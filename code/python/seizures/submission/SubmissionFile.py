@@ -1,9 +1,10 @@
 import os
 from pandas import DataFrame, read_csv
-from seizures.data.DataLoader import DataLoader
 
+from seizures.data.DataLoader import DataLoader
 from seizures.data.EEGData import EEGData
 from seizures.features.FeatureExtractBase import FeatureExtractBase
+from seizures.helper.data_structures import stack_matrices, stack_vectors
 from seizures.prediction.PredictorBase import PredictorBase
 
 
@@ -37,7 +38,8 @@ class SubmissionFile():
         return [row[1] for row in read_csv(fname)["clip"]]
         
     def generate_submission(self, predictor_seizure, predictor_early,
-                            feature_extractor, output_fname="output.csv"):
+                            feature_extractor, output_fname="output.csv",
+                            test_filenames=None):
         """
         Generates a submission file for a given pair of predictors, which will
         be trained on all training data per patient/dog instance.
@@ -47,14 +49,16 @@ class SubmissionFile():
         predictor_early   - Instance of PredictorBase, fixed parameters
         feature_extractor - Instance of FeatureExtractBase, to extract test features
         output_fname      - Optional filename for result submission file
+        test_filename     - Optional list of filenames to produce results on,
+                            default is to use all
         """
         # make sure given objects are valid
         assert(isinstance(predictor_seizure, PredictorBase))
         assert(isinstance(predictor_early, PredictorBase))
         assert(isinstance(feature_extractor, FeatureExtractBase))
         
-        # load filenames
-        fnames = SubmissionFile.get_submission_filenames()
+        if test_filenames is None:
+            test_filenames = SubmissionFile.get_submission_filenames()
         
         # predict on test data, iterate over patients and dogs
         # and the in that over all test files
@@ -65,8 +69,12 @@ class SubmissionFile():
         for patient in self.patients:
             # load training data
             print "Loading data for " + patient
-            X = data_loader.training_data(patient)
-            y_seizure, y_early = data_loader.labels(patient)
+            X_list = data_loader.training_data(patient)
+            y_seizure_list, y_early_list = data_loader.labels(patient)
+            
+            X = stack_matrices(X_list)
+            y_seizure = stack_vectors(y_seizure_list)
+            y_early = stack_vectors(y_early_list)
         
             # train both models
             print "Training seizure for " + patient
