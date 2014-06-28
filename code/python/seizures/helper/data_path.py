@@ -7,7 +7,7 @@ def get_data_path(data_path_fname):
     """
     home = expanduser("~")
     f = open(home + "/data_path.txt")
-    data_path = f.readline()
+    data_path = f.readline().strip()
     f.close()
     
     return data_path
