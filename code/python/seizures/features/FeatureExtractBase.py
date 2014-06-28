@@ -9,7 +9,7 @@ class FeatureExtractBase(object):
     """
 
     @abstractmethod
-    def extract(self):
+    def extract(self, eeg_data_instance):
         """
         Method to extract features in whatever way
 

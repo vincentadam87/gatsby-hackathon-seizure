@@ -2,6 +2,7 @@ import os
 from pandas import DataFrame, read_csv
 
 from pandas.DataFrame import to_csv
+from seizures.data.EEGData import EEGData
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.prediction.PredictorBase import PredictorBase
 
@@ -23,6 +24,7 @@ class SubmissionFile():
         fname = data_dir + os.sep + "sampleSubmission.csv"
         return read_csv(fname)["clip"]
         
+    @staticmethod
     def generate_submission(self, predictor_seizure, predictor_early,
                             feature_extractor, output_fname="output.csv"):
         """
@@ -48,10 +50,17 @@ class SubmissionFile():
         for fname in enumerate(fnames):
             print "Predicting on " + fname
             
-            # extract data and predict
-            X = feature_extractor.extract_test(fname)
+            # load raw test data
+            eeg_data = EEGData(fname)
+            
+            # extract features
+            X = feature_extractor.extract(eeg_data)
+            
+            # predict
             pred_seizure = predictor_seizure.predict(X)
             pred_early = predictor_seizure.predictor_early(X)
+            
+            # store
             result.append({'clip':fname, 'seizure':pred_seizure, 'early':pred_early})
         
         to_csv(output_fname, result)
