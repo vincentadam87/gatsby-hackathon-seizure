@@ -58,9 +58,9 @@ class DataLoader(object):
         n = len(feature_vectors)
         d = len(feature_vectors[0])
 
-        matrix = np.zeros(n, d)
+        matrix = np.zeros((n, d))
         for i, vec in enumerate(feature_vectors):
-            matrix[i, :] = feature_vectors[i]
+            matrix[i, :] = feature_vectors[i].T
 
         return matrix
 
@@ -80,3 +80,4 @@ if __name__ == '__main__':
     matrix = loader.training_data("Dog_1")
 
     print matrix
+    print loader.labels("Dog_1")
