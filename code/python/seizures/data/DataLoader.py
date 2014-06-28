@@ -6,7 +6,11 @@ from seizures.features.FFTFeatures import FFTFeatures
 
 
 class DataLoader(object):
+    """
+    Class to load all the training data for a patient.
 
+    @author Shaun
+    """
     def __init__(self, base_dir, feature_extractor):
         self.base_dir = base_dir
         self.feature_extractor = feature_extractor
@@ -17,6 +21,13 @@ class DataLoader(object):
         self.early_labels = None
 
     def training_data(self, name):
+        """
+        Returns a matrix of all the features for a given patients,
+        across all episodes.
+
+        :rtype : numpy matrix
+        :param name: str
+        """
         self.patient = name
         self._reset_lists()
 
@@ -45,11 +56,11 @@ class DataLoader(object):
 
         for instance in instances:
             new_features = self._get_feature_vector_from_instance(instance)
-            feature_vectors.append(new_features)
+            feature_vectors += new_features
 
-        self.episode_matrices.append(self._merge_vectors_into_matrix(feature_vectors))
-        self.type_labels.append(np.ones(len(feature_vectors)) * eeg.label)
-        self.early_labels.append(np.array(map(self._is_early, instances)))
+        self.episode_matrices += self._merge_vectors_into_matrix(feature_vectors)
+        self.type_labels += np.ones(len(feature_vectors)) * eeg.label
+        self.early_labels += np.array(map(self._is_early, instances))
 
     def _get_feature_vector_from_instance(self, instance):
         return self.feature_extractor.extract(instance)
