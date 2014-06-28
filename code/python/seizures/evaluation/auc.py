@@ -7,6 +7,8 @@ def auc(truth, prediction):
     Parameters:
     truth      - 1d numpy array of ground truth labels (binary)
     prediction - 1d numpy array of predicted probabilities
+    
+    @author: Heiko
     """
     # compute tp & fp rates
     fpr, tpr, _ = metrics.roc_curve(truth, prediction)
