@@ -7,6 +7,7 @@ import numpy as np
 from seizures.evaluation.XValidation import XValidation
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.RandomPredictor import RandomPredictor
+from seizures.prediction.SVMPredictor import SVMPredictor
 
 
 def test_predictor(predictor_cls):
@@ -25,3 +26,6 @@ if __name__ == '__main__':
 
     print "ForestPredictor"
     test_predictor(ForestPredictor)
+
+    print "SVMPredictor"
+    test_predictor(SVMPredictor)
