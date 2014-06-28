@@ -1,7 +1,6 @@
 import os
 
 from seizures.data.DataLoader import DataLoader
-from seizures.data.EEGData import EEGData
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.helper.data_structures import stack_matrices, stack_vectors
 from seizures.prediction.PredictorBase import PredictorBase
@@ -25,6 +24,7 @@ class SubmissionFile():
         
         # generate dog and patient record names
         self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+        # self.patients = ["Dog_1"]
     
     @staticmethod
     def get_submission_filenames():
@@ -72,8 +72,14 @@ class SubmissionFile():
 
         for patient in self.patients:
             # load training data
-            print "Loading data for " + patient
             X_list = data_loader.training_data(patient)
+            
+            # skip if no files
+            if len(X_list) == 0:
+                continue
+            
+            print "Loaded data for " + patient
+            
             y_seizure_list, y_early_list = data_loader.labels(patient)
             
             X = stack_matrices(X_list)

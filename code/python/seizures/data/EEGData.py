@@ -3,7 +3,6 @@ __author__ = 'Matthieu'
 from Instance import Instance
 import scipy.io
 import numpy as np
-import copy
 
 class EEGData(object):
     """
@@ -31,9 +30,9 @@ class EEGData(object):
 
         if 'freq' in full_data.keys():
             if len(full_data['freq'].shape) == 1:
-                self.sampling_rate = round(full_data['freq'])
+                self.sampling_rate = int(round(full_data['freq']))
             else:
-                self.sampling_rate = round(full_data['freq'][0, 0])
+                self.sampling_rate = int(round(full_data['freq'][0, 0]))
 
         if (not 'freq' in full_data.keys()) & ('latency' in full_data.keys()):
             self.sampling_rate = self.eeg_data.shape[1]/self.latency[-1]
