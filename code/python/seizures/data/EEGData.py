@@ -64,25 +64,6 @@ class EEGData(object):
         sliced_data = self.eeg_data[channels-1, (low_second*self.sampling_rate):(high_second*self.sampling_rate-1)]
         return sliced_data
 
-    def subsample_data(self, new_sampling_rate):
-        """
-        Subsamples the data to a new (lower) sampling rate and returns a new
-        EEGData class instance with subsampled data. Make sure the current
-        sampling rate is a multiple of the new sampling rate!
-        """
-        new_eeg_data = copy.deepcopy(self)
-
-        subsampling_intervals = new_eeg_data.sampling_rate / new_sampling_rate
-        new_length = new_eeg_data.eeg_data.shape[1] / subsampling_intervals
-        new_eeg_data.eeg_data = np.empty((new_eeg_data.number_of_channels, new_length))
-
-        for channel_index in range(0, new_eeg_data.number_of_channels):
-            new_eeg_data.eeg_data[channel_index, :] = np.mean(self.eeg_data[channel_index, :].reshape(-1, subsampling_intervals), 1)
-
-        new_eeg_data.sampling_rate = new_sampling_rate
-
-        return new_eeg_data
-
     def get_instances(self):
         instancesList = list()
         for second in self.latency[0:-1]:
