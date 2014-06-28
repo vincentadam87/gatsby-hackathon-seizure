@@ -1,9 +1,11 @@
 from abc import abstractmethod
-from sklearn.ensemble import RandomForestClassifier
+
 import numpy as np
+from seizures.prediction.PredictorBase import PredictorBase
+from sklearn.ensemble import RandomForestClassifier
 
 
-class ForestPredictor(object):
+class ForestPredictor(PredictorBase):
     """"
     A simple application of RandomForestClassifier
 
