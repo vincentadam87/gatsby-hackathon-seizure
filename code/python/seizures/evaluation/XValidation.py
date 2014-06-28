@@ -1,6 +1,7 @@
 from sklearn.cross_validation import StratifiedShuffleSplit
 
 import numpy as np
+from seizures.evaluation.auc import auc
 
 
 class XValidation():
@@ -12,7 +13,7 @@ class XValidation():
     """
     
     @staticmethod
-    def evaluate(X, y, test_size=0.1, n_iter=1, prediction, evaluation):
+    def evaluate(X, y, test_size=0.1, n_iter=1, prediction, evaluation=auc):
         """
         Performs stratified cross-validation on training data X and labels y.
         Assumes that y is discrete.
@@ -25,6 +26,7 @@ class XValidation():
         prediction - instance of PredictorBase
         evaluation - function handle that takes two equally sized 1d vectors
                      and evaluates some performance measure on them.
+                     Optional, default is AUC
                      
         Returns:
         2d array where each row corresponds to the performance measure on test
