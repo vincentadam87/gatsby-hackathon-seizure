@@ -45,7 +45,6 @@ class DataLoader(object):
 
     def _get_files_for_patient(self):
         files = glob.glob(join(self.base_dir, self.patient + '*'))
-        assert(len(files) > 0)
         return files
 
     def _load_data_from_file(self, filename):
@@ -70,7 +69,7 @@ class DataLoader(object):
         d = len(feature_vectors[0])
 
         matrix = np.zeros((n, d))
-        for i, vec in enumerate(feature_vectors):
+        for i, _ in enumerate(feature_vectors):
             matrix[i, :] = feature_vectors[i].T
 
         return matrix

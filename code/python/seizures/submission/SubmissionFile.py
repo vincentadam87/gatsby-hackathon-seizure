@@ -1,8 +1,6 @@
 import os
-from pandas import DataFrame, read_csv
 
 from seizures.data.DataLoader import DataLoader
-from seizures.data.EEGData import EEGData
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.helper.data_structures import stack_matrices, stack_vectors
 from seizures.prediction.PredictorBase import PredictorBase
@@ -26,6 +24,7 @@ class SubmissionFile():
         
         # generate dog and patient record names
         self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+        # self.patients = ["Dog_1"]
     
     @staticmethod
     def get_submission_filenames():
@@ -35,7 +34,12 @@ class SubmissionFile():
         me = os.path.dirname(os.path.realpath(__file__))
         data_dir = os.sep.join(me.split(os.sep)[:-4]) + os.sep + "data"
         fname = data_dir + os.sep + "sampleSubmission.csv"
-        return [row[1] for row in read_csv(fname)["clip"]]
+        
+        f = open(fname)
+        lines = f.readlines()
+        f.close()
+        
+        return [line.split(",")[0] for line in lines[1:]]
         
     def generate_submission(self, predictor_seizure, predictor_early,
                             feature_extractor, output_fname="output.csv",
@@ -62,14 +66,20 @@ class SubmissionFile():
         
         # predict on test data, iterate over patients and dogs
         # and the in that over all test files
-        result = DataFrame(columns=('clip', 'seizure', 'early'))
+        result_lines = []
 
         data_loader = DataLoader(self.data_path, feature_extractor)
 
         for patient in self.patients:
             # load training data
-            print "Loading data for " + patient
             X_list = data_loader.training_data(patient)
+            
+            # skip if no files
+            if len(X_list) == 0:
+                continue
+            
+            print "Loaded data for " + patient
+            
             y_seizure_list, y_early_list = data_loader.labels(patient)
             
             X = stack_matrices(X_list)
@@ -84,7 +94,7 @@ class SubmissionFile():
             
             # find out filenames that correspond to patient/dog
             fnames_patient = []
-            for fname in fnames:
+            for fname in test_filenames:
                 if patient in fname:
                     fnames_patient + [fname]
             
@@ -102,6 +112,10 @@ class SubmissionFile():
                 pred_early = predictor_seizure.predictor_early(X)
                 
                 # store
-                result.append({'clip':fname, 'seizure':pred_seizure, 'early':pred_early})
-        
-        result.to_csv(self.data_path + output_fname, result)
+                result_lines.append(",".join([fname, str(pred_seizure), str(pred_early)]))
+
+        f = open(self.data_path + output_fname, "w")
+        for line in result_lines:
+            f.write(line)
+        f.close()
+

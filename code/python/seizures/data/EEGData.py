@@ -3,7 +3,6 @@ __author__ = 'Matthieu'
 from Instance import Instance
 import scipy.io
 import numpy as np
-import copy
 
 class EEGData(object):
     """
@@ -31,9 +30,9 @@ class EEGData(object):
 
         if 'freq' in full_data.keys():
             if len(full_data['freq'].shape) == 1:
-                self.sampling_rate = round(full_data['freq'])
+                self.sampling_rate = int(round(full_data['freq']))
             else:
-                self.sampling_rate = round(full_data['freq'][0, 0])
+                self.sampling_rate = int(round(full_data['freq'][0, 0]))
 
         if (not 'freq' in full_data.keys()) & ('latency' in full_data.keys()):
             self.sampling_rate = self.eeg_data.shape[1]/self.latency[-1]
@@ -73,10 +72,22 @@ class EEGData(object):
 
     def get_instances(self):
         instancesList = list()
-        for second in self.latency[0:-1]:
-            sliced_data = self.get_time_channel_slice(None, second, second+1)
-            instance = Instance(self.patient_id, second, sliced_data, self.sampling_rate, self.number_of_channels)
+
+        if len(self.latency) == 1:
+            sliced_data = self.get_time_channel_slice(None, self.latency, self.latency+1)
+            instance = Instance(self.patient_id, self.latency, sliced_data, self.sampling_rate, self.number_of_channels)
             instancesList.append(instance)
+        else:
+            for second in self.latency[0:-1]:
+                sliced_data = self.get_time_channel_slice(None, second, second+1)
+                instance = Instance(self.patient_id, second, sliced_data, self.sampling_rate, self.number_of_channels)
+                instancesList.append(instance)
 
         return instancesList
 
+
+if __name__ == "__main__":
+    path = '/Users/Matthieu/Dev/seizureDectectionKaggle/Dog_1_test_segment_1.mat'
+    res = EEGData(path)
+    test = res.get_instances()
+    print test[0].eeg_data
