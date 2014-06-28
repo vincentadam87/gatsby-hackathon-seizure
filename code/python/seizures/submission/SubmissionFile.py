@@ -107,7 +107,7 @@ class SubmissionFile():
                 
                 # store
                 result_lines.append(",".join([fname, str(pred_seizure), str(pred_early)]))
-        
+
         f = open(self.data_path + output_fname, "w")
         for line in result_lines:
             f.write(line)
