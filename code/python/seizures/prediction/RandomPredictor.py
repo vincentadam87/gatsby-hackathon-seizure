@@ -1,9 +1,10 @@
 from abc import abstractmethod
 
 import numpy as np
+from seizures.prediction.PredictorBase import PredictorBase
 
 
-class RandomPredictor(object):
+class RandomPredictor(PredictorBase):
     """"
     Abstract base class that implement the interface that we use for our
     predictors. Classic supervised learning.
