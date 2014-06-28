@@ -78,9 +78,8 @@ class SubmissionFile():
             if len(X_list) == 0:
                 continue
             
-            print "Loaded data for " + patient
-            
             y_seizure_list, y_early_list = data_loader.labels(patient)
+            print "Loaded data for " + patient
             
             X = stack_matrices(X_list)
             y_seizure = stack_vectors(y_seizure_list)
@@ -96,7 +95,9 @@ class SubmissionFile():
             fnames_patient = []
             for fname in test_filenames:
                 if patient in fname:
-                    fnames_patient + [fname]
+                    fnames_patient += [fname]
+            
+            print fnames_patient
             
             # now predict on all test points
             for fname in fnames_patient:
@@ -104,16 +105,20 @@ class SubmissionFile():
                 eeg_data = None  # EEGData(fname)
                 X = feature_extractor.extract(eeg_data)
                 
-                # predict
+                # reshape since predictor expects matrix
+                X = X.reshape(1, len(X))
+                
+                # predict (one prediction only)
                 print "Predicting seizure for " + fname
-                pred_seizure = predictor_seizure.predict(X)
+                pred_seizure = predictor_seizure.predict(X)[0]
                 
                 print "Predicting seizure for " + fname
-                pred_early = predictor_seizure.predictor_early(X)
+                pred_early = predictor_early.predict(X)[0]
                 
                 # store
                 result_lines.append(",".join([fname, str(pred_seizure), str(pred_early)]))
 
+        print "Storing results to", self.data_path + output_fname
         f = open(self.data_path + output_fname, "w")
         for line in result_lines:
             f.write(line)
