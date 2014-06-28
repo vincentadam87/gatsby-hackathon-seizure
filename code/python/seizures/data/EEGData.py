@@ -1,13 +1,13 @@
 __author__ = 'Matthieu'
 
-
+from Instance import Instance
 import scipy.io
 import numpy as np
 import matplotlib.pyplot as plt
 
 class EEGData:
     """
-    Simple object that contains the EEG_data
+    Simple object that reads in the concatenated data, outputs slices and instances.
 
     path : path to the stitched (concatenated) data.
 
@@ -28,6 +28,22 @@ class EEGData:
             self.sampling_rate = round(full_data['freq'][0, 0])
         self.number_of_channels = self.eeg_data.shape[0]
 
+        if 'interictal' in path:
+            self.label = 0
+        else:
+            self.label = 1
+
+        if "Dog_" in path:
+            self.patient_type = "Dog"
+            startIndex = path.find("Dog_")+4
+            endIndex = path[startIndex:].find("_")
+            self.patient_id = path[startIndex:startIndex+endIndex]
+        else:
+            self.patient_type = "Patient"
+            startIndex = path.find("Patient_")+8
+            endIndex = path[startIndex:].find("_")
+            self.patient_id = path[startIndex:startIndex+endIndex]
+        path
     def get_time_channel_slice(self, channels=None, low_second=None, high_second=None):
         if not channels:
             channels = np.array(range(self.number_of_channels))
@@ -46,7 +62,6 @@ class EEGData:
         Make sure the current sampling rate is a multiple of the new sampling rate!
     
         """
-        
         subsampling_intervals = self.sampling_rate / new_sampling_rate
         new_length = self.eeg_data.shape[1] / subsampling_intervals
         new_eeg_data = np.empty((self.number_of_channels, new_length))
@@ -58,11 +73,11 @@ class EEGData:
         self.sampling_rate = new_sampling_rate
 
 
-
-
     def get_instances(self):
         instancesList = list()
         for second in self.latency[0:-1]:
-            instancesList.append(self.get_time_channel_slice(None, second, second+1))
+            sliced_data = self.get_time_channel_slice(None, second, second+1)
+            instance = Instance(self.patient_id, second, sliced_data, self.sampling_rate)
+            instancesList.append(instance)
 
         return instancesList
