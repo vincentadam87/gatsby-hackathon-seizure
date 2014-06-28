@@ -20,7 +20,7 @@ class Instance(object):
         sampling rate is a multiple of the new sampling rate!
         """
 
-        assert(new_sampling_rate < self.sample_rate)
+        assert(new_sampling_rate <= self.sample_rate)
 
         if new_sampling_rate == self.sample_rate:
             return self
