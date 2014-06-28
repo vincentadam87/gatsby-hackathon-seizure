@@ -18,11 +18,11 @@ def test_predictor(predictor_cls):
     print XValidation.evaluate(X_list, y_list, predictor)
 
 if __name__ == '__main__':
-#     print "RandomPredictor"
-#     test_predictor(RandomPredictor)
-# # 
+    print "RandomPredictor"
+    test_predictor(RandomPredictor)
+
     print "ForestPredictor"
     test_predictor(ForestPredictor)
-# 
-#     print "SVMPredictor"
-#     test_predictor(SVMPredictor)
+ 
+    print "SVMPredictor"
+    test_predictor(SVMPredictor)
