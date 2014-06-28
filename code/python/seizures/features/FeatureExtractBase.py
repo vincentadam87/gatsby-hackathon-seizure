@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class FeatureBase(object):
+class FeatureExtractBase(object):
     """"
     Abstract base class that implement feature extraction interface.
     
