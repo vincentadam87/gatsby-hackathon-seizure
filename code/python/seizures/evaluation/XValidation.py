@@ -1,7 +1,7 @@
 from sklearn.cross_validation import LeaveOneOut
 
 import numpy as np
-from seizures.evaluation.auc import auc
+from seizures.evaluation.performance_measures import auc
 from seizures.helper.data_structures import stack_matrices, stack_vectors
 
 

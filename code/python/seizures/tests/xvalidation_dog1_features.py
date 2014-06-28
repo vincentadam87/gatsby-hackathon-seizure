@@ -9,6 +9,7 @@ from seizures.prediction.RandomPredictor import RandomPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.data.DataLoader import DataLoader
 from seizures.features.FFTFeatures import FFTFeatures
+from seizures.evaluation.performance_measures import accuracy
 
 
 def test_predictor(predictor_cls):
@@ -20,8 +21,8 @@ def test_predictor(predictor_cls):
     X_list = loader.training_data("Dog_1")
     y_list = loader.labels("Dog_1")
 
-    print XValidation.evaluate(X_list, y_list[0], predictor)
-    print XValidation.evaluate(X_list, y_list[1], predictor)
+    print XValidation.evaluate(X_list, y_list[0], predictor, evaluation=accuracy)
+    print XValidation.evaluate(X_list, y_list[1], predictor, evaluation=accuracy)
 
 if __name__ == '__main__':
     print "RandomPredictor"
