@@ -12,7 +12,7 @@ if __name__ == '__main__':
     predictor = RandomPredictor()
     extractor = RandomFeatures()
     
-    test_files = SubmissionFile.get_submission_filenames()[:10]
+    test_files = "Dog_1_test_segment_1.mat"
     data_path = "/home/heiko/data/seizure/"
     
     submission = SubmissionFile(data_path)
