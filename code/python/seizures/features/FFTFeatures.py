@@ -14,11 +14,12 @@ class FFTFeatures(FeatureExtractBase):
         self.sampling_rate = sampling_rate
         self.bins = bins
 
-    def extract(self, eeg_data_instance):
-        features = np.empty((eeg_data_instance.number_of_channels, self.bins))
+    def extract(self, instance):
+        subsampled_instance = instance.subsample_data(self.sampling_rate)
+        features = np.empty((subsampled_instance.number_of_channels, self.bins))
 
-        for channel_index in range(0, eeg_data_instance.number_of_channels):
-            frequencies = abs(fftshift(fft(eeg_data_instance.eeg_data[channel_index, :])))
+        for channel_index in range(0, subsampled_instance.number_of_channels):
+            frequencies = abs(fftshift(fft(subsampled_instance.eeg_data[channel_index, :])))
             frequencies_to_sum = len(frequencies) / (self.bins * 2)
 
             for i in range(1, self.bins):
