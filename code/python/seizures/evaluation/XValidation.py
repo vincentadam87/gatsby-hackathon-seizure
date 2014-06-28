@@ -1,4 +1,4 @@
-from sklearn.cross_validation import StratifiedShuffleSplit
+from sklearn.cross_validation import LeaveOneOut
 
 import numpy as np
 from seizures.evaluation.auc import auc
@@ -16,19 +16,21 @@ class XValidation():
     """
     
     @staticmethod
-    def evaluate(X_list, y, predictor, test_size=0.1, n_iter=1, evaluation=auc):
+    def evaluate(X_list, y_list, predictor, test_size=0.1, n_iter=1, evaluation=auc):
         """
         Performs stratified cross-validation on training data X and labels y.
         Assumes that y is discrete.
         
-        Note that the training data is in the form of a list of matrices,
+        Note that the training data/labels are in the form of a list of matrices,
         where each matrix contains feature vectors for one particular seizure.
         Cross-validation is done over those matrices, the classifier is then 
         trained on the concatenated matrices within those blocks.
+        Labels are structured in the same way, list of vectors of labels for the
+        corresponding matrices.
         
         Parameters:
         X_list     - training data, list of 2d numpy arrays
-        y          - training labels, 1d numpy array, same length as above list
+        y_list     - training labels, 1d numpy array, same length as above list
         predictor  - instance of PredictorBase
         test_size  - number on (0,1) denoting fraction of data used for testing
         n_iter     - number of repetitions (i.e. x-validation runs)
@@ -43,45 +45,60 @@ class XValidation():
         @author: Heiko
         """
         # make sure we get right types
-        assert(type(y) == type(list))
-        for X in X_list:
-            assert(type(X) == np.ndarray)
-            
-        assert(type(y) == np.ndarray)
+        assert(type(X_list) == type(list))
+        assert(type(y_list) == type(list))
+        assert(len(y_list) == len(X_list))
+        for i in range(len(X_list)):
+            assert(type(X_list[i]) == np.ndarray)
+            assert(type(y_list[i]) == np.ndarray)
+        
         assert(type(test_size) == float)
         
         # array sizes
-        for X in X_list:
-            assert(len(X) == 2)
-            assert(X.shape[0] > 0)
-            
-        assert(len(y.shape) == 1)
+        dim = X_list[0].shape[1]
+        for i in range(len(X_list)):
+            assert(len(X_list[i].shape) == 2)
+            assert(len(y_list[i]) == X_list[i].shape[0])
+            assert(X_list[i].shape[1] == dim)
+            assert(len(y_list[i].shape) == 1)
         
-        # number of list elements and labels
-        assert(len(y) == len(y))
+            # make sure there is more than one class
+            assert(len(np.unique(y_list[i])) > 1)
         
-        # make sure there is more than one class
-        assert(len(np.unique(y))>1)
+        # create loo using sklearn
+        # this is done on the list indices
+        loo = LeaveOneOut(len(X_list))
         
-        # create stratified iterator sets using sklearn
-        sss = StratifiedShuffleSplit(y, n_iter=n_iter, test_size=test_size)
-        
-        # run x-validation
+        # run loo x-validation on the inner blocks
         result = []
-        for train_index, test_index in sss:
-            # partition data
-            X_train = X[train_index]
-            y_train = y[train_index]
-            X_test = X[test_index]
-            y_test = y[test_index]
+        for train_index, test_index in loo:
+            # partition data blocks, test data is matrix/list
+            X_train_list = [X_list[i] for i in train_index]
+            y_train_list = [y_list[i] for i in train_index]
+            X_test = X_list[test_index[0]]
+            y_test = y_list[test_index[0]]
             
-            # run predictor
+            # concatenate matrices and vectors
+            num_samples = np.sum([len(X) for X in X_train_list])
+            X_train = np.zeros((num_samples, dim))
+            y_train = np.zeros(num_samples)
+            i = 0
+            for i in range(len(X_train_list)):
+                X = X_train_list[i]
+                y = y_train_list[i]
+                X_train[i:len(X)] = X
+                y_train[i:len(y)] = y
+                i += len(X)
+            
+            # fit model
             predictor.fit(X_train, y_train)
+            
+            # run on held out matrix
             y_predict = predictor.predict(X_test)
             
             # some sanity checks on the provided predictor to avoid problems
             if not type(y_predict) == np.ndarray:
-                raise TypeError("Provided predictor doesn't return numpy array, but %s"%str(type(y_predict)))
+                raise TypeError("Provided predictor doesn't return numpy array, but %s" % str(type(y_predict)))
             
             if not len(y_predict.shape) == 1:
                 raise TypeError("Provided predictor doesn't not return 1d array")
@@ -94,4 +111,4 @@ class XValidation():
             result.append(score)
         
         # return as 2d array
-        return np.asarray(result).reshape(n_iter, len(result)/n_iter)
+        return np.asarray(result).reshape(n_iter, len(result) / n_iter)
