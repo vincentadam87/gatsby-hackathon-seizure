@@ -22,7 +22,7 @@ class XValidation():
         y          - training labels, 1d numpy array
         test_size  - number on (0,1) denoting fraction of data used for testing
         n_iter     - number of repetitions (i.e. x-validation runs)
-        prediction - function handle to a predictor
+        prediction - instance of PredictorBase
         evaluation - function handle that takes two equally sized 1d vectors
                      and evaluates some performance measure on them.
                      
@@ -48,15 +48,34 @@ class XValidation():
         assert(len(np.unique(y))>1)
         
         # create stratified iterator sets using sklearn
-        X = np.array([[1, 2], [3, 4], [1, 2], [3, 4]])
-        y = np.array([0, 0, 1, 1])
         sss = StratifiedShuffleSplit(y, n_iter=n_iter, test_size=test_size)
         
         # run x-validation
-        result = np.zeros((n_iter, ))
+        result = []
         for train_index, test_index in sss:
+            # partition data
             X_train = X[train_index]
+            y_train = y[train_index]
             X_test = X[test_index]
-            pass
+            y_test = y[test_index]
             
+            # run predictor
+            y_predict = prediction.fit(X_train, y_train)
+            y_test = prediction.predict(X_test)
+            
+            # some sanity checks on the provided predictor to avoid problems
+            if not type(y_predict) == np.ndarray:
+                raise TypeError("Provided predictor doesn't return numpy array")
+            
+            if not len(y_predict.shape) == 1:
+                raise TypeError("Provided predictor doesn't not return 1d array")
+            
+            if not len(y_predict) == len(y_test):
+                raise TypeError("Provided predictor doesn't return right number of labels")
+            
+            # evaluate, store
+            score = evaluation(X_test, y_predict)
+            result.append(score)
         
+        # return as 2d array
+        return np.asarray(result).reshape(n_iter, len(result)/n_iter)
