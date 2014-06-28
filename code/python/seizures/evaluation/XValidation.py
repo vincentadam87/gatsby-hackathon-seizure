@@ -13,7 +13,7 @@ class XValidation():
     """
     
     @staticmethod
-    def evaluate(X, y, test_size=0.1, n_iter=1, prediction, evaluation=auc):
+    def evaluate(X, y, prediction, test_size=0.1, n_iter=1, evaluation=auc):
         """
         Performs stratified cross-validation on training data X and labels y.
         Assumes that y is discrete.
@@ -21,9 +21,9 @@ class XValidation():
         Parameters:
         X          - training data, 2d numpy array
         y          - training labels, 1d numpy array
+        prediction - instance of PredictorBase
         test_size  - number on (0,1) denoting fraction of data used for testing
         n_iter     - number of repetitions (i.e. x-validation runs)
-        prediction - instance of PredictorBase
         evaluation - function handle that takes two equally sized 1d vectors
                      and evaluates some performance measure on them.
                      Optional, default is AUC
