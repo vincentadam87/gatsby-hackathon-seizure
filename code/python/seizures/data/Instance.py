@@ -26,7 +26,7 @@ class Instance(object):
             return self
 
         new_eeg_data = copy.deepcopy(self)
-        subsampling_intervals = new_eeg_data.sampling_rate / new_sampling_rate
+        subsampling_intervals = new_eeg_data.sample_rate / new_sampling_rate
         new_length = new_eeg_data.eeg_data.shape[1] / subsampling_intervals
         new_eeg_data.eeg_data = np.empty((new_eeg_data.number_of_channels, new_length))
 

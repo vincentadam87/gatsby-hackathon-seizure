@@ -80,6 +80,3 @@ class EEGData(object):
 
         return instancesList
 
-
-
-
