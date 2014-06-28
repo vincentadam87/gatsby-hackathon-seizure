@@ -25,4 +25,4 @@ class FFTFeatures(FeatureExtractBase):
             for i in range(1, self.bins):
                 features[channel_index, i] = np.mean(np.square(frequencies[(i - 1) * frequencies_to_sum:i * frequencies_to_sum]))
 
-        return features
+        return features.reshape((features.shape[0]*features.shape[1],1))
