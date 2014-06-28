@@ -21,7 +21,7 @@ class PredictorBase(object):
         raise NotImplementedError()
     
     @abstractmethod
-    def predict(self, X, y):
+    def predict(self, X):
         """
         Method to apply the model data
         
