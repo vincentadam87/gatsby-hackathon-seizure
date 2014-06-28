@@ -58,8 +58,8 @@ class DataLoader(object):
             feature_vectors.append(new_features)
 
         self.episode_matrices.append(self._merge_vectors_into_matrix(feature_vectors))
-        self.type_labels.append(np.ones(len(feature_vectors)) * eeg.label)
-        self.early_labels.append(np.array(map(self._is_early, instances)))
+        self.type_labels.append(np.ones(len(feature_vectors), dtype=np.int8) * eeg.label)
+        self.early_labels.append(np.array(map(self._is_early, instances), dtype=np.int8))
 
     def _get_feature_vector_from_instance(self, instance):
         return self.feature_extractor.extract(instance)
