@@ -2,6 +2,7 @@ from sklearn.cross_validation import LeaveOneOut
 
 import numpy as np
 from seizures.evaluation.auc import auc
+from seizures.helper.data_structures import stack_matrices, stack_vectors
 
 
 class XValidation():
@@ -16,9 +17,9 @@ class XValidation():
     """
     
     @staticmethod
-    def evaluate(X_list, y_list, predictor, test_size=0.1, n_iter=1, evaluation=auc):
+    def evaluate(X_list, y_list, predictor, evaluation=auc):
         """
-        Performs stratified cross-validation on training data X and labels y.
+        Performs LOO cross-validation on training data [X] and labels [y].
         Assumes that y is discrete.
         
         Note that the training data/labels are in the form of a list of matrices,
@@ -32,27 +33,23 @@ class XValidation():
         X_list     - training data, list of 2d numpy arrays
         y_list     - training labels, 1d numpy array, same length as above list
         predictor  - instance of PredictorBase
-        test_size  - number on (0,1) denoting fraction of data used for testing
-        n_iter     - number of repetitions (i.e. x-validation runs)
         evaluation - function handle that takes two equally sized 1d vectors
                      and evaluates some performance measure on them.
                      Optional, default is AUC
                      
         Returns:
         1d array where each entry corresponds to the performance measure the 
-        test folds (n_iter many)
+        test folds, same number as length of lists.
         
         @author: Heiko
         """
         # make sure we get right types
-        assert(type(X_list) == type(list))
-        assert(type(y_list) == type(list))
+        assert(type(X_list) == type([]))
+        assert(type(y_list) == type([]))
         assert(len(y_list) == len(X_list))
         for i in range(len(X_list)):
             assert(type(X_list[i]) == np.ndarray)
             assert(type(y_list[i]) == np.ndarray)
-        
-        assert(type(test_size) == float)
         
         # array sizes
         dim = X_list[0].shape[1]
@@ -61,9 +58,6 @@ class XValidation():
             assert(len(y_list[i]) == X_list[i].shape[0])
             assert(X_list[i].shape[1] == dim)
             assert(len(y_list[i].shape) == 1)
-        
-            # make sure there is more than one class
-            assert(len(np.unique(y_list[i])) > 1)
         
         # create loo using sklearn
         # this is done on the list indices
@@ -79,16 +73,11 @@ class XValidation():
             y_test = y_list[test_index[0]]
             
             # concatenate matrices and vectors
-            num_samples = np.sum([len(X) for X in X_train_list])
-            X_train = np.zeros((num_samples, dim))
-            y_train = np.zeros(num_samples)
-            i = 0
-            for i in range(len(X_train_list)):
-                X = X_train_list[i]
-                y = y_train_list[i]
-                X_train[i:len(X)] = X
-                y_train[i:len(y)] = y
-                i += len(X)
+            X_train = stack_matrices(X_train_list)
+            y_train = stack_vectors(y_train_list)
+            
+            # make sure there is more than one class
+            assert(len(np.unique(y_train)) > 1)
             
             # fit model
             predictor.fit(X_train, y_train)
@@ -106,9 +95,12 @@ class XValidation():
             if not len(y_predict) == len(y_test):
                 raise TypeError("Provided predictor doesn't return right number of labels")
             
+            print y_predict
+            print y_test
+            
             # evaluate, store
             score = evaluation(y_test, y_predict)
             result.append(score)
         
         # return as 2d array
-        return np.asarray(result).reshape(n_iter, len(result) / n_iter)
+        return np.asarray(result)
