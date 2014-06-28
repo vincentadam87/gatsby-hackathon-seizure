@@ -10,17 +10,25 @@ class XValidation():
     method which has an interface that takes a a bunch of feature vectors
     (as a matrix) and labels for training and then offers a predict method that
     takes a bunch of new vectors to predict a label for.
+    
+    Note that training data here has a special structure: list of 2d arrays,
+    see evaluate method.
     """
     
     @staticmethod
-    def evaluate(X, y, predictor, test_size=0.1, n_iter=1, evaluation=auc):
+    def evaluate(X_list, y, predictor, test_size=0.1, n_iter=1, evaluation=auc):
         """
         Performs stratified cross-validation on training data X and labels y.
         Assumes that y is discrete.
         
+        Note that the training data is in the form of a list of matrices,
+        where each matrix contains feature vectors for one particular seizure.
+        Cross-validation is done over those matrices, the classifier is then 
+        trained on the concatenated matrices within those blocks.
+        
         Parameters:
-        X          - training data, 2d numpy array
-        y          - training labels, 1d numpy array
+        X_list     - training data, list of 2d numpy arrays
+        y          - training labels, 1d numpy array, same length as above list
         predictor  - instance of PredictorBase
         test_size  - number on (0,1) denoting fraction of data used for testing
         n_iter     - number of repetitions (i.e. x-validation runs)
@@ -35,16 +43,22 @@ class XValidation():
         @author: Heiko
         """
         # make sure we get right types
-        assert(type(X) == np.ndarray)
+        assert(type(y) == type(list))
+        for X in X_list:
+            assert(type(X) == np.ndarray)
+            
         assert(type(y) == np.ndarray)
         assert(type(test_size) == float)
         
         # array sizes
-        assert(len(X.shape) == 2)
+        for X in X_list:
+            assert(len(X) == 2)
+            assert(X.shape[0] > 0)
+            
         assert(len(y.shape) == 1)
         
-        # array dimensions
-        assert(X.shape[0] > 0)
+        # number of list elements and labels
+        assert(len(y) == len(y))
         
         # make sure there is more than one class
         assert(len(np.unique(y))>1)
