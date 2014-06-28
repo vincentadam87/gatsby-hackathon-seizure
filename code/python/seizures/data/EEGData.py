@@ -3,10 +3,9 @@ __author__ = 'Matthieu'
 from Instance import Instance
 import scipy.io
 import numpy as np
-import matplotlib.pyplot as plt
 import copy
 
-class EEGData:
+class EEGData(object):
     """
     Simple object that reads in the concatenated data, outputs slices and instances.
 
@@ -30,7 +29,7 @@ class EEGData:
             self.sampling_rate = round(full_data['freq'][0, 0])
 
         if (not 'freq' in full_data.keys()) & ('latency' in full_data.keys()):
-            self.sampling_rate = self.eeg_data.shape[1]/self.sampling_rate
+            self.sampling_rate = self.eeg_data.shape[1]/self.latency[-1]
 
         if (not 'latency' in full_data.keys()) & ('freq' in full_data.keys()):
             self.latency = np.array(range(int(round(self.eeg_data.shape[1]/self.sampling_rate))))
@@ -88,7 +87,12 @@ class EEGData:
         instancesList = list()
         for second in self.latency[0:-1]:
             sliced_data = self.get_time_channel_slice(None, second, second+1)
-            instance = Instance(self.patient_id, second, sliced_data, self.sampling_rate)
+            instance = Instance(self.patient_id, second, sliced_data, self.sampling_rate, self.number_of_channels)
             instancesList.append(instance)
 
         return instancesList
+
+
+path = '/Users/Matthieu/Dev/seizureDectectionKaggle/SeizureData/Patient_1_ictal_segment_2.mat'
+test = EEGData(path)
+
