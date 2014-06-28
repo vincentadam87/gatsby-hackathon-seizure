@@ -22,10 +22,18 @@ class EEGData:
     def __init__(self, path):
         full_data = scipy.io.loadmat(path)
         self.eeg_data = full_data['data']
-        if 'latency' in full_data:
+
+        if 'latency' in full_data.keys():
             self.latency = np.array(full_data['latency'])[0, :]
-        if 'freq' in full_data:
+        if 'freq' in full_data.keys():
             self.sampling_rate = round(full_data['freq'][0, 0])
+
+        if (not 'freq' in full_data.keys()) & ('latency' in full_data.keys()):
+            self.sampling_rate = self.eeg_data.shape[1]/self.sampling_rate
+
+        if (not 'latency' in full_data.keys()) & ('freq' in full_data.keys()):
+            self.latency = np.array(range(int(round(self.eeg_data.shape[1]/self.sampling_rate))))
+
         self.number_of_channels = self.eeg_data.shape[0]
 
         if 'interictal' in path:
@@ -43,7 +51,7 @@ class EEGData:
             startIndex = path.find("Patient_")+8
             endIndex = path[startIndex:].find("_")
             self.patient_id = path[startIndex:startIndex+endIndex]
-        path
+
     def get_time_channel_slice(self, channels=None, low_second=None, high_second=None):
         if not channels:
             channels = np.array(range(self.number_of_channels))
@@ -81,3 +89,7 @@ class EEGData:
             instancesList.append(instance)
 
         return instancesList
+
+path = '/Users/Matthieu/Dev/seizureDectectionKaggle/SeizureData/Dog_1_ictal_segment_1.mat'
+test = EEGData(path)
+print test.latency
