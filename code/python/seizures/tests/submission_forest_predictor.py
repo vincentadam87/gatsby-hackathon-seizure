@@ -3,14 +3,14 @@ Created on 28 Jun 2014
 
 @author: heiko
 '''
-from seizures.features.RandomFeatures import RandomFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.submission.SubmissionFile import SubmissionFile
+from seizures.features.FFTFeatures import FFTFeatures
 
 
 if __name__ == '__main__':
     predictor = ForestPredictor()
-    extractor = RandomFeatures()
+    extractor = FFTFeatures()
     
     test_files = ["Dog_1_test_segment_1.mat"]
     data_path = "/home/heiko/data/seizure/"
