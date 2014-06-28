@@ -95,9 +95,6 @@ class XValidation():
             if not len(y_predict) == len(y_test):
                 raise TypeError("Provided predictor doesn't return right number of labels")
             
-            print y_predict
-            print y_test
-            
             # evaluate, store
             score = evaluation(y_test, y_predict)
             result.append(score)

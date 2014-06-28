@@ -16,6 +16,6 @@ class RandomXValidationData():
         for _ in range(10):
             n = np.random.randint(10, 100)
             X_list += [np.random.randn(n, dim)]
-            y_list += [np.random.rand(n)]
+            y_list += [(np.random.rand(n)>.5).astype(np.int64)]
             
         return X_list, y_list
