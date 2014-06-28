@@ -55,7 +55,3 @@ class SubmissionFile():
             result.append({'clip':fname, 'seizure':pred_seizure, 'early':pred_early})
         
         to_csv(output_fname, result)
-        
-if __name__ == "__main__":
-    
-    
