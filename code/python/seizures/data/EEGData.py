@@ -92,7 +92,7 @@ class EEGData(object):
 
         return instancesList
 
-
-path = '/Users/Matthieu/Dev/seizureDectectionKaggle/SeizureData/Patient_1_ictal_segment_2.mat'
-test = EEGData(path)
+if __name__ == '__main__':
+    path = '/Users/Matthieu/Dev/seizureDectectionKaggle/SeizureData/Patient_1_ictal_segment_2.mat'
+    test = EEGData(path)
 
