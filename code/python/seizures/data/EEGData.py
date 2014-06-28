@@ -89,7 +89,3 @@ class EEGData:
             instancesList.append(instance)
 
         return instancesList
-
-path = '/Users/Matthieu/Dev/seizureDectectionKaggle/SeizureData/Dog_1_ictal_segment_1.mat'
-test = EEGData(path)
-print test.latency
