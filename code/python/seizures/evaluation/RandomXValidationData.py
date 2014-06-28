@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class ToyXValidationData():
+class RandomXValidationData():
     """
     Class that generates random data for XValidation (list of matrices/lists)
     to test the pipeline
