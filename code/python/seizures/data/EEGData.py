@@ -3,6 +3,7 @@ __author__ = 'Matthieu'
 
 import scipy.io
 import numpy as np
+import matplotlib.pyplot as plt
 
 class EEGData:
     """
@@ -23,7 +24,7 @@ class EEGData:
 
     def get_time_channel_slice(self, channels=None, low_second=None, high_second=None):
         if not channels:
-            channels = range(self.number_of_channels)
+            channels = np.array(range(self.number_of_channels))
         else:
             channels = np.array(channels)
 
@@ -50,3 +51,9 @@ class EEGData:
         self.eeg_data = new_eeg_data
         self.sampling_rate = new_sampling_rate
 
+    def get_instances(self):
+        instancesList = list()
+        for second in self.latency[0:-1]:
+            instancesList.append(self.get_time_channel_slice(None, second, second+1))
+
+        return instancesList
