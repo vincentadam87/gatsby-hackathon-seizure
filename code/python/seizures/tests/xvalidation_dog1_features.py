@@ -3,20 +3,28 @@ Created on 28 Jun 2014
 
 @author: heiko
 '''
+from os.path import expanduser
+
+from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
+from seizures.evaluation.performance_measures import accuracy
+from seizures.features.FFTFeatures import FFTFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.RandomPredictor import RandomPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
-from seizures.data.DataLoader import DataLoader
-from seizures.features.FFTFeatures import FFTFeatures
-from seizures.evaluation.performance_measures import accuracy
 
 
 def test_predictor(predictor_cls):
     predictor = predictor_cls()
+    
+    home = expanduser("~")
+    f = open(home + "/data_path.txt")
+    data_path = f.readline()
+    print "data_path", data_path
+    f.close()
 
     feature_extractor = FFTFeatures()
-    data_path = "/home/heiko/data/seizure/"
+    
     loader = DataLoader(data_path, feature_extractor)
     X_list = loader.training_data("Dog_1")
     y_list = loader.labels("Dog_1")

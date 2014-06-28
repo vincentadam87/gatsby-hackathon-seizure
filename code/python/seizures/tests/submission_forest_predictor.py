@@ -3,9 +3,11 @@ Created on 28 Jun 2014
 
 @author: heiko
 '''
+from os.path import expanduser
+
+from seizures.features.FFTFeatures import FFTFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.submission.SubmissionFile import SubmissionFile
-from seizures.features.FFTFeatures import FFTFeatures
 
 
 if __name__ == '__main__':
@@ -13,7 +15,12 @@ if __name__ == '__main__':
     extractor = FFTFeatures()
     
     test_files = ["Dog_1_test_segment_1.mat"]
-    data_path = "/home/heiko/data/seizure/"
+    
+    home = expanduser("~")
+    f = open(home + "/data_path.txt")
+    data_path = f.readline()
+    print "data_path", data_path
+    f.close()
     
     submission = SubmissionFile(data_path)
     submission.generate_submission(predictor, predictor,
