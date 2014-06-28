@@ -13,7 +13,7 @@ class XValidation():
     """
     
     @staticmethod
-    def evaluate(X, y, prediction, test_size=0.1, n_iter=1, evaluation=auc):
+    def evaluate(X, y, predictor, test_size=0.1, n_iter=1, evaluation=auc):
         """
         Performs stratified cross-validation on training data X and labels y.
         Assumes that y is discrete.
@@ -21,7 +21,7 @@ class XValidation():
         Parameters:
         X          - training data, 2d numpy array
         y          - training labels, 1d numpy array
-        prediction - instance of PredictorBase
+        predictor  - instance of PredictorBase
         test_size  - number on (0,1) denoting fraction of data used for testing
         n_iter     - number of repetitions (i.e. x-validation runs)
         evaluation - function handle that takes two equally sized 1d vectors
@@ -29,21 +29,21 @@ class XValidation():
                      Optional, default is AUC
                      
         Returns:
-        2d array where each row corresponds to the performance measure on test
-        set for each fold.
+        1d array where each entry corresponds to the performance measure the 
+        test folds (n_iter many)
         
         @author: Heiko
         """
         # make sure we get right types
         assert(type(X) == np.ndarray)
         assert(type(y) == np.ndarray)
+        assert(type(test_size) == float)
         
         # array sizes
         assert(len(X.shape) == 2)
         assert(len(y.shape) == 1)
         
         # array dimensions
-        assert(X.shape[1] == len(y))
         assert(X.shape[0] > 0)
         
         # make sure there is more than one class
@@ -62,12 +62,12 @@ class XValidation():
             y_test = y[test_index]
             
             # run predictor
-            y_predict = prediction.fit(X_train, y_train)
-            y_test = prediction.predict(X_test)
+            predictor.fit(X_train, y_train)
+            y_predict = predictor.predict(X_test)
             
             # some sanity checks on the provided predictor to avoid problems
             if not type(y_predict) == np.ndarray:
-                raise TypeError("Provided predictor doesn't return numpy array")
+                raise TypeError("Provided predictor doesn't return numpy array, but %s"%str(type(y_predict)))
             
             if not len(y_predict.shape) == 1:
                 raise TypeError("Provided predictor doesn't not return 1d array")
@@ -76,7 +76,7 @@ class XValidation():
                 raise TypeError("Provided predictor doesn't return right number of labels")
             
             # evaluate, store
-            score = evaluation(X_test, y_predict)
+            score = evaluation(y_test, y_predict)
             result.append(score)
         
         # return as 2d array
