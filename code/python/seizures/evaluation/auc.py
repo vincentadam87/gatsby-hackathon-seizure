@@ -11,8 +11,6 @@ def auc(truth, prediction):
     
     @author: Heiko
     """
-    # compute tp & fp rates, 1 is regarded as positive
-    fpr, tpr, _ = metrics.roc_curve(truth, prediction, pos_label=1)
     
     # return integrated ROC curve
-    return metrics.auc(fpr, tpr)
+    return metrics.roc_auc_score(truth, prediction)
