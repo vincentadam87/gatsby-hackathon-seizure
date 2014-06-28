@@ -24,9 +24,16 @@ class EEGData(object):
         self.eeg_data = full_data['data']
 
         if 'latency' in full_data.keys():
-            self.latency = np.array(full_data['latency'])[0, :]
+            if len(full_data['latency'].shape) == 1:
+                self.latency = np.array(full_data['latency'])
+            else:
+                self.latency = np.array(full_data['latency'])[0, :]
+
         if 'freq' in full_data.keys():
-            self.sampling_rate = round(full_data['freq'][0, 0])
+            if len(full_data['freq'].shape) == 1:
+                self.sampling_rate = round(full_data['freq'])
+            else:
+                self.sampling_rate = round(full_data['freq'][0, 0])
 
         if (not 'freq' in full_data.keys()) & ('latency' in full_data.keys()):
             self.sampling_rate = self.eeg_data.shape[1]/self.latency[-1]
@@ -74,6 +81,5 @@ class EEGData(object):
         return instancesList
 
 
-path = '/Users/Matthieu/Dev/seizureDectectionKaggle/SeizureData/Patient_1_ictal_segment_2.mat'
-test = EEGData(path)
+
 
