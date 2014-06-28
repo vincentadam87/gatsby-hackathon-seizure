@@ -1,5 +1,6 @@
 import os
 from pandas import DataFrame, read_csv
+from seizures.data.DataLoader import DataLoader
 
 from seizures.data.EEGData import EEGData
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -58,11 +59,14 @@ class SubmissionFile():
         # predict on test data, iterate over patients and dogs
         # and the in that over all test files
         result = DataFrame(columns=('clip', 'seizure', 'early'))
+
+        data_loader = DataLoader(self.data_path, feature_extractor)
+
         for patient in self.patients:
             # load training data
             print "Loading data for " + patient
-            X = PatientData.training_data(patient)
-            y_seizure, y_early = PatientData.labels(patient)
+            X = data_loader.training_data(patient)
+            y_seizure, y_early = data_loader.labels(patient)
         
             # train both models
             print "Training seizure for " + patient
