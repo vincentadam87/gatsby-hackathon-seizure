@@ -1,7 +1,6 @@
 import numpy as np
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from statsmodels.tsa.vector_ar.var_model import VAR
-# dependency : http://statsmodels.sourceforge.net/
 
 class ARFeatures(FeatureExtractBase):
     """
