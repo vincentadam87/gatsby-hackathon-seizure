@@ -1,8 +1,17 @@
+"""
+Find 2^n that is equal to or greater than.
+"""
+
 from scipy.fftpack import fft, fftshift
 
 import numpy as np
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 
+
+def nextpow2(i):
+    n = 1
+    while n < i: n *= 2
+    return n
 
 class FFTFeatures(FeatureExtractBase):
     """
@@ -10,11 +19,27 @@ class FFTFeatures(FeatureExtractBase):
     @author Julian
     """
 
-    def __init__(self, sampling_rate=400, bins=10):
-        self.sampling_rate = sampling_rate
-        self.bins = bins
+    def __init__(self, band_means, band_width):
+        self.band_means = band_means
+        self.band_width = band_width
 
     def extract(self, instance):
+        data = instance.eeg_data
+        L = data.shape[1]
+        
+        nfft = nextpow2(L)
+        Y = fft(data, nfft)
+        psd = 2 * abs(Y[:,:(Y.shape[1] / 2)]) ** 2
+        f = instance.sample_rate / 2 * np.linspace(0, 1, nfft / 2)
+        
+        feats = np.zeros((instance.number_of_channels, len(self.band_means)))
+        for i in range(len(self.band_means)):
+            inds = abs(self.band_means[i] - f) < self.band_width
+            feats[:, i] += np.sum(psd[:,inds], 1)
+            
+        return feats.reshape((feats.shape[0]*feats.shape[1],))
+
+    def extract_julian_old(self, instance):
         subsampled_instance = instance.subsample_data(self.sampling_rate)
         features = np.empty((subsampled_instance.number_of_channels, self.bins))
 
@@ -25,4 +50,4 @@ class FFTFeatures(FeatureExtractBase):
             for i in range(1, self.bins):
                 features[channel_index, i] = np.mean(np.square(frequencies[(i - 1) * frequencies_to_sum:i * frequencies_to_sum]))
 
-        return features.reshape((features.shape[0]*features.shape[1],1))
+        return features.reshape((features.shape[0] * features.shape[1], 1))
