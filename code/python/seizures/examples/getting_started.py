@@ -3,6 +3,15 @@ Created on 28 Jun 2014
 @author: heiko, vincent
 '''
 
+# to run this script, you need to tell python where to find your code
+# 1- $gedit ~/.bashrc
+# 2- add to .bashrc the following line: export PYTHONPATH=$PYTHONPATH:path_to_repo/code/python, save, start a new terminal
+# 3- run this script: $python getting_started.py
+
+ 
+# you can also manually declare path
+
+
 # Loading necessary packages
 from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
@@ -11,7 +20,10 @@ from seizures.features.ARFeatures import ARFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
 import numpy as np
+import sys
 
+path_to_repo = "~/git/gatsby-hackathon-seizure/code/python/seizures/"
+sys.path.insert(1,path_to_repo)
 
 def test_predictor(predictor_cls):
     ''' function that loads data for Dog_1 run crossvalidation with ARFeatures 
