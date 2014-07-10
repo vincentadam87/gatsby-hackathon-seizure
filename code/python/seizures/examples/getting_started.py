@@ -12,17 +12,20 @@ Created on 28 Jun 2014
 
 
 # Loading necessary packages
+
+import sys
+# you can also manually declare path
+path_to_repo = "/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/"
+sys.path.insert(1,path_to_repo)
+
 from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy
 from seizures.features.ARFeatures import ARFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
-import sys
 
-# you can also manually declare path
-path_to_repo = "/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/"
-sys.path.insert(1,path_to_repo)
+
 
 def test_predictor(predictor_cls):
     ''' function that loads data for Dog_1 run crossvalidation with ARFeatures 
