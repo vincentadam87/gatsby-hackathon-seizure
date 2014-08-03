@@ -38,8 +38,8 @@ def test_predictor(predictor_cls):
     predictor = predictor_cls()    
 
     # path to data (here path from within gatsby network)
-    data_path = "/nfs/data3/kaggle_seizure/"
-
+    data_path = "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
+    
     # creating instance of autoregressive features
     feature_extractor = ARFeatures()
     
