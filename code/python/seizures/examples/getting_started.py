@@ -16,6 +16,7 @@ Created on 28 Jun 2014
 import sys
 # you can also manually declare path
 path_to_repo = "/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/"
+#path_to_repo = "/nfs/data3/balaji/research/gatsby-hackathon-seizure/code/python/"
 sys.path.insert(1,path_to_repo)
 
 from seizures.data.DataLoader import DataLoader
