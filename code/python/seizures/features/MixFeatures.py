@@ -10,20 +10,18 @@ class MixFeatures(FeatureExtractBase):
     @author V&J
     """
 
-    def __init__(self,features_string_list):
-        self.features_string_list = features_string_list
+    def __init__(self,features_list):
+        self.features_list = features_list
 
     def extract(self, instance):
-    	
-    	feature_class_dict = {"ARFeatures":ARFeatures,
-    				  		"FFTFeatures":FFTFeatures,
-    				  		"RandomFeatures":RandomFeatures}
-
-    	extracted_features_list = []
-    	for feature_string in features_string_list:
-    		if feature_string in feature_class_dict:
-	    		feature_object = feature_class_dict[feature_string]() 
-	    		extracted_features_list.append(feature_object.extract(instance))
-
-    	return np.dstack(extracted_features_list)
+        feature_class_dict = {"ARFeatures":ARFeatures,
+                              "FFTFeatures":FFTFeatures,
+                              "RandomFeatures":RandomFeatures}
+        extracted_features_list = []
+        for feature_string in self.features_list:
+            if feature_string['name'] in feature_class_dict:
+                kwargs = feature_string['args']
+                feature_object = feature_class_dict[feature_string['name']](**kwargs)
+                extracted_features_list.append(np.hstack(feature_object.extract(instance))) #flattened
+        return np.hstack(extracted_features_list)
 
