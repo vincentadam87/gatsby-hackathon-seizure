@@ -1,8 +1,9 @@
 import os
-
+from seizures.data.EEGData import EEGData
 from seizures.data.DataLoader import DataLoader
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.helper.data_structures import stack_matrices, stack_vectors
+from seizures.helper.data_structures import test_stack_matrices, test_stack_vectors
 from seizures.prediction.PredictorBase import PredictorBase
 
 
@@ -23,8 +24,11 @@ class SubmissionFile():
         self.data_path = data_path
         
         # generate dog and patient record names
-        # self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
-        self.patients = ["Dog_1"]
+        self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+#        self.patients = ["Dog_1"]
+#        self.patients = ["Dog_2"]
+#        self.patients = ["Patient_1"]
+#        self.patients = ["Patient_4"]
     
     @staticmethod
     def get_submission_filenames():
@@ -80,12 +84,22 @@ class SubmissionFile():
             
             y_seizure_list, y_early_list = data_loader.labels(patient)
             print "Loaded data for " + patient
+#            print y_seizure_list
+#            print y_early_list
             
             X = stack_matrices(X_list)
+#            print X_list[0].shape, X_list[1].shape
             y_seizure = stack_vectors(y_seizure_list)
             y_early = stack_vectors(y_early_list)
+#            print y_seizure
+#            print y_early
+#            print X.shape, y_seizure.shape, y_early.shape
+#            test_stack_matrices(X, X_list)
+#            test_stack_vectors(y_seizure, y_seizure_list)
+#            test_stack_vectors(y_early, y_early_list)
         
             # train both models
+            print
             print "Training seizure for " + patient
             predictor_seizure.fit(X, y_seizure)
             print "Training early for " + patient
@@ -97,30 +111,42 @@ class SubmissionFile():
                 if patient in fname:
                     fnames_patient += [fname]
             
-            print fnames_patient
+            #print fnames_patient
             
             # now predict on all test points
-            for fname in fnames_patient:
-                print "Loading test data for " + fname
-                eeg_data = None  # EEGData(fname)
+            for i_fname, fname in enumerate(fnames_patient):
+                print "\nLoading test data for " + fname
+                # eeg_data = None  # EEGData(fname)
+                fname_full = '/nfs/data3/kaggle_seizure/clips/' + patient + '/' + fname
+                print fname, fname_full
+                eeg_data_tmp = EEGData(fname_full)
+                eeg_data = eeg_data_tmp.get_instances()
+                assert len(eeg_data) == 1
+                eeg_data = eeg_data[0]
                 X = feature_extractor.extract(eeg_data)
+#                print X.shape
+                print X[:10]
                 
                 # reshape since predictor expects matrix
                 X = X.reshape(1, len(X))
+#                print X.shape
                 
                 # predict (one prediction only)
                 print "Predicting seizure for " + fname
                 pred_seizure = predictor_seizure.predict(X)[0]
+#                print predictor_seizure.predict(X)
+#                print pred_seizure
                 
-                print "Predicting seizure for " + fname
+                print "Predicting early for " + fname
                 pred_early = predictor_early.predict(X)[0]
-                
+#                print pred_early
+
                 # store
                 result_lines.append(",".join([fname, str(pred_seizure), str(pred_early)]))
 
         print "Storing results to", self.data_path + output_fname
         f = open(self.data_path + output_fname, "w")
         for line in result_lines:
-            f.write(line)
+            f.write(line + '\n')
         f.close()
 
