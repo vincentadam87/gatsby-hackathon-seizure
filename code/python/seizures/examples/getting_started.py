@@ -12,6 +12,7 @@ Created on 28 Jun 2014
 
 
 # Loading necessary packages
+import numpy as np
 
 import sys
 # you can also manually declare path
@@ -24,7 +25,7 @@ from seizures.evaluation.performance_measures import accuracy
 from seizures.features.ARFeatures import ARFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
-
+from seizures.features.MixFeatures import MixFeatures
 
 
 def test_predictor(predictor_cls):
@@ -40,12 +41,24 @@ def test_predictor(predictor_cls):
     data_path = "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
     
     # creating instance of autoregressive features
-    feature_extractor = ARFeatures()
-    
+    #feature_extractor = ARFeatures()
+    band_means = np.linspace(0, 200, 66)
+    band_width = 2
+    FFTFeatures_args = {'band_means':band_means, 'band_width':band_width}
+
+    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
+                                     {'name':"FFTFeatures",'args':FFTFeatures_args}])
+    #feature_extractor = ARFeatures()
+
+
+
+
     # loading the data
     loader = DataLoader(data_path, feature_extractor)
     X_list = loader.training_data("Dog_1")
     y_list = loader.labels("Dog_1")
+
+    print 'printing data'
 
     # running cross validation    
     conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
