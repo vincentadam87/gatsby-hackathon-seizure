@@ -50,19 +50,22 @@ def test_predictor(predictor_cls):
                                      {'name':"FFTFeatures",'args':FFTFeatures_args}])
     #feature_extractor = ARFeatures()
 
-
-
-
     # loading the data
     loader = DataLoader(data_path, feature_extractor)
     X_list = loader.training_data("Dog_1")
     y_list = loader.labels("Dog_1")
 
-    print 'printing data'
+    # separating the label
+    early_vs_not = y_list[1] #[a * b for (a, b) in zip(y_list[0], y_list[1])]
+    seizure_vs_not = y_list[0]
 
     # running cross validation    
-    conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
-    print XValidation.evaluate(X_list, conditioned, predictor, evaluation=accuracy)
+    print "cross validation: seizures vs not"
+    XValidation.evaluate(X_list, seizure_vs_not, predictor, evaluation=auc)
+    print "cross validation: early_vs_not"
+    XValidation.evaluate(X_list, early_vs_not, predictor, evaluation=auc)
+
+    # generate prediction for test data
 
 if __name__ == '__main__':
     # code run at script launch
