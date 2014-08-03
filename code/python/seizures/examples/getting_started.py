@@ -12,6 +12,7 @@ Created on 28 Jun 2014
 
 
 # Loading necessary packages
+import numpy as np
 
 import sys
 # assuming that you have manually added the path to repository to PYTHONPATH
@@ -23,10 +24,10 @@ from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.ARFeatures import ARFeatures
+from seizures.features.MixFeatures import MixFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.helper.data_path import get_data_path
-
 
 
 def test_predictor(predictor_cls):
@@ -43,18 +44,33 @@ def test_predictor(predictor_cls):
     data_path = get_data_path()
     
     # creating instance of autoregressive features
-    feature_extractor = ARFeatures()
-    
+    #feature_extractor = ARFeatures()
+    band_means = np.linspace(0, 200, 66)
+    band_width = 2
+    FFTFeatures_args = {'band_means':band_means, 'band_width':band_width}
+
+    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
+                                     {'name':"FFTFeatures",'args':FFTFeatures_args}])
+    #feature_extractor = ARFeatures()
+
     # loading the data
     loader = DataLoader(data_path, feature_extractor)
     print loader.base_dir
     X_list = loader.training_data("Dog_1/")
     y_list = loader.labels("Dog_1/")
 
+    # separating the label
+    early_vs_not = y_list[1] #[a * b for (a, b) in zip(y_list[0], y_list[1])]
+    seizure_vs_not = y_list[0]
+
     # running cross validation    
     conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
-#    print XValidation.evaluate(X_list, conditioned, predictor, evaluation=accuracy)
-    print XValidation.evaluate(X_list, conditioned, predictor, evaluation=auc)
+    print "cross validation: seizures vs not"
+    XValidation.evaluate(X_list, seizure_vs_not, predictor, evaluation=auc)
+    print "cross validation: early_vs_not"
+    XValidation.evaluate(X_list, early_vs_not, predictor, evaluation=auc)
+
+    # generate prediction for test data
 
 if __name__ == '__main__':
     # code run at script launch
@@ -64,5 +80,3 @@ if __name__ == '__main__':
 
     print "SVMPredictor"
     test_predictor(SVMPredictor)
-
- 
