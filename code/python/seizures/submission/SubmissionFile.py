@@ -23,8 +23,8 @@ class SubmissionFile():
         self.data_path = data_path
         
         # generate dog and patient record names
-        self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
-        # self.patients = ["Dog_1"]
+        # self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+        self.patients = ["Dog_1"]
     
     @staticmethod
     def get_submission_filenames():

@@ -78,6 +78,7 @@ class XValidation():
             
             # make sure there is more than one class
             assert(len(np.unique(y_train)) > 1)
+            assert(len(np.unique(y_test)) > 1)
             
             # fit model
             predictor.fit(X_train, y_train)

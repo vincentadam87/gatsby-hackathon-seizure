@@ -4,6 +4,7 @@ import os;
 from seizures.data.EEGData import EEGData
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
+from itertools import izip
 
 
 class DataLoader(object):
@@ -48,29 +49,42 @@ class DataLoader(object):
         self.early_labels = []
 
     def _get_files_for_patient(self):
-        globPath=join(self.base_dir, self.patient + '*')
+        files = glob.glob(join(self.base_dir, self.patient + '/*interictal*'))
+        #globPath=join(self.base_dir, self.patient + '*')
         #print globPath
-        files = glob.glob(globPath)
-        if not files:
-            # if files is empty
-            raise Exception('empty patient files from globbing: %s'%globPath)
+        #files = glob.glob(globPath)
+        #if not files:
+        #    # if files is empty
+        #    raise Exception('empty patient files from globbing: %s'%globPath)
         return files
 
     def _load_data_from_file(self, filename):
         eeg = EEGData(filename)
         instances = eeg.get_instances()
+        filename2 = filename.replace('interictal', 'ictal')
+        eeg2 = EEGData(filename2)
+        instances2 = eeg2.get_instances()
 
         feature_vectors = []
 
         for instance in instances:
             new_features = self._get_feature_vector_from_instance(instance)
             feature_vectors.append(new_features)
+        for instance in instances2:
+            new_features = self._get_feature_vector_from_instance(instance)
+            feature_vectors.append(new_features)
 
         self.episode_matrices.append(self._merge_vectors_into_matrix(feature_vectors))
-        self.type_labels.append(np.ones(len(feature_vectors), dtype=np.int8) * eeg.label)
+#        self.type_labels.append(np.ones(len(feature_vectors), dtype=np.int8) * eeg.label)
+        eeg_labels = np.ones(len(instances), dtype=np.int8) * eeg.label
+        eeg2_labels = np.ones(len(instances2), dtype=np.int8) * eeg2.label
+        self.type_labels.append(np.concatenate((eeg_labels, eeg2_labels)))
 
         # Only have 1 if there is a seizure and it is early
-        self.early_labels.append(np.array(map(self._is_early, instances), dtype=np.int8) * eeg.label)
+#        self.early_labels.append(np.array(map(self._is_early, instances), dtype=np.int8) * eeg.label)
+        early_labels = np.array(map(self._is_early, instances), dtype=np.int8) * eeg.label
+        early2_labels = np.array(map(self._is_early, instances2), dtype=np.int8) * eeg2.label
+        self.early_labels.append(np.concatenate((early_labels, early2_labels)))
 
     def _get_feature_vector_from_instance(self, instance):
         return self.feature_extractor.extract(instance)

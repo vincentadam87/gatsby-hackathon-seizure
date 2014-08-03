@@ -1,12 +1,11 @@
 from abc import abstractmethod
-from sklearn.ensemble import RandomForestClassifier
 import numpy as np
 from sklearn.svm import SVC
 
 
 class SVMPredictor(object):
     """"
-    A simple application of RandomForestClassifier
+    A simple application of SVM classifier
 
     @author: Shaun
     """

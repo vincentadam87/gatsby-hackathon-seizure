@@ -30,7 +30,7 @@ from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.helper.data_path import get_data_path
 
 
-def test_predictor(predictor_cls):
+def test_predictor(predictor_cls, patient_name='Dog_1'):
     ''' function that loads data for Dog_1 run crossvalidation with ARFeatures 
         INPUT:
         - predictor_cls: a Predictor class (implement)  
@@ -56,27 +56,36 @@ def test_predictor(predictor_cls):
     # loading the data
     loader = DataLoader(data_path, feature_extractor)
     print loader.base_dir
-    X_list = loader.training_data("Dog_1/")
-    y_list = loader.labels("Dog_1/")
+
+    print '\npatient = %s' % patient_name
+    X_list = loader.training_data(patient_name)
+    y_list = loader.labels(patient_name)
 
     # separating the label
     early_vs_not = y_list[1] #[a * b for (a, b) in zip(y_list[0], y_list[1])]
     seizure_vs_not = y_list[0]
-
+    
     # running cross validation    
     conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
-    print "cross validation: seizures vs not"
-    XValidation.evaluate(X_list, seizure_vs_not, predictor, evaluation=auc)
-    print "cross validation: early_vs_not"
-    XValidation.evaluate(X_list, early_vs_not, predictor, evaluation=auc)
+    print "\ncross validation: seizures vs not"
+    result = XValidation.evaluate(X_list, seizure_vs_not, predictor, evaluation=auc)
+    print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
+           % (np.mean(result), np.std(result), result)
+
+    print "\ncross validation: early_vs_not"
+    result = XValidation.evaluate(X_list, early_vs_not, predictor, evaluation=auc)
+    print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
+          % (np.mean(result), np.std(result), result)
 
     # generate prediction for test data
 
 if __name__ == '__main__':
     # code run at script launch
 
+    patient_name = sys.argv[1]
+    
     print "ForestPredictor"
-    test_predictor(ForestPredictor)
+    test_predictor(ForestPredictor, patient_name)
 
-    print "SVMPredictor"
-    test_predictor(SVMPredictor)
+    print "\nSVMPredictor"
+    test_predictor(SVMPredictor, patient_name)
