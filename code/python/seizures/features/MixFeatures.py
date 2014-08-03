@@ -3,6 +3,7 @@ from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.features.ARFeatures import ARFeatures
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.RandomFeatures import RandomFeatures
+from seizures.features.XCHUHFeatures import XCHUHFeatures
 
 class MixFeatures(FeatureExtractBase):
     """
