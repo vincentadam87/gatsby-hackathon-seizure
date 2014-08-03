@@ -14,16 +14,18 @@ Created on 28 Jun 2014
 # Loading necessary packages
 
 import sys
+# assuming that you have manually added the path to repository to PYTHONPATH
 # you can also manually declare path
-path_to_repo = "/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/"
-sys.path.insert(1,path_to_repo)
+# path_to_repo = "/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/"
+# sys.path.insert(1,path_to_repo)
 
 from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
-from seizures.evaluation.performance_measures import accuracy
+from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.ARFeatures import ARFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
+from seizures.helper.data_path import get_data_path
 
 
 
@@ -37,19 +39,22 @@ def test_predictor(predictor_cls):
     predictor = predictor_cls()    
 
     # path to data (here path from within gatsby network)
-    data_path = "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
+    # data_path = "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
+    data_path = get_data_path()
     
     # creating instance of autoregressive features
     feature_extractor = ARFeatures()
     
     # loading the data
     loader = DataLoader(data_path, feature_extractor)
-    X_list = loader.training_data("Dog_1")
-    y_list = loader.labels("Dog_1")
+    print loader.base_dir
+    X_list = loader.training_data("Dog_1/")
+    y_list = loader.labels("Dog_1/")
 
     # running cross validation    
     conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
-    print XValidation.evaluate(X_list, conditioned, predictor, evaluation=accuracy)
+#    print XValidation.evaluate(X_list, conditioned, predictor, evaluation=accuracy)
+    print XValidation.evaluate(X_list, conditioned, predictor, evaluation=auc)
 
 if __name__ == '__main__':
     # code run at script launch
