@@ -1,5 +1,6 @@
 import glob
 from os.path import join
+import os;
 from seizures.data.EEGData import EEGData
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
@@ -12,6 +13,9 @@ class DataLoader(object):
     @author Shaun
     """
     def __init__(self, base_dir, feature_extractor):
+        if not os.path.isdir(base_dir):
+            raise ValueError('%s is not a directory.'%base_dir)
+        
         self.base_dir = base_dir
         self.feature_extractor = feature_extractor
 
@@ -44,7 +48,12 @@ class DataLoader(object):
         self.early_labels = []
 
     def _get_files_for_patient(self):
-        files = glob.glob(join(self.base_dir, self.patient + '*'))
+        globPath=join(self.base_dir, self.patient + '*')
+        #print globPath
+        files = glob.glob(globPath)
+        if not files:
+            # if files is empty
+            raise Exception('empty patient files from globbing: %s'%globPath)
         return files
 
     def _load_data_from_file(self, filename):
