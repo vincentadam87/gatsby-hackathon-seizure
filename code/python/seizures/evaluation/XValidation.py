@@ -85,6 +85,7 @@ class XValidation():
             
             # run on held out matrix
             y_predict = predictor.predict(X_test)
+#            print y_predict
             
             # some sanity checks on the provided predictor to avoid problems
             if not type(y_predict) == np.ndarray:

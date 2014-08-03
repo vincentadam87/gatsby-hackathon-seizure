@@ -50,8 +50,10 @@ def test_predictor(predictor_cls, patient_name='Dog_1'):
     band_width = 2
     FFTFeatures_args = {'band_means':band_means, 'band_width':band_width}
 
-    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
-                                     {'name':"FFTFeatures",'args':FFTFeatures_args}])
+#    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
+#                                     {'name':"FFTFeatures",'args':FFTFeatures_args}])
+    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
+#    feature_extractor = MixFeatures([{'name':"FFTFeatures",'args':FFTFeatures_args}])
     #feature_extractor = ARFeatures()
 
     # loading the data
@@ -67,7 +69,7 @@ def test_predictor(predictor_cls, patient_name='Dog_1'):
     seizure_vs_not = y_list[0]
     
     # running cross validation    
-    conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
+#    conditioned = [a * b for (a, b) in zip(y_list[0], y_list[1])]
     print "\ncross validation: seizures vs not"
     result = XValidation.evaluate(X_list, seizure_vs_not, predictor, evaluation=auc)
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
@@ -88,5 +90,5 @@ if __name__ == '__main__':
     print "ForestPredictor"
     test_predictor(ForestPredictor, patient_name)
 
-    print "\nSVMPredictor"
-    test_predictor(SVMPredictor, patient_name)
+#    print "\nSVMPredictor"
+#    test_predictor(SVMPredictor, patient_name)

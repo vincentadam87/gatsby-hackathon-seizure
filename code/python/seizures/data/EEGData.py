@@ -21,6 +21,12 @@ class EEGData(object):
     def __init__(self, path):
         full_data = scipy.io.loadmat(path)
         self.eeg_data = full_data['data']
+        var_row = np.std(self.eeg_data, axis=1)
+        idx_zero_variance = var_row == 0
+        n_rows_zero_variance = np.sum(idx_zero_variance)
+        # FIXME: adding low variance noise to zero variance rows
+        self.eeg_data[idx_zero_variance, :] = self.eeg_data[idx_zero_variance, :] \
+                                                + 1e-6 * np.random.randn(n_rows_zero_variance, self.eeg_data.shape[1])
 
         if 'latency' in full_data.keys():
             if len(full_data['latency'].shape) == 1:

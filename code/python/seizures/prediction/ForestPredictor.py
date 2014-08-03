@@ -13,7 +13,7 @@ class ForestPredictor(PredictorBase):
     """
 
     def __init__(self):
-        self.clf = RandomForestClassifier()
+        self.clf = RandomForestClassifier(n_estimators=100)
 
     @abstractmethod
     def fit(self, X, y):
