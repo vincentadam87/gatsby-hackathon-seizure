@@ -27,5 +27,5 @@ def accuracy(truth, prediction):
     @author: Heiko
     """
     
-    # return integrated ROC curve
+    # return classification accuracy
     return metrics.accuracy_score(truth, prediction>.5)
