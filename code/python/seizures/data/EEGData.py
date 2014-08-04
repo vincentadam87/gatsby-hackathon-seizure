@@ -77,14 +77,17 @@ class EEGData(object):
 
     def get_time_channel_slice(self, channels=None, low_second=None, high_second=None):
         if not channels:
-            channels = np.array(range(self.number_of_channels))
+            channels = np.arange(self.number_of_channels)
         else:
             channels = np.array(channels)
 
         low_second = low_second or self.latency[0]
         high_second = high_second or self.latency[-1]
 
-        sliced_data = self.eeg_data[channels-1, (low_second*self.sampling_rate):(high_second*self.sampling_rate-1)]
+        if self.sampling_rate == self.eeg_data.shape[1]:
+            sliced_data = self.eeg_data
+        else:
+            sliced_data = self.eeg_data[channels, (low_second*self.sampling_rate):(high_second*self.sampling_rate-1)]
         return sliced_data
 
     def get_instances(self):
