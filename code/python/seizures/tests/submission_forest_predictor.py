@@ -31,8 +31,10 @@ if __name__ == '__main__':
 #    feature_extractor = FFTFeatures()
     
 #    test_files = ["Dog_1_test_segment_1.mat"]
+    test_files = None       # for submission
+    test_files = 'train'    # for local evaluation
     data_path = get_data_path()
     
     submission = SubmissionFile(data_path)
     submission.generate_submission(predictor_seizure, predictor_early,
-                            feature_extractor)  #, test_filenames=test_files)
+                            feature_extractor, test_filenames=test_files)

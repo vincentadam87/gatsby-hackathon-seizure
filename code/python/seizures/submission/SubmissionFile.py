@@ -1,4 +1,6 @@
 import os
+import numpy as np
+from itertools import izip
 from seizures.data.EEGData import EEGData
 from seizures.data.DataLoader import DataLoader
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -24,10 +26,11 @@ class SubmissionFile():
         self.data_path = data_path
         
         # generate dog and patient record names
-        self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+#        self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+#        self.patients = ["Patient_%d" % i for i in range(5, 9)]
 #        self.patients = ["Dog_1"]
 #        self.patients = ["Dog_2"]
-#        self.patients = ["Patient_1"]
+        self.patients = ["Patient_1"]
 #        self.patients = ["Patient_4"]
     
     @staticmethod
@@ -44,6 +47,19 @@ class SubmissionFile():
         f.close()
         
         return [line.split(",")[0] for line in lines[1:]]
+        
+    @staticmethod
+    def get_train_filenames():
+        """
+        Returns a list with names of the training data files
+        """
+        me = os.path.dirname(os.path.realpath(__file__))
+        data_dir = os.sep.join(me.split(os.sep)[:-4]) + os.sep + "data"
+        fname = data_dir + os.sep + "train_filenames.txt"
+        f = open(fname)
+        lines = f.readlines()
+        f.close()
+        return [line.rstrip('\n') for line in lines]
         
     def generate_submission(self, predictor_seizure, predictor_early,
                             feature_extractor, output_fname="output.csv",
@@ -67,6 +83,8 @@ class SubmissionFile():
         
         if test_filenames is None:
             test_filenames = SubmissionFile.get_submission_filenames()
+        elif test_filenames == 'train':
+            test_filenames = SubmissionFile.get_train_filenames()
         
         # predict on test data, iterate over patients and dogs
         # and the in that over all test files
@@ -87,10 +105,12 @@ class SubmissionFile():
 #            print y_seizure_list
 #            print y_early_list
             
-            X = stack_matrices(X_list)
+            X_train = stack_matrices(X_list)
 #            print X_list[0].shape, X_list[1].shape
             y_seizure = stack_vectors(y_seizure_list)
             y_early = stack_vectors(y_early_list)
+            print X_train.shape
+#            print X_train
 #            print y_seizure
 #            print y_early
 #            print X.shape, y_seizure.shape, y_early.shape
@@ -101,10 +121,17 @@ class SubmissionFile():
             # train both models
             print
             print "Training seizure for " + patient
-            predictor_seizure.fit(X, y_seizure)
+            predictor_seizure.fit(X_train, y_seizure)
             print "Training early for " + patient
-            predictor_early.fit(X, y_early)
-            
+            predictor_early.fit(X_train, y_early)
+
+            pred_seizure = predictor_seizure.predict(X_train)
+            pred_early = predictor_early.predict(X_train)
+            print 'Results on training data'
+            print 'seizure\tearly\tp(seizure)\tp(early)'
+            for y_1, y_2, p_1, p_2 in izip(y_seizure, y_early, pred_seizure, pred_early):
+                print '%d\t%d\t%.3f\t%.3f' % (y_1, y_2, p_1, p_2)
+
             # find out filenames that correspond to patient/dog
             fnames_patient = []
             for fname in test_filenames:
@@ -112,7 +139,8 @@ class SubmissionFile():
                     fnames_patient += [fname]
             
             #print fnames_patient
-            
+           
+            X_train_2_tmp = []
             # now predict on all test points
             for i_fname, fname in enumerate(fnames_patient):
                 print "\nLoading test data for " + fname
@@ -121,15 +149,18 @@ class SubmissionFile():
                 print fname, fname_full
                 eeg_data_tmp = EEGData(fname_full)
                 eeg_data = eeg_data_tmp.get_instances()
+                print eeg_data
                 assert len(eeg_data) == 1
                 eeg_data = eeg_data[0]
+                print eeg_data
                 X = feature_extractor.extract(eeg_data)
 #                print X.shape
-                print X[:10]
                 
                 # reshape since predictor expects matrix
                 X = X.reshape(1, len(X))
-#                print X.shape
+                print X.shape
+                X_train_2_tmp.append(X)
+
                 
                 # predict (one prediction only)
                 print "Predicting seizure for " + fname
@@ -143,6 +174,23 @@ class SubmissionFile():
 
                 # store
                 result_lines.append(",".join([fname, str(pred_seizure), str(pred_early)]))
+
+            X_train_2 = np.vstack(X_train_2_tmp)
+            X_train_mean = np.mean(X_train, 0)
+            X_train_sd = np.std(X_train, 0)
+            n_train = X_train.shape[0]
+            X_train_2_mean = np.mean(X_train_2, 0)
+            X_train_2_sd = np.std(X_train_2, 0)
+            n_train_2 = X_train_2.shape[0]
+            print n_train, n_train_2
+            print X_train_mean
+            print X_train_2_mean
+            print X_train_sd
+            print X_train_2_sd
+            assert n_train == n_train_2
+            assert X_train_mean == X_train_2_mean
+            assert X_train_sd == X_train_2_sd
+        
 
         print "Storing results to", self.data_path + output_fname
         f = open(self.data_path + output_fname, "w")

@@ -2,6 +2,7 @@ __author__ = 'Matthieu'
 
 from Instance import Instance
 import scipy.io
+import h5py
 import numpy as np
 
 class EEGData(object):
@@ -19,14 +20,24 @@ class EEGData(object):
     """
 
     def __init__(self, path):
-        full_data = scipy.io.loadmat(path)
+        try:
+            full_data = scipy.io.loadmat(path)
+        except NotImplementedError:
+            print 'Using h5py to load mat file'
+            tmp = h5py.File(path)
+            full_data = {}
+            full_data['data'] = np.array(tmp['data']).T
+            full_data['freq'] = np.array(tmp['freq'], dtype='uint16')
+            if 'latency' in tmp.keys():
+                full_data['latency'] = np.array(tmp['latency'], dtype='uint8')
         self.eeg_data = full_data['data']
         var_row = np.std(self.eeg_data, axis=1)
         idx_zero_variance = var_row == 0
         n_rows_zero_variance = np.sum(idx_zero_variance)
-        # FIXME: adding low variance noise to zero variance rows
+        # NOTE: adding low variance noise to zero variance rows 
+        #           to prevent divide by zero errors elsewhere
         self.eeg_data[idx_zero_variance, :] = self.eeg_data[idx_zero_variance, :] \
-                                                + 1e-6 * np.random.randn(n_rows_zero_variance, self.eeg_data.shape[1])
+            + 1e-6 * np.random.randn(n_rows_zero_variance, self.eeg_data.shape[1])
 
         if 'latency' in full_data.keys():
             if len(full_data['latency'].shape) == 1:
@@ -66,14 +77,17 @@ class EEGData(object):
 
     def get_time_channel_slice(self, channels=None, low_second=None, high_second=None):
         if not channels:
-            channels = np.array(range(self.number_of_channels))
+            channels = np.arange(self.number_of_channels)
         else:
             channels = np.array(channels)
 
         low_second = low_second or self.latency[0]
         high_second = high_second or self.latency[-1]
 
-        sliced_data = self.eeg_data[channels-1, (low_second*self.sampling_rate):(high_second*self.sampling_rate-1)]
+        if self.sampling_rate == self.eeg_data.shape[1]:
+            sliced_data = self.eeg_data
+        else:
+            sliced_data = self.eeg_data[channels, (low_second*self.sampling_rate):(high_second*self.sampling_rate-1)]
         return sliced_data
 
     def get_instances(self):
