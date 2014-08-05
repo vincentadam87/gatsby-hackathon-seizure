@@ -16,17 +16,19 @@ class SubmissionFile():
     @author Heiko
     """
     
-    def __init__(self, data_path):
+    def __init__(self, data_path,patients=None):
         """
         Constructor
         
         Parameters:
         data_path   - / terminated path of test data
         """
+
         self.data_path = data_path
-        
-        # generate dog and patient record names
-        self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+        if patients == None:
+            self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+        else:
+            self.patients = patients
 #        self.patients = ["Patient_%d" % i for i in range(5, 9)]
 #        self.patients = ["Dog_1"]
 #        self.patients = ["Dog_2"]
@@ -91,12 +93,13 @@ class SubmissionFile():
         
         # predict on test data, iterate over patients and dogs
         # and the in that over all test files
-        result_lines = []
+        all_result_lines = []
 
         #data_loader = DataLoader(self.data_path, feature_extractor)
 
 
         for patient in self.patients:
+            result_lines = []
             # load training data
             #X_list = data_loader.training_data(patient)
             
@@ -235,10 +238,22 @@ class SubmissionFile():
             #assert X_train_sd == X_train_2_sd
         
 
+            print "Storing results to", self.data_path + patient+ '_' + output_fname
+            f = open('/nfs/nhome/live/vincenta/Desktop/' + patient+ '_' +output_fname, "w")
+            f.write("clip,seizure,early\n")
+            for line in result_lines:
+                f.write(line + '\n')
+            f.close()
+
+            all_result_lines.append(result_lines)
+
         print "Storing results to", self.data_path + output_fname
-        f = open('/nfs/nhome/live/vincenta/Desktop/' + output_fname, "w")
+        f = open('/nfs/nhome/live/vincenta/Desktop/' +output_fname, "w")
         f.write("clip,seizure,early\n")
-        for line in result_lines:
+        for line in all_result_lines:
             f.write(line + '\n')
         f.close()
 
+
+       
+        
