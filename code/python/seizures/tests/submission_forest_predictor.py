@@ -11,9 +11,17 @@ from seizures.helper.data_path import get_data_path
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.submission.SubmissionFile import SubmissionFile
 import numpy as np
+import sys
 
 
 if __name__ == '__main__':
+    assert(len(sys.argv)>1)
+    output_fname = sys.argv[1]
+    if len(sys.argv)>2:
+	patients = sys.argv[2]
+    else:
+        patients = None
+
     predictor_seizure = ForestPredictor()
     predictor_early = ForestPredictor()
 
@@ -35,6 +43,6 @@ if __name__ == '__main__':
     test_files = 'train'    # for local evaluation
     data_path = get_data_path()
     
-    submission = SubmissionFile(data_path)
+    submission = SubmissionFile(data_path,patients=patients)
     submission.generate_submission(predictor_seizure, predictor_early,
-                            feature_extractor, test_filenames=test_files)
+                            feature_extractor, test_filenames=test_files,output_fname = output_fname)
