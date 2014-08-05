@@ -21,24 +21,29 @@ if __name__ == '__main__':
 	patients = sys.argv[2]
     else:
         patients = None
+    if len(sys.argv)>3:
+        feature_list = eval(sys.argv[3])
+    else:
+        feature_list = [{'name':"ARFeatures",'args':{}}]
+
+    print '---------'
+    print 'argv1: ' + output_fname
+    print 'argv2: ' + patients
+    print 'argv3: '
+    print feature_list
 
     predictor_seizure = ForestPredictor()
     predictor_early = ForestPredictor()
 
+    #examples of feature use
     #feature_extractor = ARFeatures()
+    #feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
+
     band_means = np.linspace(0, 200, 66)
     band_width = 2
     FFTFeatures_args = {'band_means':band_means, 'band_width':band_width}
+    feature_extractor = MixFeatures(feature_list)
 
-#    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
-#                                     {'name':"FFTFeatures",'args':FFTFeatures_args}])
-
-    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
-#    feature_extractor = MixFeatures([{'name':"FFTFeatures",'args':FFTFeatures_args}])
-
-#    feature_extractor = FFTFeatures()
-    
-#    test_files = ["Dog_1_test_segment_1.mat"]
     test_files = None       # for submission
     test_files = 'train'    # for local evaluation
     data_path = get_data_path()
