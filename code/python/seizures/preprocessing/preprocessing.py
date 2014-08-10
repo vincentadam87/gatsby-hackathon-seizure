@@ -49,11 +49,17 @@ def remove_elec_noise(x,fs):
 
 
     def butter_bandpass_filter(x, lowcut, highcut, fs, order=5):
-        b, a = signal.butter_bandpass(lowcut, highcut, fs, order=order)
-        y = signal.lfilter(b, a, data)
+        b, a = butter_bandpass(lowcut, highcut, fs, order=order)
+        y = signal.lfilter(b, a, x)
         return y
 
-    return butter_bandpass_filter(x,fs)
+    # try implementing this differently:
+    def butter_filter(x,order,bandstop):
+        x = signal.iirfilter(x, 1, bandstop)
+        # note the defaults: btype='band', analog=False, ftype='butter'
+
+    #return butter_bandpass_filter(x,bandstop,fs)
+    return butter_filter(x,bandstop,fs)
 
 
 
