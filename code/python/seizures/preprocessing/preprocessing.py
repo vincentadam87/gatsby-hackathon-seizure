@@ -35,8 +35,9 @@ def remove_elec_noise(x,fs):
     Bandpass remove:59-61Hz (US); if data from EU/UK 49-51Hz
     :return:
     """
-    lowcut = 59
-    highcut = 61
+    bandstop = 60
+    lowcut = bandstop-1
+    highcut = bandstop+1
 
 
     def butter_bandpass(lowcut, highcut, fs, order=5):
@@ -47,7 +48,7 @@ def remove_elec_noise(x,fs):
         return b, a
 
 
-    def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
+    def butter_bandpass_filter(x, lowcut, highcut, fs, order=5):
         b, a = signal.butter_bandpass(lowcut, highcut, fs, order=order)
         y = signal.lfilter(b, a, data)
         return y
