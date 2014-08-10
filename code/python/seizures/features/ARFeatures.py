@@ -13,4 +13,6 @@ class ARFeatures(FeatureExtractBase):
 
     def extract(self, instance):
         params = VAR(instance.eeg_data.T).fit(maxlags=2).params
-        return params.reshape( (np.prod(params.shape),1) )
+        features = np.hstack(params.reshape( (np.prod(params.shape),1) ))
+        self.assert_features(features)
+        return features

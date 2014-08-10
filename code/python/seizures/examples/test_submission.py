@@ -1,4 +1,5 @@
 
+import numpy as np
 from seizures.submission import SubmissionFile
 from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.features.MixFeatures import MixFeatures

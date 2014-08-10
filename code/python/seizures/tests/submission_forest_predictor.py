@@ -18,7 +18,7 @@ if __name__ == '__main__':
     assert(len(sys.argv)>1)
     output_fname = sys.argv[1]
     if len(sys.argv)>2:
-	patients = sys.argv[2]
+	    patients = sys.argv[2]
     else:
         patients = None
     if len(sys.argv)>3:
