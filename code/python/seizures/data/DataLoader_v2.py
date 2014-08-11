@@ -37,7 +37,7 @@ class DataLoader(object):
         files = self._get_files_for_patient(type)
         np.random.seed(0)
         I = np.random.permutation(len(files))
-        self.files = [files[i] for i in I[0:200]]
+        self.files = files #[files[i] for i in I[0:200]]
         for filename in files:
             self._load_data_from_file(patient_name, filename)
 
@@ -53,7 +53,7 @@ class DataLoader(object):
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels), np.array(self.early_labels)
 
-    def blocks_for_Xvalidation(self, patient_name,n_fold =10):
+    def blocks_for_Xvalidation(self, patient_name,n_fold =3):
         """
         returns
         - a list of 2D ndarrays of features
@@ -64,13 +64,28 @@ class DataLoader(object):
         """
         X,y1,y2 = self.training_data(patient_name)
         n = len(y1)
-        l = n/n_fold
-        print n,l
-        np.random.seed(0)
-        I = np.random.permutation(n)
-        Xp = [ X[I[i*l:(i+1)*l],:] for i in range(n_fold)]
-        y1p = [ y1[I[i*l:(i+1)*l]] for i in range(n_fold)]
-        y2p = [ y2[I[i*l:(i+1)*l]] for i in range(n_fold)]
+
+        assert(np.sum(y2)>n_fold)
+
+        # do blocks for labels=1 and labels=0 separetaly and merge at the end
+        # the aim is to always have both labels in each train/test sets
+        Iy2_1 = np.where(y2==1)[0].tolist()
+        Iy2_0 = np.where(y2==0)[0].tolist()
+        def chunks(l, n_block):
+            """ Yield n_block blocks.
+            """
+            n = len(l)/n_block+1
+            for i in xrange(0, len(l), n):
+                yield l[i:i+n]
+        Iy2_1_list = list(chunks(Iy2_1, n_fold))
+        Iy2_0_list = list(chunks(Iy2_0, n_fold))
+        Iy2 = [Iy2_1_list[i]+Iy2_0_list[i] for i in range(n_fold)]
+
+
+        y1p = [ y1[Iy2[i]] for i in range(n_fold)]
+        y2p = [ y2[Iy2[i]] for i in range(n_fold)]
+        Xp = [ X[Iy2[i],:] for i in range(n_fold)]
+
         return Xp,y1p,y2p
 
     def test_data(self, patient_name):
