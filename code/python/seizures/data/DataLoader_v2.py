@@ -35,11 +35,28 @@ class DataLoader(object):
         self.patient_name = patient_name
         self._reset_lists()
         files = self._get_files_for_patient(type)
+
+        # reorder files so as to mix a bit interictal and ictal (to fasten debug I crop the files to its early entries)
+        if type == 'training':
+            files_interictal = [f for f in files if f.find("_interictal_")]
+            files_ictal = [f for f in files if f.find("_ictal_")]
+            files = []
+            for i in range(max(len(files_ictal),len(files_interictal))):
+                if i < len(files_ictal):
+                    files.append(files_ictal[i])
+                if i < len(files_interictal):
+                    files.append(files_interictal[i])
+
         np.random.seed(0)
-        I = np.random.permutation(len(files))
-        self.files = files #[files[i] for i in I[0:200]]
-        for filename in files:
+        #I = np.random.permutation(len(files))
+        I = range(len(files))
+        self.files = [files[i] for i in I[0:400]]
+        i = 0.
+        for filename in self.files:
+            print i/len(self.files)*100.," percent complete         \r",
             self._load_data_from_file(patient_name, filename)
+            i+=1
+        print "\ndone"
 
     def training_data(self, patient_name):
         """
@@ -66,19 +83,28 @@ class DataLoader(object):
         n = len(y1)
 
         assert(np.sum(y2)>n_fold)
-
         # do blocks for labels=1 and labels=0 separetaly and merge at the end
         # the aim is to always have both labels in each train/test sets
         Iy2_1 = np.where(y2==1)[0].tolist()
         Iy2_0 = np.where(y2==0)[0].tolist()
+        assert(np.sum(Iy2_1)>n_fold)
+
         def chunks(l, n_block):
             """ Yield n_block blocks.
             """
-            n = len(l)/n_block+1
-            for i in xrange(0, len(l), n):
-                yield l[i:i+n]
+            m = len(l)/n_block
+            r = len(l)%n_block
+            for i in xrange(0, n_block):
+                if i == n_block-1:
+                    yield l[i*m:-1]
+                else:
+                    yield l[i*m:(i+1)*m]
+
         Iy2_1_list = list(chunks(Iy2_1, n_fold))
         Iy2_0_list = list(chunks(Iy2_0, n_fold))
+        print len(Iy2_1_list)
+        assert(len(Iy2_0_list)==n_fold)
+        assert(len(Iy2_1_list)==n_fold)
         Iy2 = [Iy2_1_list[i]+Iy2_0_list[i] for i in range(n_fold)]
 
 
