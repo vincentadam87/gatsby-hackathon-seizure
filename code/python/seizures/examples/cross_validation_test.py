@@ -14,7 +14,7 @@ from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.MixFeatures import MixFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.helper.data_path import get_data_path
-
+from sklearn.cross_validation import train_test_split
 
 
 def Xval_on_single_patient(predictor_cls,feature_extractor, patient_name="Dog_1"):
@@ -28,7 +28,12 @@ def Xval_on_single_patient(predictor_cls,feature_extractor, patient_name="Dog_1"
     predictor = predictor_cls()
     base_dir = '/nfs/data3/kaggle_seizure/clips/'
     loader = DataLoader(base_dir, feature_extractor)
+
     X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(patient_name)
+    #X_train,y_seizure, y_early = loader.training_data(patient_name)
+    #y_train = [y_seizure,y_early]
+    #X_list,y_list = train_test_split(X_train,y_train)
+
     # running cross validation
     print patient_name
     print "\ncross validation: seizures vs not"
@@ -71,6 +76,6 @@ if __name__ == '__main__':
     #patient_name = sys.argv[1]
     patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
     feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
-
+    predictor = ForestPredictor
     print "ForestPredictor"
-    Xval_on_patients(ForestPredictor,feature_extractor, patients_list)
+    Xval_on_patients(predictor,feature_extractor, patients_list)
