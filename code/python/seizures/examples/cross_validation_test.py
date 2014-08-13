@@ -17,7 +17,7 @@ from seizures.helper.data_path import get_data_path
 from sklearn.cross_validation import train_test_split
 
 
-def Xval_on_single_patient(predictor_cls,feature_extractor, patient_name="Dog_1"):
+def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1"):
     """
     Single patient cross validation
     Returns 2 lists of cross validation performances
@@ -25,6 +25,8 @@ def Xval_on_single_patient(predictor_cls,feature_extractor, patient_name="Dog_1"
     :param patient_name:
     :return:
     """
+    # predictor_cls is a handle to an instance of PredictorBase
+    # Instantiate the predictor 
     predictor = predictor_cls()
     base_dir = '/nfs/data3/kaggle_seizure/clips/'
     loader = DataLoader(base_dir, feature_extractor)
@@ -45,6 +47,7 @@ def Xval_on_single_patient(predictor_cls,feature_extractor, patient_name="Dog_1"
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
           % (np.mean(result_early), np.std(result_early), result_early)
     return result_seizure,result_early
+
 
 def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
     ''' Runs cross validation for given predictor class and feature instance on the given list of patients
@@ -71,7 +74,9 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
     return avg_results_seizure, avg_results_early
     # generate prediction for test data
 
-if __name__ == '__main__':
+
+
+def main():
     # code run at script launch
     #patient_name = sys.argv[1]
     patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
@@ -79,3 +84,6 @@ if __name__ == '__main__':
     predictor = ForestPredictor
     print "ForestPredictor"
     Xval_on_patients(predictor,feature_extractor, patients_list)
+
+if __name__ == '__main__':
+    main()

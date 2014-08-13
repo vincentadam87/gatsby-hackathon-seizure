@@ -1,7 +1,3 @@
-"""
-Find 2^n that is equal to or greater than.
-"""
-
 from scipy.fftpack import fft, fftshift
 
 import numpy as np

@@ -11,7 +11,12 @@ class MixFeatures(FeatureExtractBase):
     @author V&J
     """
 
-    def __init__(self,features_list):
+    def __init__(self, features_list):
+        """
+        Wittawat: features_list is a list L of dictionaries D's where 
+        D is of the form {'name': 'Name of a class extending FeatureExtractBase',
+        'args': 'arguments (a kwargs dictionary) to class constructor'}. ?
+        """
         self.features_list = features_list
 
     def extract(self, instance):

@@ -5,24 +5,36 @@ from seizures.data.EEGData import EEGData
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
 
+# Wittawat: Many load_* methods do not actually use the patient_name argument
 
 class DataLoader(object):
     """
-    Class to load data for a patient
+    Class to load data (all segments) for a patient
     Loading from individual files (not the stitched data)
     @author Vincent (from Shaun original loader)
     """
 
     def __init__(self, base_dir, feature_extractor):
+        """
+        base_dir: path to the directory containing patient folders i.e., directory 
+        containing Dog_1/, Dog_2, ..., Patient_1, Patient_2, ....
+        """
         if not os.path.isdir(base_dir):
             raise ValueError('%s is not a directory.' % base_dir)
         self.base_dir = base_dir
         self.feature_extractor = feature_extractor
+        # patient_name = e.g., Dog_1
         self.patient_name = None
+        # type_labels = a list of {0, 1}. Indicators of a seizure (1 for seizure).
         self.type_labels = None
+        # early_labels = a list of {0, 1}. Indicators of an early seizure 
+        # (1 for an early seizure).
         self.early_labels = None
+        # a list of numpy arrays. Each element is from feature_extractor.extract()
         self.features_train = None
+        # a list of numpy arrays. Each element is from feature_extractor.extract()
         self.features_test = None
+        # list of file names in base_dir directory
         self.files = None
         self.files_nopath = None
 
@@ -41,7 +53,10 @@ class DataLoader(object):
             files_interictal = [f for f in files if f.find("_interictal_")]
             files_ictal = [f for f in files if f.find("_ictal_")]
             files = []
-            for i in range(max(len(files_ictal),len(files_interictal))):
+            # The following loop just interleaves ictal and interictal segments
+            # so that we have 
+            #[ictal_segment1, interictal_segment1, ictal_segment2, ...]
+            for i in range(max(len(files_ictal), len(files_interictal))):
                 if i < len(files_ictal):
                     files.append(files_ictal[i])
                 if i < len(files_interictal):
@@ -50,10 +65,14 @@ class DataLoader(object):
         np.random.seed(0)
         #I = np.random.permutation(len(files))
         I = range(len(files))
+        ## Wittawat: why 0:400 ?
         self.files = [files[i] for i in I[0:400]]
         i = 0.
         for filename in self.files:
             print i/len(self.files)*100.," percent complete         \r",
+            # Each call of _load_data_from_file appends data to features_train 
+            # features_test lists depending on the (type) variable. 
+            # It also appends data to type_labels and early_labels.
             self._load_data_from_file(patient_name, filename)
             i+=1
         print "\ndone"
@@ -162,8 +181,10 @@ class DataLoader(object):
         """
         #print "\nLoading train data for " + patient + filename
         eeg_data_tmp = EEGData(filename)
+        # a list of Instance's
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
+        # eeg_data is now an Instance
         eeg_data = eeg_data[0]
         if filename.find('interictal') > -1:
             y_seizure=0

@@ -18,7 +18,7 @@ def auc(truth, prediction):
 
 def accuracy(truth, prediction):
     """
-    Compute the accurazy for given predictions and ground truth
+    Compute the accuracy for given predictions and ground truth
     
     Parameters:
     truth      - 1d numpy array of ground truth labels (binary)
@@ -27,5 +27,5 @@ def accuracy(truth, prediction):
     @author: Heiko
     """
     
-    # return classification accuracy
+    # return integrated ROC curve
     return metrics.accuracy_score(truth, prediction>.5)

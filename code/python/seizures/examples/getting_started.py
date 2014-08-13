@@ -85,6 +85,7 @@ def test_predictor(predictor_cls, patient_name='Dog_1'):
 if __name__ == '__main__':
     # code run at script launch
 
+    # patient_name is e.g., Dog_1
     patient_name = sys.argv[1]
     
     print "ForestPredictor"
