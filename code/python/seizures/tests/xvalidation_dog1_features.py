@@ -8,18 +8,17 @@ from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy
 from seizures.features.ARFeatures import ARFeatures
 from seizures.features.FFTFeatures import FFTFeatures
-from seizures.helper.data_path import get_data_path
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.RandomPredictor import RandomPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
+from seizures.Global import Global
 
 import numpy as np
 
 def test_predictor(predictor_cls):
     predictor = predictor_cls()
     
-    data_path = get_data_path("data_path.txt")
-
+    data_path = Global.path_map('clips_folder')
     # arbritary
     band_means = np.linspace(0, 200, 66)
     band_width = 2

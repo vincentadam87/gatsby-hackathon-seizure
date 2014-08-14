@@ -3,6 +3,7 @@ from itertools import izip
 from seizures.data.DataLoader_v2 import DataLoader
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.prediction.PredictorBase import PredictorBase
+from seizures.Global import Global
 
 class SubmissionFile():
     """
@@ -16,11 +17,13 @@ class SubmissionFile():
         Constructor
         
         Parameters:
-        data_path   - / terminated path of test data
+        data_path   - / terminated path. This is the base folder 
+        containing e.g., Dog_1/, Dog_2/, ....
         patients - a list of patient names e.g., ['Dog_1', 'Patient_2', ...]
         """
 
-        self.data_path = '/nfs/data3/kaggle_seizure/clips/'
+        self.data_path = Global.path_map('clips_folder')
+        #self.data_path = '/nfs/data3/kaggle_seizure/clips/'
 
         if patients == None:
             self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
@@ -131,7 +134,9 @@ class SubmissionFile():
 
 
             print "Storing results to", self.data_path + patient+ '_' + output_fname
-            f = open('/nfs/nhome/live/vincenta/Desktop/' + patient+ '_' +output_fname+'.csv', "w")
+            csv_fname = patient + '_' + output_fname + '.csv'
+            csv_path = Global.get_child_result_folder(csv_fname)
+            f = open(csv_path, "w")
             f.write("clip,seizure,early\n")
             for line in result_lines:
                 f.write(line + '\n')

@@ -13,7 +13,7 @@ from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.MixFeatures import MixFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
-from seizures.helper.data_path import get_data_path
+from seizures.Global import Global
 from sklearn.cross_validation import train_test_split
 
 
@@ -28,7 +28,8 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     # predictor_cls is a handle to an instance of PredictorBase
     # Instantiate the predictor 
     predictor = predictor_cls()
-    base_dir = '/nfs/data3/kaggle_seizure/clips/'
+    base_dir = Global.path_map('clips_folder')
+    #base_dir = '/nfs/data3/kaggle_seizure/clips/'
     loader = DataLoader(base_dir, feature_extractor)
 
     X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(patient_name)

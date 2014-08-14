@@ -21,6 +21,12 @@ class XValidation():
         """
         Performs LOO cross-validation on training data [X] and labels [y].
         Assumes that y is discrete.
+
+        /// 
+        Wittawat : If I understand the code below correctly, we are actually doing
+        a k-fold cross validation where k is specified by the length of X_list. 
+        This is not necessarily a LOO cross-validation. 
+        ///
         
         Note that the training data/labels are in the form of a list of matrices,
         where each matrix contains feature vectors for one particular seizure.
@@ -31,7 +37,7 @@ class XValidation():
         
         Parameters:
         X_list     - training data, list of 2d numpy arrays
-        y_list     - training labels, 1d numpy array, same length as above list
+        y_list     - training labels, list of 1d numpy arrays, same length as above list
         predictor  - instance of PredictorBase
         evaluation - function handle that takes two equally sized 1d vectors
                      and evaluates some performance measure on them.
@@ -54,7 +60,9 @@ class XValidation():
         # array sizes
         dim = X_list[0].shape[1]
         for i in range(len(X_list)):
+            # make sure data in fold i is a matrix
             assert(len(X_list[i].shape) == 2)
+            # make sure input and output have the same #instances 
             assert(len(y_list[i]) == X_list[i].shape[0])
             assert(X_list[i].shape[1] == dim)
             assert(len(y_list[i].shape) == 1)
