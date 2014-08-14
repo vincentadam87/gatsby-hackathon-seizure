@@ -98,6 +98,7 @@ class DataLoader(object):
         :param patient_name:
         :return: feature matrix and labels
         """
+        # y1 = type_labels,  y2 = early_labels
         X,y1,y2 = self.training_data(patient_name)
         n = len(y1)
 

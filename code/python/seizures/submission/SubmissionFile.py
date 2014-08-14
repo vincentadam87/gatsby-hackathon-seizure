@@ -17,6 +17,7 @@ class SubmissionFile():
         
         Parameters:
         data_path   - / terminated path of test data
+        patients - a list of patient names e.g., ['Dog_1', 'Patient_2', ...]
         """
 
         self.data_path = '/nfs/data3/kaggle_seizure/clips/'
@@ -37,6 +38,7 @@ class SubmissionFile():
         Returns a data-frame with all filenames of the sample submission file
         """
         me = os.path.dirname(os.path.realpath(__file__))
+        # data_dir = full path to data/ folder
         data_dir = os.sep.join(me.split(os.sep)[:-4]) + os.sep + "data"
         fname = data_dir + os.sep + "sampleSubmission.csv"
         

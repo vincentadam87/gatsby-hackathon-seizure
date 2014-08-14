@@ -31,3 +31,32 @@ class MixFeatures(FeatureExtractBase):
                 extracted_features_list.append(np.hstack(feature_object.extract(instance))) #flattened
         return np.hstack(extracted_features_list)
 
+#------- end of MixFeatures ---------------
+
+class StackFeatures(FeatureExtractBase):
+    """
+    A meta feature generator which stacks features generated from other
+    FeatureExtractBase's.  Semantically this feature generator is the same as
+    MixFeatures but directly takes in objects of subclass of
+    FeatureExtractBase, unlike MixFeatures.  
+    (I am just not comfortable passing class handle and bunch of arguments)
+
+    @author Wittawat
+    """
+
+    def __init__(self, *feature_generators):
+        """
+        Input:
+        feature_generators: a list of objects of subclass of FeatureExtractBase
+        """
+        self.feature_generators = feature_generators
+
+    def extract(self, instance):
+        extracted_features_list = []
+        for generator in self.feature_generators:
+            # a feature vector 
+            assert(isinstance(generator, FeatureExtractBase))
+            feature = generator.extract(instance)
+            extracted_features_list.append(np.hstack(feature));
+        return np.hstack(extracted_features_list)
+
