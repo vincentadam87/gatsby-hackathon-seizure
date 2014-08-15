@@ -50,8 +50,8 @@ class DataLoader(object):
 
         # reorder files so as to mix a bit interictal and ictal (to fasten debug I crop the files to its early entries)
         if type == 'training':
-            files_interictal = [f for f in files if f.find("_interictal_")==0]
-            files_ictal = [f for f in files if f.find("_ictal_")==0]
+            files_interictal = [f for f in files if f.find("_interictal_")>=0]
+            files_ictal = [f for f in files if f.find("_ictal_")>=0]
             files = []
             # The following loop just interleaves ictal and interictal segments
             # so that we have 
