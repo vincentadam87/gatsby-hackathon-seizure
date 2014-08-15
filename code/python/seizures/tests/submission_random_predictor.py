@@ -17,5 +17,7 @@ if __name__ == '__main__':
     data_path = Global.path_map('clips_folder')
     
     submission = SubmissionFile(data_path)
-    submission.generate_submission(predictor, predictor,
+    predictor_seizure = predictor 
+    predictor_early = predictor 
+    submission.generate_submission(predictor_seizure, predictor_early,
                             extractor, test_filenames=test_files)

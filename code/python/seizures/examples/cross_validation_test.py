@@ -22,6 +22,7 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     Single patient cross validation
     Returns 2 lists of cross validation performances
     :param predictor_cls:
+    :param feature_extractor
     :param patient_name:
     :return:
     """
@@ -55,6 +56,7 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
         INPUT:
         - predictor_cls: a Predictor class (implement)
         - feature_extractor: an instanciation of a Features class
+        - patients_list: a list of subject strings e.g., ['Dog_1', 'Patient_2']
     '''
 
     results_seizure = []
@@ -80,6 +82,8 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
 def main():
     # code run at script launch
     #patient_name = sys.argv[1]
+
+    # There are Dog_[1-4] and Patient_[1-8]
     patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
     feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
     predictor = ForestPredictor
@@ -88,3 +92,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+

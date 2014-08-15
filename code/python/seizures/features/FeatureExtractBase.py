@@ -21,4 +21,4 @@ class FeatureExtractBase(object):
     def assert_features(self,features):
         assert(type(features)==np.ndarray)
         assert(len(features.shape)==1)
-        assert(features.shape[0]>1)
+        assert(features.shape[0]>=1)

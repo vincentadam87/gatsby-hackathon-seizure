@@ -17,7 +17,6 @@ class ARFeatures(FeatureExtractBase):
         # Wittawat: Since VAR automatically does lags order selection, 
         # other different instances may give a different lags values ?
         params = VAR(instance.eeg_data.T).fit(maxlags=2).params
-        # Wittawat: Do we need np.hstack(.) ? 
         features = np.hstack(params.reshape( (np.prod(params.shape),1) ))
         self.assert_features(features)
         # features = a 1d ndarray 
@@ -45,6 +44,7 @@ class VarLagsARFeatures(FeatureExtractBase):
     def extract(self, instance):
         assert(isinstance(instance, Instance))
         params = VAR(instance.eeg_data.T).fit(self.lags).params
+        # hstack will collapse all entries into one big vector 
         features = np.hstack(params.reshape( (np.prod(params.shape),1) ))
         self.assert_features(features)
         # features = a 1d ndarray 

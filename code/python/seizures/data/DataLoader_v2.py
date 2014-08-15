@@ -4,6 +4,7 @@ import os;
 from seizures.data.EEGData import EEGData
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
+from seizures.features.FeatureExtractBase import FeatureExtractBase
 
 # Wittawat: Many load_* methods do not actually use the patient_name argument
 
@@ -21,6 +22,9 @@ class DataLoader(object):
         """
         if not os.path.isdir(base_dir):
             raise ValueError('%s is not a directory.' % base_dir)
+        if not isinstance(feature_extractor, FeatureExtractBase):
+            raise ValueError('feature_extractor must be an instance of FeatureExtractBase')
+
         self.base_dir = base_dir
         self.feature_extractor = feature_extractor
         # patient_name = e.g., Dog_1
@@ -31,6 +35,8 @@ class DataLoader(object):
         # (1 for an early seizure).
         self.early_labels = None
         # a list of numpy arrays. Each element is from feature_extractor.extract()
+        # The length of the list is the number of time steps in the data segment 
+        # specified by patient_name. For example, len=400 in Dog_1 
         self.features_train = None
         # a list of numpy arrays. Each element is from feature_extractor.extract()
         self.features_test = None
@@ -46,12 +52,15 @@ class DataLoader(object):
         """
         self.patient_name = patient_name
         self._reset_lists()
+        # For type='training', this will get all interictal and ictal file names
         files = self._get_files_for_patient(type)
-
+        
         # reorder files so as to mix a bit interictal and ictal (to fasten debug I crop the files to its early entries)
         if type == 'training':
-            files_interictal = [f for f in files if f.find("_interictal_")]
-            files_ictal = [f for f in files if f.find("_ictal_")]
+            files_interictal = [f for f in files if f.find("_interictal_") >= 0 ]
+            print '%d interictal segments for %s'%(len(files_interictal), patient_name)
+            files_ictal = [f for f in files if f.find("_ictal_") >= 0]
+            print '%d ictal segments for %s'%(len(files_ictal), patient_name)
             files = []
             # The following loop just interleaves ictal and interictal segments
             # so that we have 
@@ -63,10 +72,17 @@ class DataLoader(object):
                     files.append(files_interictal[i])
 
         np.random.seed(0)
-        #I = np.random.permutation(len(files))
-        I = range(len(files))
-        ## Wittawat: why 0:400 ?
-        self.files = [files[i] for i in I[0:400]]
+        I = np.random.permutation(len(files))
+        #I = range(len(files))
+        ## Wittawat: why 0:400 ? So Vincent just wants things to be faster ?
+        total_segments = len(files_interictal) + len(files_ictal)
+        subsegments = min(400, total_segments)
+        print 'subsampling from %d segments to %d'% (total_segments, subsegments)
+        self.files = [files[i] for i in I[0:subsegments]]
+
+        #self.files = [files[i] for i in I[0:200]]
+        #self.files = files
+
         i = 0.
         for filename in self.files:
             print i/len(self.files)*100.," percent complete         \r",
@@ -167,7 +183,8 @@ class DataLoader(object):
 
 
     def _load_data_from_file(self, patient, filename):
-        if not filename.find('test') == -1:
+        if filename.find('test') != -1:
+            # if filename is a test segment
             self._load_test_data_from_file(patient, filename)
         else:
             self._load_training_data_from_file(patient, filename)
@@ -230,6 +247,7 @@ class DataLoader(object):
         return matrix
 
     def labels(self, patient):
+        # Wittawat: Why do we need patient argument ? 
         assert (self.patient_name == patient)
         return self.type_labels, self.early_labels
 

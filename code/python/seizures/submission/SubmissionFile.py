@@ -21,8 +21,10 @@ class SubmissionFile():
         containing e.g., Dog_1/, Dog_2/, ....
         patients - a list of patient names e.g., ['Dog_1', 'Patient_2', ...]
         """
+        if not os.path.isdir(data_path):
+            raise ValueError('%s is not a directory.'%data_path)
 
-        self.data_path = Global.path_map('clips_folder')
+        #self.data_path = Global.path_map('clips_folder')
         #self.data_path = '/nfs/data3/kaggle_seizure/clips/'
 
         if patients == None:
