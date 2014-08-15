@@ -67,6 +67,7 @@ class DataLoader(object):
             print '%d interictal segments for %s'%(len(files_interictal), patient_name)
             files_ictal = [f for f in files if f.find("_ictal_") >= 0]
             print '%d ictal segments for %s'%(len(files_ictal), patient_name)
+
             files = []
             # The following loop just interleaves ictal and interictal segments
             # so that we have 
