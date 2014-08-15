@@ -59,6 +59,7 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
         - patients_list: a list of subject strings e.g., ['Dog_1', 'Patient_2']
     '''
 
+    assert(isinstance(feature_extractor, FeatureExtractBase))
     results_seizure = []
     results_early = []
     for patient_name in patients_list:

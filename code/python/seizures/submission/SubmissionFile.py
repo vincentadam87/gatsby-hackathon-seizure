@@ -123,6 +123,7 @@ class SubmissionFile():
 
             # now predict on all test points
             loader = DataLoader(self.data_path, feature_extractor)
+            # X_test: n x d matrix
             X_test = loader.test_data(patient)
             test_fnames_patient = loader.files
 
@@ -135,9 +136,9 @@ class SubmissionFile():
                 result_lines.append(",".join([name, str(pred_seizure), str(pred_early)]))
 
 
-            print "Storing results to", self.data_path + patient+ '_' + output_fname
             csv_fname = patient + '_' + output_fname + '.csv'
             csv_path = Global.get_child_result_folder(csv_fname)
+            print "Storing results to", csv_fname
             f = open(csv_path, "w")
             f.write("clip,seizure,early\n")
             for line in result_lines:

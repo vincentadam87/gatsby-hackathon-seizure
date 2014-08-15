@@ -107,10 +107,16 @@ class DataLoader(object):
 
     def blocks_for_Xvalidation(self, patient_name,n_fold =3):
         """
+        Stratified partitions (partition such that class proportion remains same 
+        in each data fold) of data for cross validation. The sum of instances 
+        in all partitions may be less than the original total.
         returns
         - a list of 2D ndarrays of features
         - a list of 1D ndarrays of type_labels
         - a list of 1D ndarrays of early_labels
+        All the lists have length = n_fold. 
+        These outputs can be used with XValidation.
+
         :param patient_name:
         :return: feature matrix and labels
         """
@@ -138,7 +144,7 @@ class DataLoader(object):
 
         Iy2_1_list = list(chunks(Iy2_1, n_fold))
         Iy2_0_list = list(chunks(Iy2_0, n_fold))
-        print len(Iy2_1_list)
+        #print len(Iy2_1_list)
         assert(len(Iy2_0_list)==n_fold)
         assert(len(Iy2_1_list)==n_fold)
         Iy2 = [Iy2_1_list[i]+Iy2_0_list[i] for i in range(n_fold)]
