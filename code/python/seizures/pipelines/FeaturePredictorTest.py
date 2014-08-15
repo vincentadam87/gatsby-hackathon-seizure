@@ -93,7 +93,7 @@ class CVFeaturePredictorTester(FeaturePredictorTestBase):
         #print "\ncross validation: early_vs_not"
         result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
         #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-                % (np.mean(result_early), np.std(result_early), result_early)
+                #% (np.mean(result_early), np.std(result_early), result_early)
 
         # dict containing bunch of reports
         r = {}
