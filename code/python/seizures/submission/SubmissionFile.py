@@ -129,7 +129,9 @@ class SubmissionFile():
 
             for ifname in range(len(test_fnames_patient)):
                 fname = test_fnames_patient[ifname]
+                # X is one instance 
                 X = X_test[ifname,:]
+                # [0] to extract probability out of the ndarray
                 pred_seizure = predictor_seizure.predict(X)[0]
                 pred_early = predictor_early.predict(X)[0]
                 name = fname.split("/")[-1]

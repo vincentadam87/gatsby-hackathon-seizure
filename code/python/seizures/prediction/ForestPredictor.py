@@ -21,7 +21,7 @@ class ForestPredictor(PredictorBase):
         Method to fit the model.
 
         Parameters:
-        X - 2d numpy array of training data
+        X - 2d numpy array of training data. X.shape = [n_samples, d_features]
         y - 1d numpy array of training labels
         """
         self.clf = self.clf.fit(X, y)
@@ -34,6 +34,8 @@ class ForestPredictor(PredictorBase):
         Parameters:
         X - 2d numpy array of test data
         """
+        # [:, 1] to get the second column, which contains the probabilies of 
+        # of class being 1
         return self.clf.predict_proba(X)[:, 1]
 
 if __name__ == '__main__':
