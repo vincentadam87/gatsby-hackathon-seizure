@@ -1,6 +1,7 @@
 import numpy as np
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from statsmodels.tsa.vector_ar.var_model import VAR
+from seizures.data.Instance import Instance
 
 class ARFeatures(FeatureExtractBase):
     """
@@ -17,7 +18,7 @@ class ARFeatures(FeatureExtractBase):
         # Wittawat: Since VAR automatically does lags order selection, 
         # other different instances may give a different lags values ?
         params = VAR(instance.eeg_data.T).fit(maxlags=2).params
-        features = np.hstack(params.reshape( (np.prod(params.shape),1) ))
+        features = np.hstack(params.reshape( (np.prod(params.shape), 1) ))
         self.assert_features(features)
         # features = a 1d ndarray 
         return features
@@ -50,6 +51,8 @@ class VarLagsARFeatures(FeatureExtractBase):
         # features = a 1d ndarray 
         return features
 
+    def __str__(self):
+        return 'LagsAR' + '(%d)'% (self.lags)
 
 
 

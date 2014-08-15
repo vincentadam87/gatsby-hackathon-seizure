@@ -18,7 +18,11 @@ class FeatureExtractBase(object):
         """
         raise NotImplementedError()
 
-    def assert_features(self,features):
+    def assert_features(self, features):
         assert(type(features)==np.ndarray)
         assert(len(features.shape)==1)
         assert(features.shape[0]>=1)
+
+    def __str__(self):
+        # subclass may override this. Be sure to make it readable.
+        return type(self).__name__.split('.')[-1]

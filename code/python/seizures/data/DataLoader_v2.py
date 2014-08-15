@@ -36,7 +36,7 @@ class DataLoader(object):
         self.early_labels = None
         # a list of numpy arrays. Each element is from feature_extractor.extract()
         # The length of the list is the number of time steps in the data segment 
-        # specified by patient_name. For example, len=400 in Dog_1 
+        # specified by patient_name. 
         self.features_train = None
         # a list of numpy arrays. Each element is from feature_extractor.extract()
         self.features_test = None
@@ -44,18 +44,24 @@ class DataLoader(object):
         self.files = None
         self.files_nopath = None
 
-    def load_data(self, patient_name, type='training'):
+    def load_data(self, patient_name, type='training', max_segments=-1):
         """
         Loads data for a patient and a type of data into class variables
         No output
-        :param name: str
+        :param patient_name: e.g., Dog_1
+        :param type: training or test 
+        :param max_segments: maximum segments to load. -1 to use the number of 
+        total segments available. Otherwise, all segments (ictal and interictal)
+        will be randomly subsampled without replacement. 
         """
         self.patient_name = patient_name
         self._reset_lists()
         # For type='training', this will get all interictal and ictal file names
         files = self._get_files_for_patient(type)
         
-        # reorder files so as to mix a bit interictal and ictal (to fasten debug I crop the files to its early entries)
+        # reorder files so as to mix a bit interictal and ictal (to fasten
+        # debug I crop the files to its early entries)
+        print 'Load with extractor = %s'% (str(self.feature_extractor))
         if type == 'training':
             files_interictal = [f for f in files if f.find("_interictal_") >= 0 ]
             print '%d interictal segments for %s'%(len(files_interictal), patient_name)
@@ -74,9 +80,8 @@ class DataLoader(object):
         np.random.seed(0)
         I = np.random.permutation(len(files))
         #I = range(len(files))
-        ## Wittawat: why 0:400 ? So Vincent just wants things to be faster ?
         total_segments = len(files_interictal) + len(files_ictal)
-        subsegments = min(400, total_segments)
+        subsegments = min(max_segments, total_segments)
         print 'subsampling from %d segments to %d'% (total_segments, subsegments)
         self.files = [files[i] for i in I[0:subsegments]]
 
@@ -93,23 +98,31 @@ class DataLoader(object):
             i+=1
         print "\ndone"
 
-    def training_data(self, patient_name):
+    def training_data(self, patient_name, max_segments=-1):
         """
         returns features as a matrix of 1D np.ndarray
         returns classification vectors as 1D np.ndarrays
         :param patient_name:
+        :param max_segments: maximum segments to load. -1 to use the number of 
+        total segments available. Otherwise, all segments (ictal and interictal)
+        will be randomly subsampled without replacement. 
         :return: feature matrix and labels
         """
         print "\nLoading train data for " + patient_name
-        self.load_data(patient_name, type='training')
+        self.load_data(patient_name, type='training', max_segments=max_segments)
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels), np.array(self.early_labels)
 
-    def blocks_for_Xvalidation(self, patient_name,n_fold =3):
+    def blocks_for_Xvalidation(self, patient_name,n_fold =3, max_segments=-1):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
         in all partitions may be less than the original total.
+
+        :param max_segments: maximum segments to load. -1 to use the number of 
+        total segments available. Otherwise, all segments (ictal and interictal)
+        will be randomly subsampled without replacement. 
+
         returns
         - a list of 2D ndarrays of features
         - a list of 1D ndarrays of type_labels
@@ -121,7 +134,7 @@ class DataLoader(object):
         :return: feature matrix and labels
         """
         # y1 = type_labels,  y2 = early_labels
-        X,y1,y2 = self.training_data(patient_name)
+        X,y1,y2 = self.training_data(patient_name, max_segments=max_segments)
         n = len(y1)
 
         assert(np.sum(y2)>n_fold)
@@ -156,14 +169,17 @@ class DataLoader(object):
 
         return Xp,y1p,y2p
 
-    def test_data(self, patient_name):
+    def test_data(self, patient_name, max_segments=-1):
         """
         returns features as a matrix of 1D np.ndarray
         :rtype : numpy 2D ndarray
         :param name: str
+        :param max_segments: maximum segments to load. -1 to use the number of 
+        total segments available. Otherwise, all segments (ictal and interictal)
+        will be randomly subsampled without replacement. 
         """
         print "\nLoading test data for " + patient_name
-        self.load_data(patient_name, type='test')
+        self.load_data(patient_name, type='test', max_segments=max_segments)
         return self._merge_vectors_into_matrix(self.features_test)
 
 

@@ -60,3 +60,8 @@ class StackFeatures(FeatureExtractBase):
             extracted_features_list.append(np.hstack(feature));
         return np.hstack(extracted_features_list)
 
+    def __str__(self):
+        subs = [str(e) for e in self.feature_generators]
+        return 'Stack' + '(%s)'% (', '.join(subs))
+
+
