@@ -96,6 +96,7 @@ class SubmissionFile():
 
 
             loader = DataLoader(self.data_path, feature_extractor)
+            # X_train is n x d
             X_train,y_seizure, y_early = loader.training_data(patient)
 
             print X_train.shape
