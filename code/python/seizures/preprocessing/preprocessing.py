@@ -110,9 +110,9 @@ def anti_alias_filter(x,fs):
 
     return filtered_x
 
-# DO PREPROCESSING:
-fs = 4000
-processed = preprocess_multichannel_data(matrix,fs)
+# TO DO PREPROCESSING:
+# fs = 4000
+# processed = preprocess_multichannel_data(matrix,fs)
 
 # # PLOT TO CHECK:
 # for i in range(processed.shape[0]):
