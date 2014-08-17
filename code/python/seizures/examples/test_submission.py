@@ -1,13 +1,14 @@
 
+import numpy as np
 from seizures.submission import SubmissionFile
 from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.features.MixFeatures import MixFeatures
+from seizures.Global import Global
 
 # Example script to generate submission file
 
-
-data_path =  "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
-
+#data_path =  "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
+data_path = Global.get_subject_folder('Dog_1')
 
 # Define Predictor
 predictor_seizure = SVMPredictor

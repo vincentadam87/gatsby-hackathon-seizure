@@ -53,3 +53,8 @@ docs/_build/
 target/
 
 .idea/*
+
+# vim swap files
+*.swp
+*.mat
+*.tgz

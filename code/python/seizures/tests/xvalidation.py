@@ -15,10 +15,13 @@ def test_predictor(predictor_cls):
 
     N=1000
     D=2
-    X=np.random.randn(N,D)
-    y=np.random.randint(0,2,N)
+    # simulate a 2-fold cross validation
+    Xs = [np.random.randn(N/2, D), np.random.randn(N/2, D)]
+    ys = [np.random.randint(0, 2, N/2), np.random.randint(0, 2, N/2)]
+    #X=np.random.randn(N,D)
+    #y=np.random.randint(0,2,N)
 
-    print XValidation.evaluate(X, y, predictor, n_iter=2, test_size=0.5)
+    print XValidation.evaluate(Xs, ys, predictor)
 
 if __name__ == '__main__':
     print "RandomPredictor"

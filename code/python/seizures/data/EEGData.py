@@ -12,7 +12,7 @@ class EEGData(object):
     path : path to the stitched (concatenated) data.
 
 
-    eeg_data : the actual eeg_data
+    eeg_data : the actual eeg_data. 2d array of channels x time 
     sampling_rate : sampling rate of the data
     latency : latency in seconds [0 - 31]
     number_of_channels : number of channels in the data
@@ -108,6 +108,9 @@ class EEGData(object):
 
 if __name__ == "__main__":
     path = '/Users/Matthieu/Dev/seizureDectectionKaggle/Dog_1_test_segment_1.mat'
+    #path = '/home/nuke/git/gatsby-hackathon-seizure/wj_data/Dog_1/Dog_1_ictal_segment_1.mat'
     res = EEGData(path)
     test = res.get_instances()
     print test[0].eeg_data
+    print "EEG Data length: %d" % (len(test))
+    print type(test[0])

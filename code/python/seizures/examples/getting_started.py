@@ -28,7 +28,7 @@ from seizures.features.ARFeatures import ARFeatures
 from seizures.features.MixFeatures import MixFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
-from seizures.helper.data_path import get_data_path
+from seizures.Global import Global
 
 
 def test_predictor(predictor_cls, patient_name='Dog_1'):
@@ -41,8 +41,7 @@ def test_predictor(predictor_cls, patient_name='Dog_1'):
     predictor = predictor_cls()    
 
     # path to data (here path from within gatsby network)
-    # data_path = "/nfs/data3/kaggle_seizure/scratch/Stiched_data/Dog_1/"
-    data_path = get_data_path()
+    data_path = Global.path_map('clips_folder')
     
     # creating instance of autoregressive features
     #feature_extractor = ARFeatures()
@@ -85,6 +84,7 @@ def test_predictor(predictor_cls, patient_name='Dog_1'):
 if __name__ == '__main__':
     # code run at script launch
 
+    # patient_name is e.g., Dog_1
     patient_name = sys.argv[1]
     
     print "ForestPredictor"

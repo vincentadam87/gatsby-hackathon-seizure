@@ -29,3 +29,8 @@ class PredictorBase(object):
         X - 2d numpy array of test data
         """
         raise NotImplementedError()
+
+    def __str__(self):
+        # subclass may override this. Be sure to make it readable.
+        return type(self).__name__.split('.')[-1]
+

@@ -8,6 +8,7 @@ class Instance(object):
     def __init__(self, patient_id, latency, eeg_data, sample_rate, number_of_channels):
         self.patient_id = patient_id
         self.latency = latency
+        #2d array of #channels x time 
         self.eeg_data = eeg_data
         self.sample_rate = sample_rate
         self.number_of_channels = number_of_channels

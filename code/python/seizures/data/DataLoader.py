@@ -6,7 +6,7 @@ import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
 from itertools import izip
 
-
+# See also Vincent's DataLoader_v2.DataLoader.
 class DataLoader(object):
     """
     Class to load all the training data for a patient.
@@ -107,12 +107,20 @@ class DataLoader(object):
         assert(self.patient == patient)
         return self.type_labels, self.early_labels
 
-if __name__ == '__main__':
+#--- end of DataLoader class ---- 
+
+def main():
     base_dir = "/Users/Shaun/dev/gatsby-hackathon/data/Hackaton_seizure_data/"
-    extractor = FFTFeatures()
+    #base_dir = "/home/nuke/git/gatsby-hackathon-seizure/wj_data"
+    band_means = np.linspace(0, 200, 66)
+    band_width = 2
+    extractor = FFTFeatures(band_means, band_width)
 
     loader = DataLoader(base_dir, extractor)
     matrix = loader.training_data("Dog_1")
 
     print matrix
     print loader.labels("Dog_1")
+
+if __name__ == '__main__':
+    main()

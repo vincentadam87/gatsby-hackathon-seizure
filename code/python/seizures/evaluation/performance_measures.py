@@ -18,7 +18,7 @@ def auc(truth, prediction):
 
 def accuracy(truth, prediction):
     """
-    Compute the accurazy for given predictions and ground truth
+    Compute the accuracy for given predictions and ground truth
     
     Parameters:
     truth      - 1d numpy array of ground truth labels (binary)

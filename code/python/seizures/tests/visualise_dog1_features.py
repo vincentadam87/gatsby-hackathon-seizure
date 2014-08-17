@@ -7,11 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from seizures.data.DataLoader import DataLoader
 from seizures.features.FFTFeatures import FFTFeatures
-from seizures.helper.data_path import get_data_path
-
+from seizures.Global import Global
 
 def visualise():
-    data_path = get_data_path("data_path.txt")
+    data_path = Global.path_map('clips_folder')
 
     # arbritary
     band_means = np.linspace(0, 200, 66)

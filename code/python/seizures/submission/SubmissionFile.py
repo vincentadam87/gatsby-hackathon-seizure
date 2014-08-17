@@ -1,13 +1,9 @@
 import os
-import numpy as np
 from itertools import izip
-from seizures.data.EEGData import EEGData
-from seizures.data.DataLoader import DataLoader
+from seizures.data.DataLoader_v2 import DataLoader
 from seizures.features.FeatureExtractBase import FeatureExtractBase
-from seizures.helper.data_structures import stack_matrices, stack_vectors
-from seizures.helper.data_structures import test_stack_matrices, test_stack_vectors
 from seizures.prediction.PredictorBase import PredictorBase
-
+from seizures.Global import Global
 
 class SubmissionFile():
     """
@@ -21,10 +17,16 @@ class SubmissionFile():
         Constructor
         
         Parameters:
-        data_path   - / terminated path of test data
+        data_path   - / terminated path. This is the base folder 
+        containing e.g., Dog_1/, Dog_2/, ....
+        patients - a list of patient names e.g., ['Dog_1', 'Patient_2', ...]
         """
+        if not os.path.isdir(data_path):
+            raise ValueError('%s is not a directory.'%data_path)
 
-        self.data_path = data_path
+        #self.data_path = Global.path_map('clips_folder')
+        #self.data_path = '/nfs/data3/kaggle_seizure/clips/'
+
         if patients == None:
             self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
         else:
@@ -41,6 +43,7 @@ class SubmissionFile():
         Returns a data-frame with all filenames of the sample submission file
         """
         me = os.path.dirname(os.path.realpath(__file__))
+        # data_dir = full path to data/ folder
         data_dir = os.sep.join(me.split(os.sep)[:-4]) + os.sep + "data"
         fname = data_dir + os.sep + "sampleSubmission.csv"
         
@@ -88,76 +91,17 @@ class SubmissionFile():
         
         all_result_lines = []
 
-#data_loader = DataLoader(self.data_path, feature_extractor)
-
-
         for patient in self.patients:
             result_lines = []
 
-#load training data
-#X_list = data_loader.training_data(patient)
-## skip if no files
-#if len(X_list) == 0:
-#    continue
-#y_seizure_list, y_early_list = data_loader.labels(patient)
-# print "Loaded data for " + patient
-# print y_seizure_list
-# print y_early_list
-#X_train = stack_matrices(X_list)
-#print X_list[0].shape, X_list[1].shape
-#y_seizure = stack_vectors(y_seizure_list)
-#y_early = stack_vectors(y_early_list)
-# print X_train.shape
-#print X_train
-#print y_seizure
-#print y_early
-#print X.shape, y_seizure.shape, y_early.shape
-#test_stack_matrices(X, X_list)
-#test_stack_vectors(y_seizure, y_seizure_list)
-#test_stack_vectors(y_early, y_early_list)
 
-
-            # find out train filenames that correspond to patient/dog
-            train_fnames_patient = []
-            for fname in train_filenames:
-                if patient in fname:
-                    train_fnames_patient += [fname]
-            
-            X_train = []
-            y_seizure = []
-            y_early = []
-            # now predict on all test points
-            for i_fname, fname in enumerate(train_fnames_patient):
-                print "\nLoading train data for " + fname + '\nProgress: ' + str(i_fname) + '/' + str(len(train_fnames_patient))
-                fname_full = '/nfs/data3/kaggle_seizure/clips/' + patient + '/' + fname
-                print fname_full
-                eeg_data_tmp = EEGData(fname_full)                    
-                eeg_data = eeg_data_tmp.get_instances()
-                assert len(eeg_data) == 1
-                eeg_data = eeg_data[0]
-                if fname.find('interictal') > -1:
-                    y_seizure.append(0)
-                    y_early.append(0)
-                elif eeg_data.latency < 15:
-                    y_seizure.append(1)
-                    y_early.append(1)
-                else:
-                    y_seizure.append(1)
-                    y_early.append(0)
-                X = feature_extractor.extract(eeg_data)
-                
-                # reshape since predictor expects matrix
-                X = X.reshape(1, len(X))
-                X_train.append(X)
-
-            X_train = np.concatenate(X_train)
-            y_seizure = np.array(y_seizure)
-            y_early = np.array(y_early)
+            loader = DataLoader(self.data_path, feature_extractor)
+            # X_train is n x d
+            X_train,y_seizure, y_early = loader.training_data(patient)
 
             print X_train.shape
             print y_seizure.shape
 
-        
             # train both models
             #print
             print "Training seizure for " + patient
@@ -177,65 +121,34 @@ class SubmissionFile():
             for fname in test_filenames:
                 if patient in fname:
                     test_fnames_patient += [fname]
-                       
-            
+
             # now predict on all test points
-            for i_fname, fname in enumerate(test_fnames_patient):
-                print "\nLoading test data for " + fname + '\nProgress: ' + str(i_fname) + '/' + str(len(test_fnames_patient))
-                # eeg_data = None  # EEGData(fname)
-                fname_full = '/nfs/data3/kaggle_seizure/clips/' + patient + '/' + fname
-                print fname_full
-                eeg_data_tmp = EEGData(fname_full)
-                eeg_data = eeg_data_tmp.get_instances()
+            loader = DataLoader(self.data_path, feature_extractor)
+            # X_test: n x d matrix
+            X_test = loader.test_data(patient)
+            test_fnames_patient = loader.files
 
-                assert len(eeg_data) == 1
-                eeg_data = eeg_data[0]
-
-                X = feature_extractor.extract(eeg_data)
-
-                
-                # reshape since predictor expects matrix
-                X = X.reshape(1, len(X))                
-                # predict (one prediction only)
+            for ifname in range(len(test_fnames_patient)):
+                fname = test_fnames_patient[ifname]
+                # X is one instance 
+                X = X_test[ifname,:]
+                # [0] to extract probability out of the ndarray
                 pred_seizure = predictor_seizure.predict(X)[0]
                 pred_early = predictor_early.predict(X)[0]
-                # store
-                result_lines.append(",".join([fname, str(pred_seizure), str(pred_early)]))
-                
+                name = fname.split("/")[-1]
+                result_lines.append(",".join([name, str(pred_seizure), str(pred_early)]))
 
-            #X_train_2 = np.vstack(X_train_2_tmp)
-            #X_train_mean = np.mean(X_train, 0)
-            #X_train_sd = np.std(X_train, 0)
-            #n_train = X_train.shape[0]
-            #X_train_2_mean = np.mean(X_train_2, 0)
-            #X_train_2_sd = np.std(X_train_2, 0)
-            #n_train_2 = X_train_2.shape[0]
-            #print n_train, n_train_2
-            #print X_train_mean
-            #print X_train_2_mean
-            ##print X_train_sd
-            #print X_train_2_sd
-            #assert n_train == n_train_2
-            #assert X_train_mean == X_train_2_mean
-            #assert X_train_sd == X_train_2_sd
-        
 
-            print "Storing results to", self.data_path + patient+ '_' + output_fname
-            f = open('/nfs/nhome/live/vincenta/Desktop/' + patient+ '_' +output_fname+'.csv', "w")
+            csv_fname = patient + '_' + output_fname + '.csv'
+            csv_path = Global.get_child_result_folder(csv_fname)
+            print "Storing results to", csv_fname
+            f = open(csv_path, "w")
             f.write("clip,seizure,early\n")
             for line in result_lines:
                 f.write(line + '\n')
             f.close()
 
             all_result_lines.append(result_lines)
-
-        #print "Storing results to", self.data_path + output_fname
-        #f = open('/nfs/nhome/live/vincenta/Desktop/' +output_fname, "w")
-        #f.write("clip,seizure,early\n")
-        #for line in all_result_lines:
-        #    print line
-        #    f.write(line + '\n')
-        #f.close()
 
 
        
