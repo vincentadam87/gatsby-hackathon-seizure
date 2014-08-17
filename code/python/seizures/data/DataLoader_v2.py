@@ -82,13 +82,22 @@ class DataLoader(object):
         np.random.seed(0)
         I = np.random.permutation(len(files))
         #I = range(len(files))
-        total_segments = len(files_interictal) + len(files_ictal)
+
+        if type == 'training':
+            total_segments = len(files_interictal) + len(files_ictal)
+        else:
+            total_segments = len(files)
+
+
+
         subsegments = min(max_segments, total_segments)
         print 'subsampling from %d segments to %d'% (total_segments, subsegments)
         self.files = [files[i] for i in I[0:subsegments]]
 
         #self.files = [files[i] for i in I[0:200]]
-        #self.files = files
+
+        if type == 'test':
+            self.files = files
 
         i = 0.
         for filename in self.files:
