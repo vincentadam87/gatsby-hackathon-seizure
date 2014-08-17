@@ -16,14 +16,13 @@ class PLVFeatures(FeatureExtractBase):
         pass
 
     def extract(self, instance):
-        data = instance.eeg_data.T
+        data = instance.eeg_data
         n_ch, time = data.shape
         n_pairs = n_ch*(n_ch-1)/2
-
         # initiate matrices
-        phases = np.array(data.shape)
-        delta_phase_pairwise = np.array((n_pairs,time))
-        plv = np.array((n_pairs,))
+        phases = np.zeros((n_ch,time))
+        delta_phase_pairwise = np.zeros((n_pairs,time))
+        plv = np.zeros((n_pairs,))
 
         # extract phases for each channel
         for c in range(n_ch):
@@ -32,7 +31,7 @@ class PLVFeatures(FeatureExtractBase):
         # compute phase differences
         k = 0
         for i in range(n_ch):
-            for j in range(i,n_ch):
+            for j in range(i+1,n_ch):
                 delta_phase_pairwise[k,:] = phases[i,:]-phases[j,:]
                 k+=1
 
