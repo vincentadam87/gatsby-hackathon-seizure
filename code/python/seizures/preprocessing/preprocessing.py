@@ -1,6 +1,6 @@
 import numpy as np
-import scipy.signal as signal
-import matplotlib.pyplot as plt
+from scipy.signal import firwin, kaiserord, convolve2d
+#from matplotlib import pyplot as plt
 
 # DEFINE FILTERS FOR PREPROCESSING:
 def preprocess_multichannel_data(matrix,fs):
@@ -38,9 +38,6 @@ def remove_dc(x):
 
 def remove_elec_noise(x,fs):
     # import the relevant filters from signal processing library
-    import numpy as np
-    from scipy.signal import kaiserord, firwin, convolve2d
-
     assert(type(x)==np.ndarray)
 
     # build custom filter; inspiration : http://wiki.scipy.org/Cookbook/FIRFilter
@@ -78,10 +75,6 @@ def anti_alias_filter(x,fs):
     Anti_aliasing: use Nyquist frequ cutoff low-pass filter
     :return: anti-aliased signal
     """
-    # import the relevant filters from signal processing library
-    import numpy as np
-    from scipy.signal import convolve2d
-
     assert(type(x)==np.ndarray)
 
     def build_aa_filter(fs):
@@ -110,7 +103,7 @@ def anti_alias_filter(x,fs):
 
     return filtered_x
 
-# TO DO PREPROCESSING:
+# DO PREPROCESSING:
 # fs = 4000
 # processed = preprocess_multichannel_data(matrix,fs)
 
