@@ -2,6 +2,7 @@ import glob
 from os.path import join
 import os;
 from seizures.data.EEGData import EEGData
+from seizures.code.preprocessing import preprocess_multichannel_data
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -235,6 +236,7 @@ class DataLoader(object):
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
         # eeg_data is now an Instance
+
         eeg_data = eeg_data[0]
         if filename.find('interictal') > -1:
             y_seizure=0
@@ -245,6 +247,9 @@ class DataLoader(object):
         else:
             y_seizure=1
             y_early=0
+
+        fs = eeg_data.sampling_rate
+        eeg_data = preprocess_multichannel_data(eeg_data,fs)
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_seizure)
@@ -263,6 +268,9 @@ class DataLoader(object):
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
         eeg_data = eeg_data[0]
+
+        fs = eeg_data.sampling_rate
+        eeg_data = preprocess_multichannel_data(eeg_data,fs)
         x = self.feature_extractor.extract(eeg_data)
         self.features_test.append(np.hstack(x))
 
