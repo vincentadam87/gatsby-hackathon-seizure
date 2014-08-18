@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.signal import firwin, kaiserord, convolve2d
+from scipy.signal import firwin, kaiserord, convolve2d, decimate
 #from matplotlib import pyplot as plt
 
 # DEFINE FILTERS FOR PREPROCESSING:
@@ -16,6 +16,7 @@ def preprocess_multichannel_data(matrix,params):
 
     assert(type(matrix)==np.ndarray)
 
+    matrix = downsample(matrix,params)
     #print 'initial ', matrix.shape
     matrix = remove_elec_noise(matrix,params)
     #print 'elec noise ', matrix.shape
@@ -24,6 +25,28 @@ def preprocess_multichannel_data(matrix,params):
     matrix = remove_dc(matrix)
     #print 'dc ', matrix.shape
     return matrix
+
+def downsample(matrix,params):
+
+    dograte = 400
+    dsfactor = params/dograte #should come out to 1, i.e. no downsampling for dogs
+    print 'dsfactor calculated =', dsfactor
+    maxdsfactor = 8
+
+    if dsfactor > maxdsfactor:
+        dsfactor = maxdsfactor
+    #print 'dsfactor used =', dsfactor
+
+    ds_list=[]
+
+    for i in range(matrix.shape[0]):
+        x = matrix[i,:]
+        ds_x = decimate(x, dsfactor)
+        ds_list.append(ds_x)
+
+    ds_matrix = np.asarray(ds_list)
+
+    return ds_matrix
 
 def remove_dc(x):
     #print x.shape
@@ -115,45 +138,3 @@ def anti_alias_filter(x,params):
     f = np.expand_dims(f,axis=0)
     filtered_x = convolve2d(x,f,mode='same') # NB: mode='same' cuts beginning & end
     return filtered_x
-
-
-
-
-# DO PREPROCESSING:
-# fs = 4000
-# processed = preprocess_multichannel_data(matrix,fs)
-
-# # PLOT TO CHECK:
-# for i in range(processed.shape[0]):
-#     plt.plot(processed[i]+i)
-# plt.show()
-
-# just for testing:
-
-# # generate test matrix; check it looks remotely like the data
-# import random as random
-# matrix = np.random.random((4,1000))
-# for i in range(matrix.shape[0]):
-#     plt.plot( matrix[i,:]+i)
-# plt.show()
-#
-# fs = 400
-#
-# # apply filters:
-# matrix = remove_dc(matrix)
-#
-# for i in range(matrix.shape[0]):
-#     plt.plot(matrix[i]+2*i)
-# plt.show()
-#
-# matrix = anti_alias_filter(matrix,fs)
-#
-# for i in range(matrix.shape[0]):
-#     plt.plot(matrix[i]+2*i)
-# plt.show()
-#
-# matrix = remove_elec_noise(matrix,fs)
-#
-# for i in range(no_elec.shape[0]):
-#     plt.plot(no_elec[i]+2*i)
-# plt.show()
