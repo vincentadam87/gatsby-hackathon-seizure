@@ -28,6 +28,12 @@ def preprocess_multichannel_data(matrix,params):
 
 def downsample(matrix,params):
 
+    """
+    :param matrix: multichannel EEG data
+    :param params: takes in sampling frequency fs from params dict
+    :return: downsampled data; downsample to dogfrequency but maximum downsampling rate set to 8  
+    """
+
     dograte = 400
     dsfactor = params/dograte #should come out to 1, i.e. no downsampling for dogs
     #print 'dsfactor calculated =', dsfactor
