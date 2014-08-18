@@ -259,7 +259,7 @@ class DataLoader(object):
           'elec_noise_width' :3.,
           'elec_noise_attenuation' : 60.0,
           'elec_noise_cutoff' : [49.,51.]}
-        
+
         eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))

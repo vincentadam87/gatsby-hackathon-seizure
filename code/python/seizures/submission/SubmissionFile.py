@@ -24,7 +24,7 @@ class SubmissionFile():
         if not os.path.isdir(data_path):
             raise ValueError('%s is not a directory.'%data_path)
 
-        #self.data_path = Global.path_map('clips_folder')
+        self.data_path = Global.path_map('clips_folder')
         #self.data_path = '/nfs/data3/kaggle_seizure/clips/'
 
         if patients == None:

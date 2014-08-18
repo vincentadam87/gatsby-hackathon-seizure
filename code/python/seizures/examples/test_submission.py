@@ -18,8 +18,10 @@ predictor_early = SVMPredictor
 band_means = np.linspace(0, 200, 66)
 band_width = 2
 FFTFeatures_args = {'band_means':band_means, 'band_width':band_width}
+#feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
+#                                 {'name':"FFTFeatures",'args':FFTFeatures_args}])
 feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
-                                 {'name':"FFTFeatures",'args':FFTFeatures_args}])
+                                 {'name':"PLVFeatures",'args':{}}])
 
 submissionfile = SubmissionFile(data_path)
 
