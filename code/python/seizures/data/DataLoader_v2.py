@@ -279,9 +279,10 @@ class DataLoader(object):
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
         eeg_data = eeg_data[0]
+        fs = eeg_data.sample_rate
 
         fs = eeg_data.sampling_rate
-        eeg_data = preprocess_multichannel_data(eeg_data,fs)
+        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         x = self.feature_extractor.extract(eeg_data)
         self.features_test.append(np.hstack(x))
 
