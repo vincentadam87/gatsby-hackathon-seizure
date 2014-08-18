@@ -30,8 +30,8 @@ def downsample(matrix,params):
 
     dograte = 400
     dsfactor = params/dograte #should come out to 1, i.e. no downsampling for dogs
-    print 'dsfactor calculated =', dsfactor
-    maxdsfactor = 8
+    #print 'dsfactor calculated =', dsfactor
+    maxdsfactor = int(8)
 
     if dsfactor > maxdsfactor:
         dsfactor = maxdsfactor
