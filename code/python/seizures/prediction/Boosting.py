@@ -28,6 +28,7 @@ class AdaBoostTrees(PredictorBase):
         X - 2d numpy array of training data. X.shape = [n_samples, d_features]
         y - 1d numpy array of training labels
         """
+        print "fitting AdaBoost trees"
         self.clf = self.clf.fit(X, y)
 
     def predict(self, X):
@@ -41,6 +42,8 @@ class AdaBoostTrees(PredictorBase):
         # of class being 1
         return self.clf.predict_proba(X)[:, 1]
 
+    def __str__(self):
+        return "ABTrees"
 
 def main():
     N = 399 

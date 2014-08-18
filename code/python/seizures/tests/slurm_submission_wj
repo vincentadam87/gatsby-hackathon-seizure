@@ -11,11 +11,11 @@ cat > script$guy << EOF
 #SBATCH -n1 --time=40:00:00 --mem-per-cpu=1gb
 #SBATCH -J bafa_pf
 
-cd /nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/seizures/tests/
-python submission_forest_predictor.py "$guy" "$guy" 
+cd /nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/code/python/seizures/tests/
+python submission_wj.py "$guy" "$guy" 
 EOF
 chmod a+x script$guy
-sbatch script$guy
+#sbatch script$guy
 
 done
 

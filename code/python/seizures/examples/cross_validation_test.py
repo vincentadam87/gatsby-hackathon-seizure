@@ -11,7 +11,11 @@ import sys
 from seizures.data.DataLoader_v2 import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
+from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.features.MixFeatures import MixFeatures
+from seizures.features.PLVFeatures import PLVFeatures
+from seizures.features.ARFeatures import ARFeatures
+
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.Global import Global
 from sklearn.cross_validation import train_test_split
@@ -30,7 +34,7 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     # Instantiate the predictor 
     predictor = predictor_cls()
     base_dir = Global.path_map('clips_folder')
-    #base_dir = '/nfs/data3/kaggle_seizure/clips/'
+    base_dir = '/nfs/data3/kaggle_seizure/clips/'
     loader = DataLoader(base_dir, feature_extractor)
 
     X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(patient_name)
@@ -86,7 +90,14 @@ def main():
 
     # There are Dog_[1-4] and Patient_[1-8]
     patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
-    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
+    patients_list = ["Dog_%d" % i for i in [1]] + ["Patient_%d" % i for i in range(1, 9)]
+ 
+    #feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
+    #feature_extractor = PLVFeatures()
+    feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}},{'name':"ARFeatures",'args':{}}])
+    #feature_extractor = ARFeatures()
+    #feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}}])
+
     predictor = ForestPredictor
     print "ForestPredictor"
     Xval_on_patients(predictor,feature_extractor, patients_list)

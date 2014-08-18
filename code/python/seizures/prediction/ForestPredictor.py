@@ -12,8 +12,9 @@ class ForestPredictor(PredictorBase):
     @author: Shaun
     """
 
-    def __init__(self):
-        self.clf = RandomForestClassifier(n_estimators=100)
+    def __init__(self, n_estimators=100, max_features='auto'):
+        self.clf = RandomForestClassifier(n_estimators=n_estimators, 
+                max_features=max_features)
 
     @abstractmethod
     def fit(self, X, y):
@@ -24,6 +25,7 @@ class ForestPredictor(PredictorBase):
         X - 2d numpy array of training data. X.shape = [n_samples, d_features]
         y - 1d numpy array of training labels
         """
+        print "Fitting a random forest predictor"
         self.clf = self.clf.fit(X, y)
 
     @abstractmethod
@@ -37,6 +39,9 @@ class ForestPredictor(PredictorBase):
         # [:, 1] to get the second column, which contains the probabilies of 
         # of class being 1
         return self.clf.predict_proba(X)[:, 1]
+
+    def __str__(self):
+        return "Forest"
 
 if __name__ == '__main__':
     N = 1000

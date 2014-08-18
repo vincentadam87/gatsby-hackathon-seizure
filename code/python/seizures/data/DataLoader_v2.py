@@ -2,9 +2,12 @@ import glob
 from os.path import join
 import os;
 from seizures.data.EEGData import EEGData
+from seizures.preprocessing import preprocessing
 import numpy as np
+import random
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
+
 
 # Wittawat: Many load_* methods do not actually use the patient_name argument
 
@@ -62,10 +65,13 @@ class DataLoader(object):
         # reorder files so as to mix a bit interictal and ictal (to fasten
         # debug I crop the files to its early entries)
         print 'Load with extractor = %s'% (str(self.feature_extractor))
+        random.seed(0)
         if type == 'training':
             files_interictal = [f for f in files if f.find("_interictal_") >= 0 ]
+            random.shuffle(files_interictal)
             print '%d interictal segments for %s'%(len(files_interictal), patient_name)
             files_ictal = [f for f in files if f.find("_ictal_") >= 0]
+            random.shuffle(files_ictal)
             print '%d ictal segments for %s'%(len(files_ictal), patient_name)
 
             files = []
@@ -78,25 +84,31 @@ class DataLoader(object):
                 if i < len(files_interictal):
                     files.append(files_interictal[i])
 
-        np.random.seed(0)
-        I = np.random.permutation(len(files))
+        #np.random.seed(0)
+        #I = np.random.permutation(len(files))
         #I = range(len(files))
-        total_segments = len(files_interictal) + len(files_ictal)
+
+        if type == 'training':
+            total_segments = len(files_interictal) + len(files_ictal)
+        else:
+            total_segments = len(files)
+
         subsegments = min(max_segments, total_segments)
         print 'subsampling from %d segments to %d'% (total_segments, subsegments)
-        self.files = [files[i] for i in I[0:subsegments]]
+        #self.files = [files[i] for i in I[0:subsegments]]
+        self.files = files[0:subsegments]
 
         #self.files = [files[i] for i in I[0:200]]
-        #self.files = files
 
-        i = 0.
-        for filename in self.files:
+        if type == 'test':
+            self.files = files
+
+        for i, filename in enumerate(self.files):
             print i/len(self.files)*100.," percent complete         \r",
             # Each call of _load_data_from_file appends data to features_train 
             # features_test lists depending on the (type) variable. 
             # It also appends data to type_labels and early_labels.
             self._load_data_from_file(patient_name, filename)
-            i+=1
         print "\ndone"
 
     def training_data(self, patient_name, max_segments=-1):
@@ -226,6 +238,7 @@ class DataLoader(object):
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
         # eeg_data is now an Instance
+
         eeg_data = eeg_data[0]
         if filename.find('interictal') > -1:
             y_seizure=0
@@ -236,6 +249,20 @@ class DataLoader(object):
         else:
             y_seizure=1
             y_early=0
+
+        fs = eeg_data.sample_rate
+
+        # preprocessing
+        data = eeg_data.eeg_data
+        params = {'fs':fs,
+          'anti_alias_cutoff': 100.,
+          'anti_alias_width': 30.,
+          'anti_alias_attenuation' : 40,
+          'elec_noise_width' :3.,
+          'elec_noise_attenuation' : 60.0,
+          'elec_noise_cutoff' : [49.,51.]}
+
+        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_seizure)
@@ -254,6 +281,20 @@ class DataLoader(object):
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
         eeg_data = eeg_data[0]
+
+        fs = eeg_data.sample_rate
+        # preprocessing
+        data = eeg_data.eeg_data
+        params = {'fs':fs,
+          'anti_alias_cutoff': 100.,
+          'anti_alias_width': 30.,
+          'anti_alias_attenuation' : 40,
+          'elec_noise_width' :3.,
+          'elec_noise_attenuation' : 60.0,
+          'elec_noise_cutoff' : [49.,51.]}
+
+
+        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         x = self.feature_extractor.extract(eeg_data)
         self.features_test.append(np.hstack(x))
 
