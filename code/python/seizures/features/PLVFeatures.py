@@ -43,6 +43,9 @@ class PLVFeatures(FeatureExtractBase):
         # features = a 1d ndarray
         return plv
 
+    def __str__(self):
+        return "PLV"
+
 
 
 

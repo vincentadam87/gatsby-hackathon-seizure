@@ -10,7 +10,10 @@ class Instance(object):
         self.latency = latency
         #2d array of #channels x time 
         self.eeg_data = eeg_data
+        # Two attribute names were inconsistently used. For backward
+        # compatibility,  use both for now.
         self.sample_rate = sample_rate
+        self.sampling_rate = sample_rate
         self.number_of_channels = number_of_channels
 
 
@@ -35,5 +38,6 @@ class Instance(object):
             new_eeg_data.eeg_data[channel_index, :] = np.mean(self.eeg_data[channel_index, :].reshape(-1, subsampling_intervals), 1)
 
         new_eeg_data.sampling_rate = new_sampling_rate
+        new_eeg_data.sample_rate = new_sampling_rate
 
         return new_eeg_data
