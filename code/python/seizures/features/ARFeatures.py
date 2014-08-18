@@ -23,6 +23,9 @@ class ARFeatures(FeatureExtractBase):
         # features = a 1d ndarray 
         return features
 
+    def __str__(self):
+        return "AR"
+
 # ----- end of ARFeatures ------------
 
 class VarLagsARFeatures(FeatureExtractBase):
@@ -52,7 +55,7 @@ class VarLagsARFeatures(FeatureExtractBase):
         return features
 
     def __str__(self):
-        return 'LagsAR' + '(%d)'% (self.lags)
+        return 'VLAR' + '(%d)'% (self.lags)
 
 
 

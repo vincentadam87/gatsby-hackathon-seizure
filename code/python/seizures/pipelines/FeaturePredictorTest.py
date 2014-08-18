@@ -11,8 +11,13 @@ from seizures.Global import Global
 from seizures.data.DataLoader_v2 import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
+from seizures.data.SubjectEEGData import SubjectEEGData
 from abc import abstractmethod
+from sklearn import cross_validation
+from seizures.preprocessing import preprocessing
 import numpy as np
+
+from IPython.core.debugger import Tracer
 
 class FeaturePredictorTestBase(object):
     """
@@ -97,7 +102,6 @@ class CVFeaturePredictorTester(FeaturePredictorTestBase):
         self._patient = patient
         self._data_path = data_path
 
-    @abstractmethod
     def test_combination(self, fold=3, max_segments=-1):
         """
         Test the predictor using features given by feature_extractor 
@@ -135,8 +139,6 @@ class CVFeaturePredictorTester(FeaturePredictorTestBase):
         r['feature_extractor'] = self._feature_extractor
         # total features extracted. X_i is n x d
         r['total_features'] = X_list[0].shape[1]
-        r['clips_folder'] = self._data_path
-        r['patient'] = self._patient 
         r['cv_fold'] = fold
         r['seizure_mean_auc'] = np.mean(result_seizure)
         r['seizure_std_auc'] = np.std(result_seizure)
@@ -166,7 +168,40 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
         self._patient = patient
         self._data_path = data_path
 
-    @abstractmethod
+    @staticmethod 
+    def test_all_combinations(features, feature_extractors, predictors):
+        """
+        features is a list [(X_seizure, y_seizure, X_early, y_early)] where each element 
+        in the tuple is itself a list of length = fold containing data in each 
+        CV fold
+
+        return an instance of FeaturesPredictsTable
+        """
+        # these loops can be parallelized.
+        # !! Can be improved !!
+        L = []
+        for i, feature_extractor in enumerate(feature_extractors):
+            feature_list = []
+            X_seizure, y_seizure, X_early, y_early = features[i]
+            for j, predictor in enumerate(predictors):
+                print 'Evaluating feat: %s + pred: %s on seizure task'%(str(feature_extractor), str(predictor) )
+                result_seizure = XValidation.evaluate(X_seizure, y_seizure, predictor, evaluation=auc)
+                print 'Evaluating feat: %s + pred: %s on early seizure task'%(str(feature_extractor), str(predictor) )
+                result_early = XValidation.evaluate(X_early, y_early, predictor, evaluation=auc)
+                r = {}
+                r['predictor'] = predictor
+                r['feature_extractor'] = feature_extractor
+                # total features extracted. X_i is n x d
+                r['total_features'] = X_early[0].shape[1]
+                r['cv_fold'] = len(X_early)
+                r['seizure_mean_auc'] = np.mean(result_seizure)
+                r['seizure_std_auc'] = np.std(result_seizure)
+                r['early_mean_auc'] = np.mean(result_early)
+                r['early_std_auc'] = np.std(result_early)
+                feature_list.append(r)
+            L.append(feature_list)
+        return FeaturesPredictsTable(L)
+
     def test_combination(self, fold=3, max_segments=-1):
         """
         Test the predictors using features given by each feature_extractor 
@@ -177,38 +212,18 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
         will be randomly subsampled without replacement. 
 
         return: an instance of FeaturesPredictsTable         """
-        L = []
         # preload data and extract features 
         features = [] # list of feature tuples. list length = len(self._feature_extractors)
         for i, feature_extractor in enumerate(self._feature_extractors):
             loader = DataLoader(self._data_path, feature_extractor)
             X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(
                 self._patient, fold, max_segments)
-            features.append( (X_list, y_seizure, y_early) )
+            features.append( (X_list, y_seizure, X_list, y_early) )
 
-        # these loops can be parallelized.
-        # !! Can be improved !!
-        for i, feature_extractor in enumerate(self._feature_extractors):
-            feature_list = []
-            X_list, y_seizure, y_early = features[i]
-            for j, predictor in enumerate(self._predictors):
-                result_seizure = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
-                result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
-                r = {}
-                r['predictor'] = predictor
-                r['feature_extractor'] = feature_extractor
-                # total features extracted. X_i is n x d
-                r['total_features'] = X_list[0].shape[1]
-                r['clips_folder'] = self._data_path
-                r['patient'] = self._patient 
-                r['cv_fold'] = fold
-                r['seizure_mean_auc'] = np.mean(result_seizure)
-                r['seizure_std_auc'] = np.std(result_seizure)
-                r['early_mean_auc'] = np.mean(result_early)
-                r['early_std_auc'] = np.std(result_early)
-                feature_list.append(r)
-            L.append(feature_list)
-        return FeaturesPredictsTable(L)
+        T = CVFeaturesPredictorsTester.test_all_combinations(features, 
+                self._feature_extractors, self._predictors)
+        return T
+
 
 class FeaturesPredictsTable(object):
     """
@@ -245,10 +260,12 @@ class FeaturesPredictsTable(object):
         predictors_strs = [str(rep['predictor']) for rep in L[0]]
         extractor_strs = [str(l[0]['feature_extractor']) for l in L]
         # see https://code.google.com/p/prettytable/wiki/Tutorial
-        T = PrettyTable([''] + predictors_strs)
+        T = PrettyTable(['feat. \ pred.'] + predictors_strs)
         T.padding_width = 1 # One space between column edges and contents (default)
         for i, feature_extractor in enumerate(extractor_strs):
             predictors_values = [r[attribute] for r in L[i]]
+            if isinstance(predictors_values[0], float):
+                predictors_values = ['%.3g'%v for v in predictors_values]
             extractor_col = extractor_strs[i]
             T.add_row([extractor_col] + predictors_values )
 
@@ -260,5 +277,99 @@ class FeaturesPredictsTable(object):
 
     def __str__(self):
         self.print_ascii_table('seizure_mean_auc')
+
+
+class CachedCVFeaPredTester(FeaturePredictorTestBase):
+    """
+    An implementation of FeaturesPredictorsTestBase which test 
+    by cross validation the given predictors using features from each 
+    feature_extractor on the patient data. Cache loaded raw data so that 
+    loading is done only once. 
+
+    @author: Wittawat 
+    """
+
+    def __init__(self, feature_extractors, predictors, patient, 
+            data_path=Global.path_map('clips_folder')):
+
+        assert(type(feature_extractors)==type([]))
+        assert(type(predictors)==type([]))
+        assert(isinstance(patient, basestring))
+        self._feature_extractors = feature_extractors
+        self._predictors = predictors
+        self._patient = patient
+        self._data_path = data_path
+
+
+    def test_combination(self, fold=3, max_segments=-1):
+        """
+        Test the predictors using features given by each feature_extractor 
+        in feature_extractors on the data specified by the patient argument.
+
+        :param max_segments: maximum segments to load. -1 to use the number of 
+        total segments available. Otherwise, all segments (ictal and interictal)
+        will be randomly subsampled without replacement. 
+
+        return: an instance of FeaturesPredictsTable         """
+
+        loader = SubjectEEGData(self._patient, self._data_path, use_cache=True, 
+                max_train_segments=max_segments)
+
+        # a list of (Instance, y_seizure, y_early)'s
+        train_data = loader.get_train_data()
+        fs = train_data[0][0].sample_rate
+
+        # preprocessing. 
+        params = {'fs':fs,
+          'anti_alias_cutoff': 100.,
+          'anti_alias_width': 30.,
+          'anti_alias_attenuation' : 40,
+          'elec_noise_width' :3.,
+          'elec_noise_attenuation' : 60.0,
+          'elec_noise_cutoff' : [49.,51.]}
+        # list of preprocessed tuples 
+        for (x, y_seizure, y_early) in train_data:
+            x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params) 
+
+        # pre-extract features 
+        features = [] # list of feature tuples. list length = len(self._feature_extractors)
+        Y_seizure = np.array([y_seizure for (x, y_seizure, y_early) in train_data])
+        Y_early = np.array([y_early for (x, y_seizure, y_early) in train_data])
+        skf_seizure = cross_validation.StratifiedKFold(Y_seizure, n_folds=fold)
+        skf_early = cross_validation.StratifiedKFold(Y_early, n_folds=fold)
+        for i, feature_extractor in enumerate(self._feature_extractors):
+            print 'Extracting features with %s'%str(feature_extractor)
+            Xlist = [feature_extractor.extract(x) for  (x, y_seizure, y_early) 
+                    in train_data]
+            #Tracer()()
+            # Xlist = list of ndarray's
+            n = len(Xlist)
+            d = len(Xlist[0])
+            #d = Xlist[0].shape[0]
+            # make 2d numpy array
+            X = np.zeros((n, d))
+            for i in xrange(len(Xlist)):
+                X[i, :] = Xlist[i].T
+
+            # chunk data for cross validation
+            # construct a list of 2d numpy arrays to be fed to XValidation
+            # tr_I = train index, te_I = test index
+            X_seizure = []
+            y_seizure = []
+
+            #Tracer()()
+            for tr_I, te_I in skf_seizure:
+                X_seizure.append(X[tr_I, :])
+                y_seizure.append(Y_seizure[tr_I])
+            X_early = []
+            y_early = []
+            for tr_I, te_I in skf_early:
+                X_early.append(X[tr_I, :])
+                y_early.append(Y_early[tr_I])
+            features.append( (X_seizure, y_seizure, X_early, y_early) )
+
+        T = CVFeaturesPredictorsTester.test_all_combinations(features, 
+                self._feature_extractors, self._predictors)
+        return T
 
 
