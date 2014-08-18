@@ -2,7 +2,7 @@ import glob
 from os.path import join
 import os;
 from seizures.data.EEGData import EEGData
-from seizures.code.preprocessing import preprocess_multichannel_data
+from seizures.preprocessing import preprocessing
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -248,8 +248,19 @@ class DataLoader(object):
             y_seizure=1
             y_early=0
 
-        fs = eeg_data.sampling_rate
-        eeg_data = preprocess_multichannel_data(eeg_data,fs)
+        fs = eeg_data.sample_rate
+
+        # preprocessing
+        data = eeg_data.eeg_data
+        params = {'fs':fs,
+          'anti_alias_cutoff': 100.,
+          'anti_alias_width': 30.,
+          'anti_alias_attenuation' : 40,
+          'elec_noise_width' :3.,
+          'elec_noise_attenuation' : 60.0,
+          'elec_noise_cutoff' : [49.,51.]}
+        
+        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_seizure)
