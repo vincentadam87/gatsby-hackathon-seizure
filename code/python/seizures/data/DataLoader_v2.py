@@ -104,7 +104,7 @@ class DataLoader(object):
             self.files = files
 
         for i, filename in enumerate(self.files):
-            print i/len(self.files)*100.," percent complete         \r",
+            print float(i)/float(len(self.files))*100.," percent complete         \r",
             # Each call of _load_data_from_file appends data to features_train 
             # features_test lists depending on the (type) variable. 
             # It also appends data to type_labels and early_labels.
