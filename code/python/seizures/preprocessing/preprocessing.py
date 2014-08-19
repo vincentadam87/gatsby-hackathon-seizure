@@ -33,16 +33,19 @@ def downsample(matrix,params):
     :return: downsampled data; downsample to dogfrequency but maximum downsampling rate set to 8  
     """
     fs = int(params['fs'])
-    dograte = 400
-    dsfactor = int(fs/dograte) #should come out to 1, i.e. no downsampling for dogs
+    targetrate = int(params['targetrate'])
+    dsfactor = max(1,int(fs/targetrate)) #should come out to 1, i.e. no downsampling for dogs
     #print 'dsfactor calculated =', dsfactor
-    maxdsfactor = int(8)
+    #maxdsfactor = int(8)
 
-    if dsfactor > maxdsfactor:
-        dsfactor = maxdsfactor
+    #if dsfactor > maxdsfactor:
+    #   dsfactor = maxdsfactor
     #print 'dsfactor used =', dsfactor
-
-    ds_matrix = decimate(matrix,dsfactor,axis=1)
+    if dsfactor>1:
+        ds_matrix = decimate(matrix,dsfactor,axis=1)
+        return ds_matrix, float(fs/dsfactor)
+    else:
+        return matrix, float(fs)
 
     #ds_list=[]
     #for i in range(matrix.shape[0]):
@@ -51,7 +54,7 @@ def downsample(matrix,params):
     #    ds_list.append(ds_x)
     #ds_matrix = np.asarray(ds_list)
 
-    return ds_matrix, float(fs/dsfactor)
+
 
 def remove_dc(x):
     #print x.shape
@@ -139,7 +142,11 @@ def anti_alias_filter(x,params):
     width = params['anti_alias_width']
     attenuation = params['anti_alias_attenuation']
 
-    f = build_filter(fs,cutoff,width,attenuation)
-    f = np.expand_dims(f,axis=0)
-    filtered_x = convolve2d(x,f,mode='same') # NB: mode='same' cuts beginning & end
-    return filtered_x
+    if (cutoff==None) or (cutoff>=fs/2.):
+        return x
+    else:
+        f = build_filter(fs,cutoff,width,attenuation)
+        f = np.expand_dims(f,axis=0)
+        filtered_x = convolve2d(x,f,mode='same') # NB: mode='same' cuts beginning & end
+        return filtered_x
+
