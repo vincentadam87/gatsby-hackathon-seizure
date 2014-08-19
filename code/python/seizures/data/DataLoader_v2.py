@@ -52,7 +52,7 @@ class DataLoader(object):
           'elec_noise_width' :3.,
           'elec_noise_attenuation' : 60.0,
           'elec_noise_cutoff' : [59.,61.],
-          'targetrate':1000}
+          'targetrate':400}
 
     def load_data(self, patient_name, type='training', max_segments=-1,preprocess=True):
         """
@@ -135,7 +135,7 @@ class DataLoader(object):
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels), np.array(self.early_labels)
 
-    def blocks_for_Xvalidation(self, patient_name,n_fold =3, max_segments=-1,preprocess=True):
+    def blocks_for_Xvalidation(self, patient_name,n_fold =5, max_segments=-1,preprocess=True):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
@@ -162,9 +162,15 @@ class DataLoader(object):
         assert(np.sum(y2)>n_fold)
         # do blocks for labels=1 and labels=0 separetaly and merge at the end
         # the aim is to always have both labels in each train/test sets
-        Iy2_1 = np.where(y2==1)[0].tolist()
-        Iy2_0 = np.where(y2==0)[0].tolist()
-        assert(np.sum(Iy2_1)>n_fold)
+        Iy_11 = np.where([(y1[i]==1) and (y2[i]==1) for i in range(len(y1))])[0].tolist()
+        Iy_10 = np.where([(y1[i]==1) and (y2[i]==0) for i in range(len(y1))])[0].tolist()
+        Iy_00 = np.where([(y1[i]==0) and (y2[i]==0) for i in range(len(y1))])[0].tolist()
+        #Iy_10 = np.where((y1==1) and (y2==0))[0].tolist()
+        #Iy_00 = np.where((y1==0) and (y2==0))[0].tolist()
+
+        assert(np.sum(Iy_10)>n_fold)
+        assert(np.sum(Iy_11)>n_fold)
+        assert(np.sum(Iy_00)>n_fold)
 
         def chunks(l, n_block):
             """ Yield n_block blocks.
@@ -177,12 +183,16 @@ class DataLoader(object):
                 else:
                     yield l[i*m:(i+1)*m]
 
-        Iy2_1_list = list(chunks(Iy2_1, n_fold))
-        Iy2_0_list = list(chunks(Iy2_0, n_fold))
+        Iy_11_list = list(chunks(Iy_11, n_fold))
+        Iy_10_list = list(chunks(Iy_10, n_fold))
+        Iy_00_list = list(chunks(Iy_00, n_fold))
+
         #print len(Iy2_1_list)
-        assert(len(Iy2_0_list)==n_fold)
-        assert(len(Iy2_1_list)==n_fold)
-        Iy2 = [Iy2_1_list[i]+Iy2_0_list[i] for i in range(n_fold)]
+        assert(len(Iy_11_list)==n_fold)
+        assert(len(Iy_10_list)==n_fold)
+        assert(len(Iy_00_list)==n_fold)
+
+        Iy2 = [Iy_11_list[i]+Iy_10_list[i]+Iy_00_list[i] for i in range(n_fold)]
 
 
         y1p = [ y1[Iy2[i]] for i in range(n_fold)]
@@ -191,7 +201,7 @@ class DataLoader(object):
 
         return Xp,y1p,y2p
 
-    def test_data(self, patient_name, max_segments=-1):
+    def test_data(self, patient_name, max_segments=-1,preprocess=True):
         """
         returns features as a matrix of 1D np.ndarray
         :rtype : numpy 2D ndarray
@@ -201,7 +211,7 @@ class DataLoader(object):
         will be randomly subsampled without replacement. 
         """
         print "\nLoading test data for " + patient_name
-        self.load_data(patient_name, type='test', max_segments=max_segments)
+        self.load_data(patient_name, type='test', max_segments=max_segments,preprocess=preprocess)
         return self._merge_vectors_into_matrix(self.features_test)
 
 
