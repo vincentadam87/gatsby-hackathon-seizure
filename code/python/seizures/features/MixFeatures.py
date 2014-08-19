@@ -5,6 +5,9 @@ from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.RandomFeatures import RandomFeatures
 from seizures.features.XCHUHFeatures import XCHUHFeatures
+from seizures.features.SEFeatures import SEFeatures
+from seizures.features.LyapunovFeatures import LyapunovFeatures
+
 
 class MixFeatures(FeatureExtractBase):
     """
@@ -24,7 +27,9 @@ class MixFeatures(FeatureExtractBase):
         feature_class_dict = {"ARFeatures":ARFeatures,
                               "FFTFeatures":FFTFeatures,
                               "PLVFeatures":PLVFeatures,
-                              "RandomFeatures":RandomFeatures}
+                              "RandomFeatures":RandomFeatures,
+                              "SEFeatures":SEFeatures,
+                              "LyapunovFeatures":LyapunovFeatures}
         extracted_features_list = []
         for feature_string in self.features_list:
             if feature_string['name'] in feature_class_dict:
