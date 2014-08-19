@@ -68,7 +68,7 @@ class SubmissionFile():
         
     def generate_submission(self, predictor_seizure, predictor_early,
                             feature_extractor, output_fname="output.csv",
-                            test_filenames=None):
+                            test_filenames=None, preprocess=True):
         """
         Generates a submission file for a given pair of predictors, which will
         be trained on all training data per patient/dog instance.
@@ -97,7 +97,7 @@ class SubmissionFile():
 
             loader = DataLoader(self.data_path, feature_extractor)
             # X_train is n x d
-            X_train,y_seizure, y_early = loader.training_data(patient)
+            X_train,y_seizure, y_early = loader.training_data(patient,preprocess=preprocess)
 
             print X_train.shape
             print y_seizure.shape
@@ -125,7 +125,7 @@ class SubmissionFile():
             # now predict on all test points
             loader = DataLoader(self.data_path, feature_extractor)
             # X_test: n x d matrix
-            X_test = loader.test_data(patient)
+            X_test = loader.test_data(patient,preprocess=preprocess)
             test_fnames_patient = loader.files
 
             for ifname in range(len(test_fnames_patient)):
