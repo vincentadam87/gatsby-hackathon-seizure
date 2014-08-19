@@ -30,7 +30,9 @@ class SEFeatures(FeatureExtractBase):
         I = range(time)
         fmax = 100.
         If = [i for i in I if freqs[i]*fs <fmax] # indices of freq below X Hz
-        L = len(If)/10 # cutting spectrum in homogenous bands
+
+        NBAND = 40
+        L = len(If)/min(NBAND,len(If)) # cutting spectrum in homogenous bands
         edges = If[0::L] # bands of length L
         bands = [range(edges[i],edges[i+1]) for i in range(len(edges)-1) ]
         n_band = len(bands)
