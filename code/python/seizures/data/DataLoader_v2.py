@@ -286,12 +286,12 @@ class DataLoader(object):
         # preprocessing
         data = eeg_data.eeg_data
         params = {'fs':fs,
-          'anti_alias_cutoff': 100.,
+          'anti_alias_cutoff': 150.,
           'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 40,
+          'anti_alias_attenuation' : 30,
           'elec_noise_width' :3.,
           'elec_noise_attenuation' : 60.0,
-          'elec_noise_cutoff' : [49.,51.]}
+          'elec_noise_cutoff' : [59.,61.]}
 
 
         eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
