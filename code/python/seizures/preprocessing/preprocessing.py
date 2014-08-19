@@ -34,7 +34,7 @@ def downsample(matrix,params):
     """
     fs = int(params['fs'])
     dograte = 400
-    dsfactor = fs/dograte #should come out to 1, i.e. no downsampling for dogs
+    dsfactor = int(fs/dograte) #should come out to 1, i.e. no downsampling for dogs
     #print 'dsfactor calculated =', dsfactor
     maxdsfactor = int(8)
 
