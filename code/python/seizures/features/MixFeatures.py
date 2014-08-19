@@ -7,8 +7,9 @@ from seizures.features.RandomFeatures import RandomFeatures
 from seizures.features.XCHUHFeatures import XCHUHFeatures
 from seizures.features.SEFeatures import SEFeatures
 from seizures.features.LyapunovFeatures import LyapunovFeatures
+from seizures.features.StatsFeatures import StatsFeatures
 
-
+StatsFeatures
 class MixFeatures(FeatureExtractBase):
     """
     Class to concatenate output of individual feature classes.
@@ -29,7 +30,9 @@ class MixFeatures(FeatureExtractBase):
                               "PLVFeatures":PLVFeatures,
                               "RandomFeatures":RandomFeatures,
                               "SEFeatures":SEFeatures,
-                              "LyapunovFeatures":LyapunovFeatures}
+                              "LyapunovFeatures":LyapunovFeatures,
+                              "StatsFeatures":StatsFeatures}
+
         extracted_features_list = []
         for feature_string in self.features_list:
             if feature_string['name'] in feature_class_dict:

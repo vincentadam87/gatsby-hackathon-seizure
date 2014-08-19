@@ -21,34 +21,33 @@ class LyapunovFeatures(FeatureExtractBase):
         pass
 
     def extract(self, instance):
-        series = instance.eeg_data.T
-        n_ch, N = data.shape
+        series = instance.eeg_data
+        n_ch, N = series.shape
 
-         
-    def d(series,a,b):
-        an=series[:,a]/numpy.linalg.norm(series[:,a])
-        bn=series[:,b]/numpy.linalg.norm(series[:,b])
-        eps=numpy.linalg.norm(an-bn)
-        return eps
-    
-    eps=0.1;
-    dlist=[[] for i in range(N)]
-    n=0 
-    for i in range(N-1):
-        for j in range(i+1,N-1):
-            if d(series,i,j) < eps:
-                n+=1
-                x=min(N-i,N-j)
-                if x == 5:
-                    x=4
-                for k in range(min(5,x)):
-                    dlist[k].append(log(d(series,i+k,j+k)))
-    Lyapfeat = [[] for i in range(5)]                
-    for i in range(len(dlist)):
-        if len(dlist[i]):
-            Lyapfeat[i].append(sum(dlist[i])/len(dlist[i]))
+        def d(series,a,b):
+            #print a,b,series.shape
+            an=series[:,a]/np.linalg.norm(series[:,a])
+            bn=series[:,b]/np.linalg.norm(series[:,b])
+            eps=np.linalg.norm(an-bn)
+            return eps
+
+        eps=0.2
+        dlist=[[] for i in range(5)]
+
+        for i in range(N-1):
+            for j in range(i+1,N):
+                if d(series,i,j) < eps:
+                    x=min(N-i,N-j)
+                    for k in range(min(5,x)):
+                        dlist[k].append(log(d(series,i+k,j+k)))
+
+        #features = [[] for i in range(5)]
+        features = np.zeros((5,))
+        for i in range(len(dlist)):
+            if len(dlist[i]):
+                features[i]=np.mean(dlist[i])
 
 
-    Lyapfeat=np.asarray(Lyapfeat)
-    
-    return Lyapfeat
+        Lyapfeatures=np.asarray(features)
+
+        return np.hstack(Lyapfeatures)
