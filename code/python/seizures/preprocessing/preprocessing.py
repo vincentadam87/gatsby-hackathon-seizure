@@ -12,11 +12,10 @@ def preprocess_multichannel_data(matrix,params):
 
     authors: Lea and Vincent
     """
-
-
     assert(type(matrix)==np.ndarray)
-
-    matrix = downsample(matrix,params)
+    #print 'downsample...'
+    matrix,fs = downsample(matrix,params)
+    params['fs']=fs # update sampling rate
     #print 'initial ', matrix.shape
     matrix = remove_elec_noise(matrix,params)
     #print 'elec noise ', matrix.shape
@@ -33,9 +32,9 @@ def downsample(matrix,params):
     :param params: takes in sampling frequency fs from params dict
     :return: downsampled data; downsample to dogfrequency but maximum downsampling rate set to 8  
     """
-
+    fs = int(params['fs'])
     dograte = 400
-    dsfactor = params/dograte #should come out to 1, i.e. no downsampling for dogs
+    dsfactor = fs/dograte #should come out to 1, i.e. no downsampling for dogs
     #print 'dsfactor calculated =', dsfactor
     maxdsfactor = int(8)
 
@@ -43,16 +42,16 @@ def downsample(matrix,params):
         dsfactor = maxdsfactor
     #print 'dsfactor used =', dsfactor
 
-    ds_list=[]
+    ds_matrix = decimate(matrix,dsfactor,axis=1)
 
-    for i in range(matrix.shape[0]):
-        x = matrix[i,:]
-        ds_x = decimate(x, dsfactor)
-        ds_list.append(ds_x)
+    #ds_list=[]
+    #for i in range(matrix.shape[0]):
+    #    x = matrix[i,:]
+    #    ds_x = decimate(x, dsfactor)
+    #    ds_list.append(ds_x)
+    #ds_matrix = np.asarray(ds_list)
 
-    ds_matrix = np.asarray(ds_list)
-
-    return ds_matrix
+    return ds_matrix, float(fs/dsfactor)
 
 def remove_dc(x):
     #print x.shape
