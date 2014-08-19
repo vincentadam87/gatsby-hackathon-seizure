@@ -46,8 +46,15 @@ class DataLoader(object):
         # list of file names in base_dir directory
         self.files = None
         self.files_nopath = None
+        self.params = { 'anti_alias_cutoff': 500.,
+          'anti_alias_width': 30.,
+          'anti_alias_attenuation' : 40,
+          'elec_noise_width' :3.,
+          'elec_noise_attenuation' : 60.0,
+          'elec_noise_cutoff' : [59.,61.],
+          'targetrate':1000}
 
-    def load_data(self, patient_name, type='training', max_segments=-1):
+    def load_data(self, patient_name, type='training', max_segments=-1,preprocess=True):
         """
         Loads data for a patient and a type of data into class variables
         No output
@@ -65,6 +72,8 @@ class DataLoader(object):
         # reorder files so as to mix a bit interictal and ictal (to fasten
         # debug I crop the files to its early entries)
         print 'Load with extractor = %s'% (str(self.feature_extractor))
+        print 'Load with params = %s'% (str(self.params))
+
         random.seed(0)
         if type == 'training':
             files_interictal = [f for f in files if f.find("_interictal_") >= 0 ]
@@ -108,10 +117,10 @@ class DataLoader(object):
             # Each call of _load_data_from_file appends data to features_train 
             # features_test lists depending on the (type) variable. 
             # It also appends data to type_labels and early_labels.
-            self._load_data_from_file(patient_name, filename)
+            self._load_data_from_file(patient_name, filename,preprocess=preprocess)
         print "\ndone"
 
-    def training_data(self, patient_name, max_segments=-1):
+    def training_data(self, patient_name, max_segments=-1,preprocess=True):
         """
         returns features as a matrix of 1D np.ndarray
         returns classification vectors as 1D np.ndarrays
@@ -122,11 +131,11 @@ class DataLoader(object):
         :return: feature matrix and labels
         """
         print "\nLoading train data for " + patient_name
-        self.load_data(patient_name, type='training', max_segments=max_segments)
+        self.load_data(patient_name, type='training', max_segments=max_segments,preprocess=preprocess)
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels), np.array(self.early_labels)
 
-    def blocks_for_Xvalidation(self, patient_name,n_fold =3, max_segments=-1):
+    def blocks_for_Xvalidation(self, patient_name,n_fold =3, max_segments=-1,preprocess=True):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
@@ -147,7 +156,7 @@ class DataLoader(object):
         :return: feature matrix and labels
         """
         # y1 = type_labels,  y2 = early_labels
-        X,y1,y2 = self.training_data(patient_name, max_segments=max_segments)
+        X,y1,y2 = self.training_data(patient_name, max_segments=max_segments,preprocess=preprocess)
         n = len(y1)
 
         assert(np.sum(y2)>n_fold)
@@ -217,15 +226,15 @@ class DataLoader(object):
         return files
 
 
-    def _load_data_from_file(self, patient, filename):
+    def _load_data_from_file(self, patient, filename, preprocess=True):
         if filename.find('test') != -1:
             # if filename is a test segment
-            self._load_test_data_from_file(patient, filename)
+            self._load_test_data_from_file(patient, filename,preprocess=preprocess)
         else:
-            self._load_training_data_from_file(patient, filename)
+            self._load_training_data_from_file(patient, filename,preprocess=preprocess)
 
 
-    def _load_training_data_from_file(self, patient, filename):
+    def _load_training_data_from_file(self, patient, filename, preprocess=True):
         """
         Loading single file training data
         :param patient:
@@ -254,21 +263,19 @@ class DataLoader(object):
 
         # preprocessing
         data = eeg_data.eeg_data
-        params = {'fs':fs,
-          'anti_alias_cutoff': 100.,
-          'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 40,
-          'elec_noise_width' :3.,
-          'elec_noise_attenuation' : 60.0,
-          'elec_noise_cutoff' : [49.,51.]}
 
-        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+        params = self.params
+        params['fs']=fs
+        ### comment if no preprocessing
+        if preprocess==True:
+            eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+        ###
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_seizure)
         self.early_labels.append(y_early)
 
-    def _load_test_data_from_file(self, patient, filename):
+    def _load_test_data_from_file(self, patient, filename, preprocess=True):
         """
         Loading single file test data
         :param patient:
@@ -285,16 +292,13 @@ class DataLoader(object):
         fs = eeg_data.sample_rate
         # preprocessing
         data = eeg_data.eeg_data
-        params = {'fs':fs,
-          'anti_alias_cutoff': 150.,
-          'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 30,
-          'elec_noise_width' :3.,
-          'elec_noise_attenuation' : 60.0,
-          'elec_noise_cutoff' : [59.,61.]}
 
+        params = self.params
+        params['fs']=fs
 
-        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+        ### comment if no preprocessing
+        if preprocess==True:
+            eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         x = self.feature_extractor.extract(eeg_data)
         self.features_test.append(np.hstack(x))
 
