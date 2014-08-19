@@ -24,13 +24,17 @@ if __name__ == '__main__':
     if len(sys.argv)>3:
         feature_list = eval(sys.argv[3])
     else:
-        feature_list = [{'name':"ARFeatures",'args':{}}]
+        feature_list = [{'name':"ARFeatures",'args':{}},{'name':"PLVFeatures",'args':{}},{'name':'SEFeatures','args':{}},{'name':"StatsFeatures",'args':{}}]
+        #[{'name':"ARFeatures",'args':{}}]
+
 
     print '---------'
     print 'argv1: ' + output_fname
     print 'argv2: ' + patients
     print 'argv3: '
     print feature_list
+
+    preprocess=True
 
     predictor_seizure = ForestPredictor()
     predictor_early = ForestPredictor()
@@ -50,4 +54,4 @@ if __name__ == '__main__':
     
     submission = SubmissionFile(data_path,patients=patients)
     submission.generate_submission(predictor_seizure, predictor_early,
-                            feature_extractor, test_filenames=test_files,output_fname = output_fname)
+                            feature_extractor, test_filenames=test_files,output_fname = output_fname,preprocess=preprocess)
