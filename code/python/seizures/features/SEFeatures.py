@@ -43,4 +43,7 @@ class SEFeatures(FeatureExtractBase):
             i_band+=1
         return np.hstack(features)
 
+    def __str__(self):
+        return "SE"
+
 

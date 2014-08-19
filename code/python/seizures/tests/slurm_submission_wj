@@ -9,7 +9,7 @@ do
 cat > script$guy << EOF
 #!/bin/bash -f
 #SBATCH -n1 --time=40:00:00 --mem-per-cpu=1gb
-#SBATCH -J bafa_pf
+#SBATCH -J wj_hackathon
 
 cd /nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/code/python/seizures/tests/
 python submission_wj.py "$guy" "$guy" 
