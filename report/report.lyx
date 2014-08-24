@@ -82,7 +82,7 @@ https://www.kaggle.com/wiki/WinningModelDocumentationTemplate
 
 \end_inset
 
-
+ also see the best practice link
 \end_layout
 
 \begin_layout Section
@@ -141,7 +141,15 @@ Method
 
 \begin_layout Standard
 We proceeded in 3 steps from the raw signal to the classification output:
- preprocessing, feature extraction, classification
+ preprocessing, feature extraction, classification.
+ Our approach follows closely that of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mirowski2008comparing"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -149,14 +157,95 @@ Preprocessing
 \end_layout
 
 \begin_layout Standard
-Signal was downsampled to the divisor of the initial sampling rate the closest
- to 
-\begin_inset Formula $500Hz$
+Signal was downsampled to the divisor of the initial sampling rate 
+\begin_inset Formula $f_{s}$
+\end_inset
+
+ the closest to the target sampling rate 
+\begin_inset Formula $f_{s}^{target}=500Hz$
 \end_inset
 
 .
- Electrical noise was then removed [TODO].
- Signal was finally low pass filtered [TODO].
+ Electrical noise was then removed.
+ Signal was finally low pass filtered.
+\end_layout
+
+\begin_layout Subsubsection
+Downsampling
+\end_layout
+
+\begin_layout Standard
+We downsampled each signal by integer factor 
+\begin_inset Formula $k=\lfloor f_{s}/f_{s}^{target}\rfloor$
+\end_inset
+
+.
+ This step consists in a low pass filtering followed by downsampling
+\end_layout
+
+\begin_layout Subsubsection
+Bandpass filtering
+\end_layout
+
+\begin_layout Standard
+Electrical noise was removed using a kaiser filter that achieves the following
+ properties
+\end_layout
+
+\begin_layout Itemize
+cutoff frequencies : 
+\begin_inset Formula $\left[59Hz,61Hz\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+width: 
+\begin_inset Formula $3Hz$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+attenuation in band: 
+\begin_inset Formula $60dB$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Low pass filtering
+\end_layout
+
+\begin_layout Standard
+Finally a kaiser low pass filter was applied with following properties
+\end_layout
+
+\begin_layout Itemize
+cutoff: 
+\begin_inset Formula $500Hz$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+width: 
+\begin_inset Formula $30Hz$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+attenuation: 
+\begin_inset Formula $40Hz$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -176,16 +265,111 @@ Single channel feature
 Spectral energy
 \end_layout
 
+\begin_layout Standard
+Spectral energy (squared modulus of fourier transform) was computed.
+ Energy below 
+\begin_inset Formula $f_{max}=100Hz$
+\end_inset
+
+ was averged into 
+\begin_inset Formula $N_{bands}$
+\end_inset
+
+ contiguous bands of spectral width 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\lfloor f_{max}/N_{bands}\rfloor$
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsubsection
 Multiple channel features
 \end_layout
 
 \begin_layout Itemize
-Fitted parameters of vector autoregressive models
+Fitted parameters of vector autoregressive models 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lutkepohl2005new"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Signal was assumed to be generated from a vector autoregressive model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x_{t}=\sum_{\tau=1}^{2}A_{\tau}x_{t-\tau}+\epsilon_{t}$
+\end_inset
+
+, where 
+\begin_inset Formula $\epsilon\sim\mathcal{N}(0,Q)$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
-Phase Locking value for pairs of signal
+Phase Locking value for pairs of signal 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lachaux1999measuring"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For each channel 
+\begin_inset Formula $i$
+\end_inset
+
+, we extract the phase 
+\begin_inset Formula $\phi_{i}^{a}$
+\end_inset
+
+ of analytical signal 
+\begin_inset Formula $x_{i}^{a}$
+\end_inset
+
+ of time series 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ 
+\begin_inset Newline newline
+\end_inset
+
+For each pair 
+\begin_inset Formula $(i,j)$
+\end_inset
+
+ of channels, we compute the modulus of the time averaged phase difference
+ mapped onto the unit circle
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $PLV_{ij}=\left|\frac{1}{N}\sum_{t}e^{i(\phi_{i}^{a}-\phi_{j}^{a})}\right|$
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -201,6 +385,12 @@ We tested two classification methods.
 Support vector machine
 \end_layout
 
+\begin_layout Standard
+This classification method finds the maximum margin classifier of the data
+ in an infinite dimensional feature space (the reproducing kernel hilbert
+ space of the gaussian kernel).
+\end_layout
+
 \begin_layout Subsubsection
 Random forest
 \end_layout
@@ -211,6 +401,37 @@ Results
 
 \begin_layout Section
 Discussion
+\end_layout
+
+\begin_layout Section
+Software
+\end_layout
+
+\begin_layout Standard
+All mathematical analyses were executed using the following Python libraries
+\end_layout
+
+\begin_layout Itemize
+statsmodels (Vector Autoregressive model fitting)
+\end_layout
+
+\begin_layout Itemize
+scikit.learn 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "scikit-learn"
+
+\end_inset
+
+ (svm, random forest, cross-validation)
+\end_layout
+
+\begin_layout Itemize
+scipy.signal (signal filtering, downsampling)
+\end_layout
+
+\begin_layout Itemize
+numpy (fourier transform)
 \end_layout
 
 \begin_layout Section
