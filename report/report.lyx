@@ -84,12 +84,16 @@ Julian Serban, Matthieu Louis
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 Although we didn't win, this winner template is a good guide
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 \begin_inset Flex URL
-status open
+status collapsed
 
 \begin_layout Plain Layout
 
@@ -99,6 +103,36 @@ https://www.kaggle.com/wiki/WinningModelDocumentationTemplate
 \end_inset
 
  also see the best practice link
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Section*
+TODO
+\end_layout
+
+\begin_layout Itemize
+make proper existing and used feature list
+\end_layout
+
+\begin_layout Itemize
+motivate used feature and add reference 
+\end_layout
+
+\begin_layout Itemize
+Describe code structure
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -197,11 +231,13 @@ Signal was downsampled to the divisor of the initial sampling rate
 \end_inset
 
  the closest to the target sampling rate 
-\begin_inset Formula $f_{s}^{target}=500Hz$
+\begin_inset Formula $f_{s}^{target}$
 \end_inset
 
 .
- Electrical noise was then removed.
+ The aim was to reduce dimensionality to speedup feature extraction with
+ minimal loss of information.
+ Electrical noise (United States) was then removed.
  Signal was finally low pass filtered.
 \end_layout
 
@@ -223,32 +259,20 @@ Bandpass filtering
 \end_layout
 
 \begin_layout Standard
-Electrical noise was removed using a kaiser filter that achieves the following
- properties
-\end_layout
-
-\begin_layout Itemize
-cutoff frequencies : 
-\begin_inset Formula $\left[59Hz,61Hz\right]$
+Electrical noise was removed using a kaiser filter with following parameterizati
+on: cutoff frequencies : 
+\begin_inset Formula $\left[f_{low}^{BP},f_{high}^{BP}\right]$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Itemize
-width: 
-\begin_inset Formula $3Hz$
+, width: 
+\begin_inset Formula $w^{BP}$
 \end_inset
 
-
-\end_layout
-
-\begin_layout Itemize
-attenuation in band: 
-\begin_inset Formula $60dB$
+, attenuation in band: 
+\begin_inset Formula $\rho^{BP}$
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Subsubsection
@@ -256,28 +280,33 @@ Low pass filtering
 \end_layout
 
 \begin_layout Standard
-Finally a kaiser low pass filter was applied with following properties
-\end_layout
+Finally a kaiser low pass filter was applied with the following parameterization
+: cutoff: 
+\begin_inset Formula $f_{c}^{LP}$
+\end_inset
 
-\begin_layout Itemize
-cutoff: 
-\begin_inset Formula $500Hz$
+, width: 
+\begin_inset Formula $w^{LP}$
+\end_inset
+
+, attenuation: 
+\begin_inset Formula $\rho^{LP}$
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-width: 
-\begin_inset Formula $30Hz$
-\end_inset
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
 
 
+\backslash
+medskip
 \end_layout
 
-\begin_layout Itemize
-attenuation: 
-\begin_inset Formula $40Hz$
 \end_inset
 
 
@@ -300,9 +329,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="3">
+<lyxtabular version="3" rows="11" columns="2">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
@@ -311,15 +339,6 @@ status open
 
 \begin_layout Plain Layout
 Name
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Description 
 \end_layout
 
 \end_inset
@@ -344,15 +363,6 @@ Downsampling
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -369,14 +379,21 @@ Downsampling
 
 \begin_layout Plain Layout
 Target sampling rate 
-\end_layout
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
 
+\begin_inset Formula $f_{s}^{target}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -386,6 +403,21 @@ Target sampling rate
 \begin_inset Text
 
 \begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $500Hz$
+\end_inset
+
 
 \end_layout
 
@@ -402,15 +434,6 @@ Electrical noise removal
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -426,15 +449,10 @@ Electrical noise removal
 \begin_inset Text
 
 \begin_layout Plain Layout
-band cutoff
-\end_layout
-
+band cutoff 
+\begin_inset Formula $\left[f_{low}^{BP},f_{high}^{BP}\right]$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -444,6 +462,9 @@ band cutoff
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $\left[59Hz,61Hz\right]$
+\end_inset
+
 
 \end_layout
 
@@ -455,15 +476,10 @@ band cutoff
 \begin_inset Text
 
 \begin_layout Plain Layout
-width of filter band
-\end_layout
-
+width of filter band 
+\begin_inset Formula $w^{BP}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -473,6 +489,9 @@ width of filter band
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $3Hz$
+\end_inset
+
 
 \end_layout
 
@@ -484,15 +503,10 @@ width of filter band
 \begin_inset Text
 
 \begin_layout Plain Layout
-attenuation in band
-\end_layout
-
+attenuation in band 
+\begin_inset Formula $\rho^{BP}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -502,6 +516,9 @@ attenuation in band
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $60dB$
+\end_inset
+
 
 \end_layout
 
@@ -518,15 +535,6 @@ Low pass filtering
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -542,15 +550,10 @@ Low pass filtering
 \begin_inset Text
 
 \begin_layout Plain Layout
-cutoff
-\end_layout
-
+cutoff 
+\begin_inset Formula $f_{c}^{LP}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -560,6 +563,9 @@ cutoff
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $500Hz$
+\end_inset
+
 
 \end_layout
 
@@ -571,15 +577,10 @@ cutoff
 \begin_inset Text
 
 \begin_layout Plain Layout
-width of filter
-\end_layout
-
+width of filter 
+\begin_inset Formula $w^{LP}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -589,6 +590,9 @@ width of filter
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $30Hz$
+\end_inset
+
 
 \end_layout
 
@@ -600,15 +604,10 @@ width of filter
 \begin_inset Text
 
 \begin_layout Plain Layout
-attenuation in band
-\end_layout
-
+attenuation in band 
+\begin_inset Formula $\rho^{LP}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -618,6 +617,9 @@ attenuation in band
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $60dB$
+\end_inset
+
 
 \end_layout
 
@@ -661,7 +663,7 @@ Spectral energy
 \begin_layout Standard
 Spectral energy (squared modulus of fourier transform) was computed.
  Energy below 
-\begin_inset Formula $f_{max}=100Hz$
+\begin_inset Formula $f_{max}$
 \end_inset
 
  was averged into 
@@ -766,6 +768,22 @@ For each pair
 \end_layout
 
 \begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+medskip
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 \begin_inset Box Frameless
 position "t"
 hor_pos "c"
@@ -782,9 +800,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="3">
+<lyxtabular version="3" rows="6" columns="2">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
@@ -793,15 +810,6 @@ status open
 
 \begin_layout Plain Layout
 Name
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Description 
 \end_layout
 
 \end_inset
@@ -826,15 +834,6 @@ Spectral Energy
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -851,14 +850,9 @@ Spectral Energy
 
 \begin_layout Plain Layout
 max frequency 
-\end_layout
-
+\begin_inset Formula $f_{max}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -868,6 +862,9 @@ max frequency
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $100Hz$
+\end_inset
+
 
 \end_layout
 
@@ -879,15 +876,10 @@ max frequency
 \begin_inset Text
 
 \begin_layout Plain Layout
-number of bands
-\end_layout
-
+number of bands 
+\begin_inset Formula $N_{bands}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -897,6 +889,9 @@ number of bands
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $40$
+\end_inset
+
 
 \end_layout
 
@@ -908,16 +903,7 @@ number of bands
 \begin_inset Text
 
 \begin_layout Plain Layout
-Vector autoregressive modem
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
+Vector autoregressive model
 \end_layout
 
 \end_inset
@@ -937,15 +923,10 @@ Vector autoregressive modem
 \begin_inset Text
 
 \begin_layout Plain Layout
-lag
-\end_layout
-
+lag 
+\begin_inset Formula $\tau$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -955,6 +936,9 @@ lag
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $2$
+\end_inset
+
 
 \end_layout
 
@@ -1013,9 +997,8 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="3">
+<lyxtabular version="3" rows="6" columns="2">
 <features tabularvalignment="middle">
-<column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
 <row>
@@ -1024,15 +1007,6 @@ status open
 
 \begin_layout Plain Layout
 Name
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Description 
 \end_layout
 
 \end_inset
@@ -1057,15 +1031,6 @@ Support vector machine
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -1081,15 +1046,10 @@ Support vector machine
 \begin_inset Text
 
 \begin_layout Plain Layout
-Gaussian kernel width
-\end_layout
-
+Gaussian kernel width 
+\begin_inset Formula $\sigma_{svm}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -1099,7 +1059,7 @@ Gaussian kernel width
 \begin_inset Text
 
 \begin_layout Plain Layout
-
+?
 \end_layout
 
 \end_inset
@@ -1110,15 +1070,10 @@ Gaussian kernel width
 \begin_inset Text
 
 \begin_layout Plain Layout
-misclassification penalty
-\end_layout
-
+misclassification penalty 
+\begin_inset Formula $C$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -1128,6 +1083,9 @@ misclassification penalty
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
 
 \end_layout
 
@@ -1144,15 +1102,6 @@ Random forest
 
 \end_inset
 </cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
 <cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
 \begin_inset Text
 
@@ -1168,15 +1117,10 @@ Random forest
 \begin_inset Text
 
 \begin_layout Plain Layout
-number of trees
-\end_layout
-
+number of trees 
+\begin_inset Formula $N_{trees}$
 \end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
-\begin_inset Text
 
-\begin_layout Plain Layout
 
 \end_layout
 
@@ -1186,6 +1130,9 @@ number of trees
 \begin_inset Text
 
 \begin_layout Plain Layout
+\begin_inset Formula $100$
+\end_inset
+
 
 \end_layout
 
@@ -1241,6 +1188,109 @@ scipy.signal (signal filtering, downsampling)
 
 \begin_layout Itemize
 numpy (fourier transform)
+\end_layout
+
+\begin_layout Subsection
+Code Structure
+\end_layout
+
+\begin_layout Itemize
+Classes
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Feature Class and wrapper
+\end_layout
+
+\begin_layout Itemize
+Predictor Class
+\end_layout
+
+\begin_layout Itemize
+Data Loader Class
+\end_layout
+
+\begin_layout Itemize
+Xvalidation Class
+\end_layout
+
+\begin_layout Itemize
+Submission Class
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Modules
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Preprocessing module
+\end_layout
+
+\end_deeper
+\begin_layout Section*
+Remarks & additional info
+\end_layout
+
+\begin_layout Standard
+Unexplored features and existing literature
+\end_layout
+
+\begin_layout Itemize
+Phase dynamics 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "daly2014exploration"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+cross power spectrum 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "krusienski2012value"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+mixture of features for classification 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "valderrama2012identifying,laurent2010source"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Spatial feature? 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "shoeb2010application"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Directional coupling (connectivity based) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gomez2008measuring,billinger2014scot"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
