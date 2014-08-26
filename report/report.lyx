@@ -105,6 +105,15 @@ https://www.kaggle.com/wiki/WinningModelDocumentationTemplate
  also see the best practice link
 \end_layout
 
+\begin_layout Plain Layout
+Link to winner's solution
+\begin_inset Newline newline
+\end_inset
+
+Also check forum for other user's solution: https://www.kaggle.com/c/seizure-detec
+tion/forums/t/10111/required-model-documentation-and-code
+\end_layout
+
 \end_inset
 
 
@@ -128,6 +137,11 @@ motivate used feature and add reference
 
 \begin_layout Itemize
 Describe code structure
+\end_layout
+
+\begin_layout Itemize
+Have a flow chart diagram of processing (makes things easy to understand).
+ preprocess --> feature --> classification
 \end_layout
 
 \end_inset
@@ -1236,6 +1250,17 @@ Remarks & additional info
 
 \begin_layout Standard
 Unexplored features and existing literature
+\end_layout
+
+\begin_layout Itemize
+Correlation features 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schindler2007assessing"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Itemize
