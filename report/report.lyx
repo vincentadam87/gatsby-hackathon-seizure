@@ -223,6 +223,20 @@ Method
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Interesting book to read: EEG Signal Processing (Saeid and Cambers).
+ Describes eeg generation and analysis
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
 We proceeded in 3 steps from the raw signal to the classification output:
  preprocessing, feature extraction, classification.
  Our approach follows closely that of 
