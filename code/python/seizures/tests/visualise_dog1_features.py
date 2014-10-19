@@ -5,7 +5,7 @@ Created on 28 Jun 2014
 '''
 import matplotlib.pyplot as plt
 import numpy as np
-from seizures.data.DataLoader import DataLoader
+from seizures.data.DataLoader_v2 import DataLoader
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.Global import Global
 
