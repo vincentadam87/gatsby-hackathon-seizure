@@ -252,8 +252,6 @@ class DataLoader(object):
         if preprocess==True:
             eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         ###
-        print eeg_data
-        print eeg_data.eeg_data.shape
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_interictal)

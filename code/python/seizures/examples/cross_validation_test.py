@@ -12,7 +12,7 @@ from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.FeatureExtractBase import FeatureExtractBase
-from seizures.features.MixFeatures import MixFeatures
+from seizures.features.MixFeatures import MixFeatures, StackFeatures
 from seizures.features.SEFeatures import SEFeatures
 
 from seizures.features.StatsFeatures import StatsFeatures
@@ -105,7 +105,12 @@ def main():
     #feature_extractor = PLVFeatures()
     #feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}},{'name':"ARFeatures",'args':{}}])
     #feature_extractor = ARFeatures()
-    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},{'name':"PLVFeatures",'args':{}},{'name':'SEFeatures','args':{}}])
+    feature1 = ARFeatures()
+    feature2 = PLVFeatures()
+    feature3 = SEFeatures()
+    feature_extractor = StackFeatures(feature1,feature2,feature3)
+
+    #feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},{'name':"PLVFeatures",'args':{}},{'name':'SEFeatures','args':{}}])
     #feature_extractor = SEFeatures()
     #feature_extractor = LyapunovFeatures()
 
