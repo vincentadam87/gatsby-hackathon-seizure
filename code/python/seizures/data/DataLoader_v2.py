@@ -32,14 +32,8 @@ class DataLoader(object):
         self.feature_extractor = feature_extractor
         # patient_name = e.g., Dog_1
         self.patient_name = None
-        # type_labels = a list of {0, 1}. Indicators of a seizure (1 for seizure).
+        # type_labels = a list of {0, 1}. Indicators of a preictal (1 for preictal).
         self.type_labels = None
-        # early_labels = a list of {0, 1}. Indicators of an early seizure 
-        # (1 for an early seizure).
-        self.early_labels = None
-        # a list of numpy arrays. Each element is from feature_extractor.extract()
-        # The length of the list is the number of time steps in the data segment 
-        # specified by patient_name. 
         self.features_train = None
         # a list of numpy arrays. Each element is from feature_extractor.extract()
         self.features_test = None
@@ -76,20 +70,20 @@ class DataLoader(object):
 
         random.seed(0)
         if type == 'training':
-            files_interictal = [f for f in files if f.find("_interictal_") >= 0 ]
+            files_interictal = [f for f in files if f.find("interictal_") >= 0 ]
             random.shuffle(files_interictal)
             print '%d interictal segments for %s'%(len(files_interictal), patient_name)
-            files_ictal = [f for f in files if f.find("_ictal_") >= 0]
-            random.shuffle(files_ictal)
-            print '%d ictal segments for %s'%(len(files_ictal), patient_name)
+            files_preictal = [f for f in files if f.find("preictal_") >= 0]
+            random.shuffle(files_preictal)
+            print '%d preictal segments for %s'%(len(files_preictal), patient_name)
 
             files = []
-            # The following loop just interleaves ictal and interictal segments
+            # The following loop just interleaves preictal and interictal segments
             # so that we have 
-            #[ictal_segment1, interictal_segment1, ictal_segment2, ...]
-            for i in range(max(len(files_ictal), len(files_interictal))):
-                if i < len(files_ictal):
-                    files.append(files_ictal[i])
+            #[preictal_segment1, interictal_segment1, preictal_segment2, ...]
+            for i in range(max(len(files_preictal), len(files_interictal))):
+                if i < len(files_preictal):
+                    files.append(files_preictal[i])
                 if i < len(files_interictal):
                     files.append(files_interictal[i])
 
@@ -98,7 +92,7 @@ class DataLoader(object):
         #I = range(len(files))
 
         if type == 'training':
-            total_segments = len(files_interictal) + len(files_ictal)
+            total_segments = len(files_interictal) + len(files_preictal)
         else:
             total_segments = len(files)
 
@@ -133,7 +127,7 @@ class DataLoader(object):
         print "\nLoading train data for " + patient_name
         self.load_data(patient_name, type='training', max_segments=max_segments,preprocess=preprocess)
         X = self._merge_vectors_into_matrix(self.features_train)
-        return X, np.array(self.type_labels), np.array(self.early_labels)
+        return X, np.array(self.type_labels)
 
     def blocks_for_Xvalidation(self, patient_name,n_fold =5, max_segments=-1,preprocess=True):
         """
@@ -148,29 +142,20 @@ class DataLoader(object):
         returns
         - a list of 2D ndarrays of features
         - a list of 1D ndarrays of type_labels
-        - a list of 1D ndarrays of early_labels
-        All the lists have length = n_fold. 
+        All the lists have length = n_fold.
         These outputs can be used with XValidation.
 
         :param patient_name:
         :return: feature matrix and labels
         """
         # y1 = type_labels,  y2 = early_labels
-        X,y1,y2 = self.training_data(patient_name, max_segments=max_segments,preprocess=preprocess)
+        X,y1 = self.training_data(patient_name, max_segments=max_segments,preprocess=preprocess)
         n = len(y1)
-
-        assert(np.sum(y2)>n_fold)
+        assert(np.sum(y1)>n_fold)
         # do blocks for labels=1 and labels=0 separetaly and merge at the end
         # the aim is to always have both labels in each train/test sets
-        Iy_11 = np.where([(y1[i]==1) and (y2[i]==1) for i in range(len(y1))])[0].tolist()
-        Iy_10 = np.where([(y1[i]==1) and (y2[i]==0) for i in range(len(y1))])[0].tolist()
-        Iy_00 = np.where([(y1[i]==0) and (y2[i]==0) for i in range(len(y1))])[0].tolist()
-        #Iy_10 = np.where((y1==1) and (y2==0))[0].tolist()
-        #Iy_00 = np.where((y1==0) and (y2==0))[0].tolist()
-
-        assert(np.sum(Iy_10)>n_fold)
-        assert(np.sum(Iy_11)>n_fold)
-        assert(np.sum(Iy_00)>n_fold)
+        Iy_1 = np.where([(y1[i]==1) for i in range(len(y1))])[0].tolist()
+        Iy_0 = np.where([(y1[i]==0) for i in range(len(y1))])[0].tolist()
 
         def chunks(l, n_block):
             """ Yield n_block blocks.
@@ -183,23 +168,17 @@ class DataLoader(object):
                 else:
                     yield l[i*m:(i+1)*m]
 
-        Iy_11_list = list(chunks(Iy_11, n_fold))
-        Iy_10_list = list(chunks(Iy_10, n_fold))
-        Iy_00_list = list(chunks(Iy_00, n_fold))
+        Iy_1_list = list(chunks(Iy_1, n_fold))
+        Iy_0_list = list(chunks(Iy_0, n_fold))
 
-        #print len(Iy2_1_list)
-        assert(len(Iy_11_list)==n_fold)
-        assert(len(Iy_10_list)==n_fold)
-        assert(len(Iy_00_list)==n_fold)
+        assert(len(Iy_1_list)==n_fold)
 
-        Iy2 = [Iy_11_list[i]+Iy_10_list[i]+Iy_00_list[i] for i in range(n_fold)]
+        Iy = [Iy_1_list[i]+Iy_0_list[i] for i in range(n_fold)]
 
+        y1p = [ y1[Iy[i]] for i in range(n_fold)]
+        Xp = [ X[Iy[i],:] for i in range(n_fold)]
 
-        y1p = [ y1[Iy2[i]] for i in range(n_fold)]
-        y2p = [ y2[Iy2[i]] for i in range(n_fold)]
-        Xp = [ X[Iy2[i],:] for i in range(n_fold)]
-
-        return Xp,y1p,y2p
+        return Xp,y1p
 
     def test_data(self, patient_name, max_segments=-1,preprocess=True):
         """
@@ -218,7 +197,6 @@ class DataLoader(object):
     def _reset_lists(self):
         self.episode_matrices = []
         self.type_labels = []
-        self.early_labels = []
 
     def _get_files_for_patient(self, type="training"):
         assert (type in ["test", "training"])
@@ -228,7 +206,6 @@ class DataLoader(object):
 
         elif type == "test":
             self.features_test = []
-            self.early_labels = []
             self.type_labels = []
             files = glob.glob(join(self.base_dir, self.patient_name + '/*test*'))
         # files_nopath = [os.path.basename(x) for x in files]
@@ -260,14 +237,9 @@ class DataLoader(object):
 
         eeg_data = eeg_data[0]
         if filename.find('interictal') > -1:
-            y_seizure=0
-            y_early=0
-        elif eeg_data.latency < 15:
-            y_seizure=1
-            y_early=1
+            y_interictal = 1
         else:
-            y_seizure=1
-            y_early=0
+            y_interictal = 0
 
         fs = eeg_data.sample_rate
 
@@ -282,8 +254,7 @@ class DataLoader(object):
         ###
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
-        self.type_labels.append(y_seizure)
-        self.early_labels.append(y_early)
+        self.type_labels.append(y_interictal)
 
     def _load_test_data_from_file(self, patient, filename, preprocess=True):
         """
@@ -327,5 +298,5 @@ class DataLoader(object):
     def labels(self, patient):
         # Wittawat: Why do we need patient argument ? 
         assert (self.patient_name == patient)
-        return self.type_labels, self.early_labels
+        return self.type_labels
 
