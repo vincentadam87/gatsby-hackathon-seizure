@@ -25,7 +25,9 @@ from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.ARFeatures import ARFeatures
-from seizures.features.MixFeatures import MixFeatures
+from seizures.features.SEFeatures import SEFeatures
+
+from seizures.features.MixFeatures import MixFeatures, StackFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.Global import Global
@@ -51,7 +53,10 @@ def test_predictor(predictor_cls, patient_name='Dog_1'):
 
 #    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},
 #                                     {'name':"FFTFeatures",'args':FFTFeatures_args}])
-    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
+
+    feature1 = ARFeatures()
+    feature2 = SEFeatures()
+    feature_extractor = StackFeatures(feature1, feature2)
 #    feature_extractor = MixFeatures([{'name':"FFTFeatures",'args':FFTFeatures_args}])
     #feature_extractor = ARFeatures()
 
