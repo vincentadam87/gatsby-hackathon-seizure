@@ -62,7 +62,13 @@ class SubjectEEGData(object):
         # early_labels = a list of {0, 1}. Indicators of an early seizure 
         # (1 for an early seizure).
         self.early_labels = None
-
+        self.params = { 'anti_alias_cutoff': 500.,
+            'anti_alias_width': 30.,
+            'anti_alias_attenuation' : 40,
+            'elec_noise_width' :3.,
+            'elec_noise_attenuation' : 60.0,
+            'elec_noise_cutoff' : [59.,61.],
+            'targetrate':500}
     def get_train_data(self):
         """
         Loads training data for the patient data. 
@@ -102,7 +108,7 @@ class SubjectEEGData(object):
             for i, filename in enumerate(loaded_train_fnames):
                 print float(i)/len(loaded_train_fnames)*100.," percent complete         \r",
                 # y_seizure, y_early are binary
-                tr_instance, y_seizure, y_early = SubjectEEGData.load_train_data_from_file(patient_name, filename)
+                tr_instance, y_seizure, y_early = SubjectEEGData.load_train_data_from_file(patient_name, filename,self.params)
                 train_data.append( (tr_instance, y_seizure, y_early) )
             print "\ndone"
             loaded_train_data = train_data
@@ -133,7 +139,7 @@ class SubjectEEGData(object):
             test_data = []
             for i, filename in enumerate(loaded_test_fnames):
                 print float(i)/len(patient_test_file_list)*100.," percent complete         \r",
-                te_instance = SubjectEEGData.load_test_data_from_file(patient_name, filename)
+                te_instance = SubjectEEGData.load_test_data_from_file(patient_name, filename,self.params)
                 test_data.append(te_instance)
             print "\ndone"
             loaded_test_data = test_data
@@ -154,7 +160,7 @@ class SubjectEEGData(object):
 
     #### static methods  ###
     @staticmethod
-    def load_train_data_from_file(patient_name, filename):
+    def load_train_data_from_file(patient_name, filename,params=None):
         """
         Loading single file training data
         filename: full path to .mat file 
@@ -183,19 +189,14 @@ class SubjectEEGData(object):
 
         # preprocessing
         data = eeg_data.eeg_data
-        params = {'fs':fs,
-          'anti_alias_cutoff': 100.,
-          'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 40,
-          'elec_noise_width' :3.,
-          'elec_noise_attenuation' : 60.0,
-          'elec_noise_cutoff' : [49.,51.]}
+        params['fs']=fs
 
-        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+
+        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data, params)
         return (eeg_data, y_seizure, y_early)
 
     @staticmethod
-    def load_test_data_from_file(patient_name, filename):
+    def load_test_data_from_file(patient_name, filename,params=None):
         """
         Loading single file test data
         :return: EEG data Instance (no labels returned)
@@ -208,6 +209,8 @@ class SubjectEEGData(object):
         # an Instance
         eeg_data = eeg_data[0]
         fs = eeg_data.sample_rate
+        data = eeg_data.eeg_data
+        params['fs']=fs
 
         eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         return eeg_data

@@ -13,15 +13,24 @@ from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.features.MixFeatures import MixFeatures
+from seizures.features.SEFeatures import SEFeatures
+
+from seizures.features.StatsFeatures import StatsFeatures
+
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.ARFeatures import ARFeatures
+from seizures.features.LyapunovFeatures import LyapunovFeatures
 
 from seizures.prediction.ForestPredictor import ForestPredictor
+from seizures.prediction.SVMPredictor import SVMPredictor
+
+from seizures.prediction.XtraTreesPredictor import XtraTreesPredictor
+
 from seizures.Global import Global
 from sklearn.cross_validation import train_test_split
 
 
-def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1"):
+def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1",preprocess=True):
     """
     Single patient cross validation
     Returns 2 lists of cross validation performances
@@ -37,7 +46,7 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     base_dir = '/nfs/data3/kaggle_seizure/clips/'
     loader = DataLoader(base_dir, feature_extractor)
 
-    X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(patient_name)
+    X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(patient_name,preprocess=preprocess)
     #X_train,y_seizure, y_early = loader.training_data(patient_name)
     #y_train = [y_seizure,y_early]
     #X_list,y_list = train_test_split(X_train,y_train)
@@ -55,7 +64,7 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     return result_seizure,result_early
 
 
-def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
+def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1'],preprocess=True):
     ''' Runs cross validation for given predictor class and feature instance on the given list of patients
         INPUT:
         - predictor_cls: a Predictor class (implement)
@@ -67,7 +76,7 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1']):
     results_seizure = []
     results_early = []
     for patient_name in patients_list:
-        result_seizure, result_early = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name)
+        result_seizure, result_early = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name, preprocess=preprocess)
         results_seizure.append(result_seizure)
         results_early.append(result_early)
 
@@ -90,17 +99,29 @@ def main():
 
     # There are Dog_[1-4] and Patient_[1-8]
     patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
-    patients_list = ["Dog_%d" % i for i in [1]] + ["Patient_%d" % i for i in range(1, 9)]
+    patients_list =  ["Dog_%d" % i for i in [1]]  #["Patient_%d" % i for i in range(1, 9)]#++
  
     #feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
     #feature_extractor = PLVFeatures()
-    feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}},{'name':"ARFeatures",'args':{}}])
+    #feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}},{'name':"ARFeatures",'args':{}}])
     #feature_extractor = ARFeatures()
-    #feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}}])
+    feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},{'name':"PLVFeatures",'args':{}},{'name':'SEFeatures','args':{}}])
+    #feature_extractor = SEFeatures()
+    #feature_extractor = LyapunovFeatures()
 
-    predictor = ForestPredictor
-    print "ForestPredictor"
-    Xval_on_patients(predictor,feature_extractor, patients_list)
+    #feature_extractor = StatsFeatures()
+
+    preprocess = True
+    predictor = SVMPredictor
+    #predictor = XtraTreesPredictor
+
+    if preprocess==True:
+        print 'Preprocessing ON'
+    else:
+        print 'Preprocessing OFF'
+
+    print 'predictor: ',predictor
+    Xval_on_patients(predictor,feature_extractor, patients_list,preprocess=preprocess)
 
 if __name__ == '__main__':
     main()

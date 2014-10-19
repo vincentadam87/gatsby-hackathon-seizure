@@ -290,7 +290,7 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
     """
 
     def __init__(self, feature_extractors, predictors, patient, 
-            data_path=Global.path_map('clips_folder')):
+            data_path=Global.path_map('clips_folder'),params=None):
 
         assert(type(feature_extractors)==type([]))
         assert(type(predictors)==type([]))
@@ -299,7 +299,7 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
         self._predictors = predictors
         self._patient = patient
         self._data_path = data_path
-
+        self.params = params
 
     def test_combination(self, fold=3, max_segments=-1):
         """
@@ -320,16 +320,24 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
         fs = train_data[0][0].sample_rate
 
         # preprocessing. 
-        params = {'fs':fs,
-          'anti_alias_cutoff': 100.,
-          'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 40,
-          'elec_noise_width' :3.,
-          'elec_noise_attenuation' : 60.0,
-          'elec_noise_cutoff' : [49.,51.]}
-        # list of preprocessed tuples 
-        for (x, y_seizure, y_early) in train_data:
-            x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params) 
+        #params = {'fs':fs,
+        #  'anti_alias_cutoff': 100.,
+        ##  'anti_alias_width': 30.,
+        #  'anti_alias_attenuation' : 40,
+        #  'elec_noise_width' :3.,
+        #  'elec_noise_attenuation' : 60.0,
+        #  'elec_noise_cutoff' : [49.,51.]}
+        # list of preprocessed tuples
+        params = self.params
+        params['fs']=fs
+#        for (x, y_seizure, y_early) in train_data:
+#            x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, self.params)
+
+        #train_data2 = []
+        #for (x, y_seizure, y_early) in train_data:
+        #    x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
+        #    train_data2.append(((x, y_seizure, y_early)))
+        #train_data =train_data2
 
         # pre-extract features 
         features = [] # list of feature tuples. list length = len(self._feature_extractors)
@@ -338,17 +346,31 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
         skf_seizure = cross_validation.StratifiedKFold(Y_seizure, n_folds=fold)
         skf_early = cross_validation.StratifiedKFold(Y_early, n_folds=fold)
         for i, feature_extractor in enumerate(self._feature_extractors):
-            print 'Extracting features with %s'%str(feature_extractor)
-            Xlist = [feature_extractor.extract(x) for  (x, y_seizure, y_early) 
-                    in train_data]
+            #print 'Extracting features with %s'%str(feature_extractor)
+            #Xlist = [feature_extractor.extract(x) for  (x, y_seizure, y_early)
+            #        in train_data]
+            Xlist = []
+            for (x, y_seizure, y_early) in train_data:
+                #print '---------'
+                #print x.eeg_data.shape
+                params['fs']=x.sample_rate
+                x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
+                feat =feature_extractor.extract(x)
+                #print x.eeg_data.shape
+                #print feat.shape
+                Xlist.append(feat)
             #Tracer()()
             # Xlist = list of ndarray's
+            #print len(Xlist), Xlist[0].shape,len(Xlist[0])
             n = len(Xlist)
-            d = len(Xlist[0])
-            #d = Xlist[0].shape[0]
+            #d = len(Xlist[0])
+            d = Xlist[0].shape[0]
             # make 2d numpy array
+            #print n,d
             X = np.zeros((n, d))
+            #print X.shape
             for i in xrange(len(Xlist)):
+                #print Xlist[i].shape, X[i, :].shape
                 X[i, :] = Xlist[i].T
 
             # chunk data for cross validation
