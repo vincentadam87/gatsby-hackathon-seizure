@@ -61,7 +61,6 @@ class SubjectEEGData(object):
         self.type_labels = None
         # early_labels = a list of {0, 1}. Indicators of an early seizure 
         # (1 for an early seizure).
-        self.early_labels = None
         self.params = { 'anti_alias_cutoff': 500.,
             'anti_alias_width': 30.,
             'anti_alias_attenuation' : 40,
@@ -81,25 +80,25 @@ class SubjectEEGData(object):
             # debug I crop the files to its early entries)
             random.seed(0)
             files_interictal = [f for f in patient_train_file_list if f.find("_interictal_") >= 0 ]
-            files_ictal = [f for f in patient_train_file_list if f.find("_ictal_") >= 0]
+            files_preictal = [f for f in patient_train_file_list if f.find("_preictal_") >= 0]
             print '%d interictal segments for %s'%(len(files_interictal), patient_name)
-            print '%d ictal segments for %s'%(len(files_ictal), patient_name)
+            print '%d preictal segments for %s'%(len(files_preictal), patient_name)
 
             # randomly shuffle lists 
             random.shuffle(files_interictal)
-            random.shuffle(files_ictal)
+            random.shuffle(files_preictal)
 
             patient_train_file_list = []
             # The following loop just interleaves ictal and interictal segments
             # so that we have 
             #[ictal_segment1, interictal_segment1, ictal_segment2, ...]
-            for i in range(max(len(files_ictal), len(files_interictal))):
-                if i < len(files_ictal):
-                    patient_train_file_list.append(files_ictal[i])
+            for i in range(max(len(files_preictal), len(files_interictal))):
+                if i < len(files_preictal):
+                    patient_train_file_list.append(files_preictal[i])
                 if i < len(files_interictal):
                     patient_train_file_list.append(files_interictal[i])
 
-            total_segments = len(files_interictal) + len(files_ictal)
+            total_segments = len(files_interictal) + len(files_preictal)
             subsegments = min(self.max_train_segments, total_segments)
             print 'subsampling from %d segments to %d'% (total_segments, subsegments)
             loaded_train_fnames = patient_train_file_list[0:subsegments]
@@ -107,9 +106,9 @@ class SubjectEEGData(object):
             train_data = []
             for i, filename in enumerate(loaded_train_fnames):
                 print float(i)/len(loaded_train_fnames)*100.," percent complete         \r",
-                # y_seizure, y_early are binary
-                tr_instance, y_seizure, y_early = SubjectEEGData.load_train_data_from_file(patient_name, filename,self.params)
-                train_data.append( (tr_instance, y_seizure, y_early) )
+                # y_seizure is binary
+                tr_instance, y_interictal = SubjectEEGData.load_train_data_from_file(patient_name, filename,self.params)
+                train_data.append( (tr_instance, y_interictal) )
             print "\ndone"
             loaded_train_data = train_data
 
@@ -177,26 +176,21 @@ class SubjectEEGData(object):
         # determine labels based on filename
         if filename.find('interictal') > -1:
             y_seizure=0
-            y_early=0
-        elif eeg_data.latency < 15:
-            y_seizure=1
-            y_early=1
         else:
             y_seizure=1
-            y_early=0
 
         fs = eeg_data.sample_rate
 
         # preprocessing
         data = eeg_data.eeg_data
-        params['fs']=fs
+        params['fs'] = fs
 
 
         eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data, params)
-        return (eeg_data, y_seizure, y_early)
+        return (eeg_data, y_seizure)
 
     @staticmethod
-    def load_test_data_from_file(patient_name, filename,params=None):
+    def load_test_data_from_file(patient_name, filename, params=None):
         """
         Loading single file test data
         :return: EEG data Instance (no labels returned)
