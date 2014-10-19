@@ -8,7 +8,7 @@ import numpy as np
 import sys
 
 
-from seizures.data.DataLoader_v2 import DataLoader
+from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.FeatureExtractBase import FeatureExtractBase

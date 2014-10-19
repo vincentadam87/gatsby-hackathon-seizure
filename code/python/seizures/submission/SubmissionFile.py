@@ -1,6 +1,6 @@
 import os
 from itertools import izip
-from seizures.data.DataLoader_v2 import DataLoader
+from seizures.data.DataLoader import DataLoader
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.prediction.PredictorBase import PredictorBase
 from seizures.Global import Global
