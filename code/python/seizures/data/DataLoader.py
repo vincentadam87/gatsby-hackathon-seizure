@@ -125,11 +125,11 @@ class DataLoader(object):
         :return: feature matrix and labels
         """
         print "\nLoading train data for " + patient_name
-        self.load_data(patient_name, type='training', max_segments=max_segments,preprocess=preprocess)
+        self.load_data(patient_name, type='training', max_segments=max_segments, preprocess=preprocess)
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels)
 
-    def blocks_for_Xvalidation(self, patient_name,n_fold =5, max_segments=-1,preprocess=True):
+    def blocks_for_Xvalidation(self, patient_name, n_fold=5, max_segments=-1, preprocess=True):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
@@ -216,9 +216,9 @@ class DataLoader(object):
     def _load_data_from_file(self, patient, filename, preprocess=True):
         if filename.find('test') != -1:
             # if filename is a test segment
-            self._load_test_data_from_file(patient, filename,preprocess=preprocess)
+            self._load_test_data_from_file(patient, filename, preprocess=preprocess)
         else:
-            self._load_training_data_from_file(patient, filename,preprocess=preprocess)
+            self._load_training_data_from_file(patient, filename, preprocess=preprocess)
 
 
     def _load_training_data_from_file(self, patient, filename, preprocess=True):
@@ -241,7 +241,7 @@ class DataLoader(object):
         else:
             y_interictal = 0
 
-        fs = eeg_data.sample_rate
+        fs = eeg_data.sampling_rate
 
         # preprocessing
         data = eeg_data.eeg_data
@@ -252,6 +252,8 @@ class DataLoader(object):
         if preprocess==True:
             eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
         ###
+        print eeg_data
+        print eeg_data.eeg_data.shape
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_interictal)

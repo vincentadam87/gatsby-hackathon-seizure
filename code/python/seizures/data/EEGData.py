@@ -23,10 +23,15 @@ class EEGData(object):
         full_data = scipy.io.loadmat(path)
 
 
-        sample = full_data.keys()[0]
-        base_data = full_data[sample][0][0]  # base structure
+        samples = full_data.keys()
+        for s in samples:
+            if 'segment' in s:
+                sample = s
 
+        # base structure
+        base_data = full_data[sample][0][0]
         self.eeg_data = base_data[0]
+
         var_row = np.std(self.eeg_data, axis=1)
         idx_zero_variance = var_row == 0
         n_rows_zero_variance = np.sum(idx_zero_variance)
@@ -41,6 +46,8 @@ class EEGData(object):
         self.data_length_sec = base_data[1]
         # sampling_frequency
         self.sampling_frequency = base_data[2]
+        self.sampling_rate = self.sampling_frequency
+
         # channels
         self.channels = base_data[3]
 
@@ -62,32 +69,12 @@ class EEGData(object):
             endIndex = path[startIndex:].find("_")
             self.patient_id = path[startIndex:startIndex+endIndex]
 
-    def get_time_channel_slice(self, channels=None, low_minute=None, high_minute=None):
-        if not channels:
-            channels = np.arange(self.number_of_channels)
-        else:
-            channels = np.array(channels)
-        low_minute = low_minute or self.sequence[0]
-        high_minute = high_minute or self.sequence[-1]
-        if self.sampling_rate == self.eeg_data.shape[1]:
-            sliced_data = self.eeg_data
-        else:
-            sliced_data = self.eeg_data[channels, (low_minute*10*self.sampling_rate*60):(high_minute*10*self.sampling_rate*60-1)]
-        return sliced_data
 
     def get_instances(self):
         instancesList = list()
-        if len(self.sequence) == 1:
-            sliced_data = self.get_time_channel_slice(None, self.sequence, self.sequence+1)
-            instance = Instance(self.patient_id, self.sequence, sliced_data, self.sampling_rate, self.number_of_channels)
-            instancesList.append(instance)
-        else:
-            for tensOfMinutes in self.sequence[0:-1]:
-                sliced_data = self.get_time_channel_slice(None, tensOfMinutes, tensOfMinutes+1)
-                instance = Instance(self.patient_id, tensOfMinutes, sliced_data, self.sampling_rate, self.number_of_channels)
-                instancesList.append(instance)
+        instance = Instance(self.patient_id, self.sequence, self.eeg_data, self.sampling_rate, self.number_of_channels)
+        instancesList.append(instance)
         return instancesList
-
 
 if __name__ == "__main__":
     path = '/Users/Matthieu/Dev/seizureDectectionKaggle/Dog_1_test_segment_1.mat'

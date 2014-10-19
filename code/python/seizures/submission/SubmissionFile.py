@@ -12,7 +12,7 @@ class SubmissionFile():
     @author Heiko
     """
     
-    def __init__(self, data_path,patients=None):
+    def __init__(self, data_path, patients=None):
         """
         Constructor
         
@@ -25,7 +25,6 @@ class SubmissionFile():
             raise ValueError('%s is not a directory.'%data_path)
 
         self.data_path = Global.path_map('clips_folder')
-        #self.data_path = '/nfs/data3/kaggle_seizure/clips/'
 
         if patients == None:
             self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
@@ -66,24 +65,21 @@ class SubmissionFile():
         f.close()
         return [line.rstrip('\n') for line in lines]
         
-    def generate_submission(self, predictor_seizure, predictor_early,
-                            feature_extractor, output_fname="output.csv",
+    def generate_submission(self, predictor_preictal, feature_extractor, output_fname="output.csv",
                             test_filenames=None, preprocess=True):
         """
         Generates a submission file for a given pair of predictors, which will
         be trained on all training data per patient/dog instance.
         
         Parameters:
-        predictor_seizure - Instance of PredictorBase, fixed parameters
-        predictor_early   - Instance of PredictorBase, fixed parameters
+        predictor_preictal - Instance of PredictorBase, fixed parameters
         feature_extractor - Instance of FeatureExtractBase, to extract test features
         output_fname      - Optional filename for result submission file
         test_filename     - Optional list of filenames to produce results on,
                             default is to use all
         """
         # make sure given objects are valid
-        assert(isinstance(predictor_seizure, PredictorBase))
-        assert(isinstance(predictor_early, PredictorBase))
+        assert(isinstance(predictor_preictal, PredictorBase))
         assert(isinstance(feature_extractor, FeatureExtractBase))
         
         test_filenames = SubmissionFile.get_submission_filenames()
@@ -97,24 +93,22 @@ class SubmissionFile():
 
             loader = DataLoader(self.data_path, feature_extractor)
             # X_train is n x d
-            X_train,y_seizure, y_early = loader.training_data(patient,preprocess=preprocess)
+            X_train,y_preictal  = loader.training_data(patient, preprocess=preprocess)
 
             print X_train.shape
-            print y_seizure.shape
+            print y_preictal.shape
 
             # train both models
             #print
             print "Training seizure for " + patient
-            predictor_seizure.fit(X_train, y_seizure)
-            print "Training early for " + patient
-            predictor_early.fit(X_train, y_early)
+            predictor_preictal.fit(X_train, y_preictal)
 
-            pred_seizure = predictor_seizure.predict(X_train)
-            pred_early = predictor_early.predict(X_train)
+
+            pred_preictal = predictor_preictal.predict(X_train)
             print 'Results on training data'
-            print 'seizure\tearly\tp(seizure)\tp(early)'
-            for y_1, y_2, p_1, p_2 in izip(y_seizure, y_early, pred_seizure, pred_early):
-                print '%d\t%d\t%.3f\t%.3f' % (y_1, y_2, p_1, p_2)
+            print 'preictal\tearly\tp(preictal)'
+            for y_1, p_1 in izip(y_preictal, pred_preictal):
+                print '%d\t%.3f' % (y_1, p_1)
 
             # find out filenames that correspond to patient/dog
             test_fnames_patient = []
@@ -125,25 +119,24 @@ class SubmissionFile():
             # now predict on all test points
             loader = DataLoader(self.data_path, feature_extractor)
             # X_test: n x d matrix
-            X_test = loader.test_data(patient,preprocess=preprocess)
+            X_test = loader.test_data(patient, preprocess=preprocess)
             test_fnames_patient = loader.files
 
             for ifname in range(len(test_fnames_patient)):
                 fname = test_fnames_patient[ifname]
                 # X is one instance 
-                X = X_test[ifname,:]
+                X = X_test[ifname, :]
                 # [0] to extract probability out of the ndarray
-                pred_seizure = predictor_seizure.predict(X)[0]
-                pred_early = predictor_early.predict(X)[0]
+                pred_preictal = predictor_preictal.predict(X)[0]
                 name = fname.split("/")[-1]
-                result_lines.append(",".join([name, str(pred_seizure), str(pred_early)]))
+                result_lines.append(",".join([name, str(pred_preictal)]))
 
 
             csv_fname = patient + '_' + output_fname + '.csv'
             csv_path = Global.get_child_result_folder(csv_fname)
             print "Storing results to", csv_fname
             f = open(csv_path, "w")
-            f.write("clip,seizure,early\n")
+            f.write("clip,preictal\n")
             for line in result_lines:
                 f.write(line + '\n')
             f.close()
@@ -151,5 +144,5 @@ class SubmissionFile():
             all_result_lines.append(result_lines)
 
 
-       
+
         
