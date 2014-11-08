@@ -1,0 +1,1351 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Seizure Detection Challenge
+\begin_inset Newline newline
+\end_inset
+
+The Fitzgerald team solution
+\end_layout
+
+\begin_layout Author
+Vincent Adam, Heiko Strathmann, Wittawat Jitkritum,
+\begin_inset Newline newline
+\end_inset
+
+Balaji Lakshminarayanan, Gergő Bohner, Joana Soldado Magraner,
+\begin_inset Newline newline
+\end_inset
+
+ Lea Goetz, Ben Dongsung Huh, Shaun Dowling,
+\begin_inset Newline newline
+\end_inset
+
+Julian Serban, Matthieu Louis
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Although we didn't win, this winner template is a good guide
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Flex URL
+status collapsed
+
+\begin_layout Plain Layout
+
+https://www.kaggle.com/wiki/WinningModelDocumentationTemplate
+\end_layout
+
+\end_inset
+
+ also see the best practice link
+\end_layout
+
+\begin_layout Plain Layout
+Link to winner's solution
+\begin_inset Newline newline
+\end_inset
+
+Also check forum for other user's solution: https://www.kaggle.com/c/seizure-detec
+tion/forums/t/10111/required-model-documentation-and-code
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Section*
+TODO
+\end_layout
+
+\begin_layout Itemize
+make proper existing and used feature list
+\end_layout
+
+\begin_layout Itemize
+motivate used feature and add reference 
+\end_layout
+
+\begin_layout Itemize
+Describe code structure
+\end_layout
+
+\begin_layout Itemize
+Have a flow chart diagram of processing (makes things easy to understand).
+ preprocess --> feature --> classification
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+As part of a hackathon, post-graduate students of the gatsby computational
+ neuroscience unit (UCL, London) took part in the seizure Detection Challenge
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SeizureChallengeKaggle"
+
+\end_inset
+
+ hosted by the machine learning competition organizer Kaggle.
+ We ranked 9/205 and here describe the method we used.
+\end_layout
+
+\begin_layout Section
+Data and Task
+\end_layout
+
+\begin_layout Subsection
+Data
+\end_layout
+
+\begin_layout Standard
+The data consisted in 1s long multi-channel intracranial eeg recordings
+ (segments) from 4 dogs and 8 human patients.
+ Each patient had a fixed number of implanted electrodes from which signal
+ was recorded (
+\begin_inset Formula $N_{channel}$
+\end_inset
+
+) at a fixed sampling rate 
+\begin_inset Formula $f_{s}$
+\end_inset
+
+.
+ No information was given about the localization of the electrodes.
+\end_layout
+
+\begin_layout Subsubsection
+Labels
+\end_layout
+
+\begin_layout Standard
+Training data was classified as ictal or interictal.
+ Ictal segments belonged to episodes lasting multiple second.
+ For those ictal segments, time since episode onset was given.
+\end_layout
+
+\begin_layout Subsection
+Task
+\end_layout
+
+\begin_layout Standard
+The task was to answer the following questions for each test segment:
+\end_layout
+
+\begin_layout Itemize
+is it a seizure segment?
+\end_layout
+
+\begin_layout Itemize
+is it an early seizure segment? (early being defined as time from onset
+ of seizure episode below 15sec.)
+\end_layout
+
+\begin_layout Section
+Method
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Interesting book to read: EEG Signal Processing (Saeid and Cambers).
+ Describes eeg generation and analysis
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We proceeded in 3 steps from the raw signal to the classification output:
+ preprocessing, feature extraction, classification.
+ Our approach follows closely that of 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "mirowski2008comparing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Preprocessing
+\end_layout
+
+\begin_layout Standard
+Signal was downsampled to the divisor of the initial sampling rate 
+\begin_inset Formula $f_{s}$
+\end_inset
+
+ the closest to the target sampling rate 
+\begin_inset Formula $f_{s}^{target}$
+\end_inset
+
+.
+ The aim was to reduce dimensionality to speedup feature extraction with
+ minimal loss of information.
+ Electrical noise (United States) was then removed.
+ Signal was finally low pass filtered.
+\end_layout
+
+\begin_layout Subsubsection
+Downsampling
+\end_layout
+
+\begin_layout Standard
+We downsampled each signal by integer factor 
+\begin_inset Formula $k=\lfloor f_{s}/f_{s}^{target}\rfloor$
+\end_inset
+
+.
+ This step consists in a low pass filtering followed by downsampling
+\end_layout
+
+\begin_layout Subsubsection
+Bandpass filtering
+\end_layout
+
+\begin_layout Standard
+Electrical noise was removed using a kaiser filter with following parameterizati
+on: cutoff frequencies : 
+\begin_inset Formula $\left[f_{low}^{BP},f_{high}^{BP}\right]$
+\end_inset
+
+, width: 
+\begin_inset Formula $w^{BP}$
+\end_inset
+
+, attenuation in band: 
+\begin_inset Formula $\rho^{BP}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Low pass filtering
+\end_layout
+
+\begin_layout Standard
+Finally a kaiser low pass filter was applied with the following parameterization
+: cutoff: 
+\begin_inset Formula $f_{c}^{LP}$
+\end_inset
+
+, width: 
+\begin_inset Formula $w^{LP}$
+\end_inset
+
+, attenuation: 
+\begin_inset Formula $\rho^{LP}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+medskip
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Downsampling
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Target sampling rate 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $f_{s}^{target}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $500Hz$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Electrical noise removal
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+band cutoff 
+\begin_inset Formula $\left[f_{low}^{BP},f_{high}^{BP}\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\left[59Hz,61Hz\right]$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+width of filter band 
+\begin_inset Formula $w^{BP}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3Hz$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+attenuation in band 
+\begin_inset Formula $\rho^{BP}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $60dB$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Low pass filtering
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cutoff 
+\begin_inset Formula $f_{c}^{LP}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $500Hz$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+width of filter 
+\begin_inset Formula $w^{LP}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $30Hz$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+attenuation in band 
+\begin_inset Formula $\rho^{LP}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $60dB$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Feature extraction
+\end_layout
+
+\begin_layout Standard
+We tried multiple features that can be classified as single or multichannel
+ features.
+ Single channel features are motivated from the observation that marginally,
+ statistics of signal of a single channels varies with the conditions of
+ interest.
+ Multiple channel features focus on capturing the variation of the dependence
+ between channels as conditions changes.
+\end_layout
+
+\begin_layout Subsubsection
+Single channel feature
+\end_layout
+
+\begin_layout Itemize
+Spectral energy
+\end_layout
+
+\begin_layout Standard
+Spectral energy (squared modulus of fourier transform) was computed.
+ Energy below 
+\begin_inset Formula $f_{max}$
+\end_inset
+
+ was averged into 
+\begin_inset Formula $N_{bands}$
+\end_inset
+
+ contiguous bands of spectral width 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\lfloor f_{max}/N_{bands}\rfloor$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Multiple channel features
+\end_layout
+
+\begin_layout Itemize
+Fitted parameters of vector autoregressive models 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lutkepohl2005new"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Signal was assumed to be generated from a vector autoregressive model
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $x_{t}=\sum_{\tau=1}^{2}A_{\tau}x_{t-\tau}+\epsilon_{t}$
+\end_inset
+
+, where 
+\begin_inset Formula $\epsilon\sim\mathcal{N}(0,Q)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Phase Locking value for pairs of signal 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lachaux1999measuring"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For each channel 
+\begin_inset Formula $i$
+\end_inset
+
+, we extract the phase 
+\begin_inset Formula $\phi_{i}^{a}$
+\end_inset
+
+ of analytical signal 
+\begin_inset Formula $x_{i}^{a}$
+\end_inset
+
+ of time series 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+ 
+\begin_inset Newline newline
+\end_inset
+
+For each pair 
+\begin_inset Formula $(i,j)$
+\end_inset
+
+ of channels, we compute the modulus of the time averaged phase difference
+ mapped onto the unit circle
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $PLV_{ij}=\left|\frac{1}{N}\sum_{t}e^{i(\phi_{i}^{a}-\phi_{j}^{a})}\right|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+medskip
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Spectral Energy
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+max frequency 
+\begin_inset Formula $f_{max}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $100Hz$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+number of bands 
+\begin_inset Formula $N_{bands}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $40$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Vector autoregressive model
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+lag 
+\begin_inset Formula $\tau$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $2$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Classification
+\end_layout
+
+\begin_layout Standard
+We tested two classification methods.
+ Both were trained on the whole training data.
+\end_layout
+
+\begin_layout Subsubsection
+Support vector machine
+\end_layout
+
+\begin_layout Standard
+This classification method finds the maximum margin classifier of the data
+ in an infinite dimensional feature space (the reproducing kernel hilbert
+ space of the gaussian kernel).
+\end_layout
+
+\begin_layout Subsubsection
+Random forest
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="2">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Name
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Support vector machine
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Gaussian kernel width 
+\begin_inset Formula $\sigma_{svm}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+?
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+misclassification penalty 
+\begin_inset Formula $C$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Random forest
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+number of trees 
+\begin_inset Formula $N_{trees}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $100$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Section
+Software
+\end_layout
+
+\begin_layout Standard
+All mathematical analyses were executed using the following Python libraries
+\end_layout
+
+\begin_layout Itemize
+statsmodels (Vector Autoregressive model fitting)
+\end_layout
+
+\begin_layout Itemize
+scikit.learn 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "scikit-learn"
+
+\end_inset
+
+ (svm, random forest, cross-validation)
+\end_layout
+
+\begin_layout Itemize
+scipy.signal (signal filtering, downsampling)
+\end_layout
+
+\begin_layout Itemize
+numpy (fourier transform)
+\end_layout
+
+\begin_layout Subsection
+Code Structure
+\end_layout
+
+\begin_layout Itemize
+Classes
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Feature Class and wrapper
+\end_layout
+
+\begin_layout Itemize
+Predictor Class
+\end_layout
+
+\begin_layout Itemize
+Data Loader Class
+\end_layout
+
+\begin_layout Itemize
+Xvalidation Class
+\end_layout
+
+\begin_layout Itemize
+Submission Class
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Modules
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Preprocessing module
+\end_layout
+
+\end_deeper
+\begin_layout Section*
+Remarks & additional info
+\end_layout
+
+\begin_layout Standard
+Unexplored features and existing literature
+\end_layout
+
+\begin_layout Itemize
+Correlation features 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schindler2007assessing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Phase dynamics 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "daly2014exploration"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+cross power spectrum 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "krusienski2012value"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+mixture of features for classification 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "valderrama2012identifying,laurent2010source"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Spatial feature? 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "shoeb2010application"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Directional coupling (connectivity based) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gomez2008measuring,billinger2014scot"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+References
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "report_bib"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

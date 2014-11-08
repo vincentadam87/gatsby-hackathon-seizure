@@ -32,9 +32,14 @@ class StatsFeatures(FeatureExtractBase):
         
         # hstack will collapse all entries into one big vector 
         features = np.hstack( (kurtosis, skew, variation) )
+        Inan = np.where(np.isnan(features))
+        Iinf = np.where(np.isinf(features))
+        features[Inan] = 0
+        features[Iinf] = 0
+
         self.assert_features(features)
         # features = a 1d ndarray 
-        return features
+        return np.hstack(features)
 
     def __str__(self):
         return "Stats"

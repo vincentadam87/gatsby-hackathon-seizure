@@ -58,3 +58,7 @@ target/
 *.swp
 *.mat
 *.tgz
+
+# others
+*~
+*ipynb_checkpoint*
