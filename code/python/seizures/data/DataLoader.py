@@ -1,8 +1,8 @@
 import glob
 from os.path import join
-import os;
+import os
 from seizures.data.EEGData import EEGData
-from seizures.preprocessing import preprocessing
+from seizures.preprocessing import preprocessing_utils
 import numpy as np
 import random
 from seizures.features.FFTFeatures import FFTFeatures
@@ -18,7 +18,7 @@ class DataLoader(object):
     @author Vincent (from Shaun original loader)
     """
 
-    def __init__(self, base_dir, feature_extractor):
+    def __init__(self, base_dir, feature_extractor, preprocess=None):
         """
         base_dir: path to the directory containing patient folders i.e., directory 
         containing Dog_1/, Dog_2, ..., Patient_1, Patient_2, ....
@@ -40,15 +40,9 @@ class DataLoader(object):
         # list of file names in base_dir directory
         self.files = None
         self.files_nopath = None
-        self.params = { 'anti_alias_cutoff': 500.,
-          'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 40,
-          'elec_noise_width' :3.,
-          'elec_noise_attenuation' : 60.0,
-          'elec_noise_cutoff' : [59.,61.],
-          'targetrate':400}
+        self.preprocess = preprocess
 
-    def load_data(self, patient_name, type='training', max_segments=-1,preprocess=True):
+    def load_data(self, patient_name, type='training', max_segments=-1):
         """
         Loads data for a patient and a type of data into class variables
         No output
@@ -111,10 +105,10 @@ class DataLoader(object):
             # Each call of _load_data_from_file appends data to features_train 
             # features_test lists depending on the (type) variable. 
             # It also appends data to type_labels and early_labels.
-            self._load_data_from_file(patient_name, filename,preprocess=preprocess)
+            self._load_data_from_file(patient_name, filename)
         print "\ndone"
 
-    def training_data(self, patient_name, max_segments=-1,preprocess=True):
+    def training_data(self, patient_name, max_segments=-1):
         """
         returns features as a matrix of 1D np.ndarray
         returns classification vectors as 1D np.ndarrays
@@ -125,11 +119,11 @@ class DataLoader(object):
         :return: feature matrix and labels
         """
         print "\nLoading train data for " + patient_name
-        self.load_data(patient_name, type='training', max_segments=max_segments, preprocess=preprocess)
+        self.load_data(patient_name, type='training', max_segments=max_segments)
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels)
 
-    def blocks_for_Xvalidation(self, patient_name, n_fold=5, max_segments=-1, preprocess=True):
+    def blocks_for_Xvalidation(self, patient_name, n_fold=5, max_segments=-1):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
@@ -149,7 +143,7 @@ class DataLoader(object):
         :return: feature matrix and labels
         """
         # y1 = type_labels,  y2 = early_labels
-        X,y1 = self.training_data(patient_name, max_segments=max_segments,preprocess=preprocess)
+        X,y1 = self.training_data(patient_name, max_segments=max_segments)
         n = len(y1)
         assert(np.sum(y1)>n_fold)
         # do blocks for labels=1 and labels=0 separetaly and merge at the end
@@ -180,7 +174,7 @@ class DataLoader(object):
 
         return Xp,y1p
 
-    def test_data(self, patient_name, max_segments=-1,preprocess=True):
+    def test_data(self, patient_name, max_segments=-1):
         """
         returns features as a matrix of 1D np.ndarray
         :rtype : numpy 2D ndarray
@@ -190,7 +184,7 @@ class DataLoader(object):
         will be randomly subsampled without replacement. 
         """
         print "\nLoading test data for " + patient_name
-        self.load_data(patient_name, type='test', max_segments=max_segments,preprocess=preprocess)
+        self.load_data(patient_name, type='test', max_segments=max_segments)
         return self._merge_vectors_into_matrix(self.features_test)
 
 
@@ -213,15 +207,15 @@ class DataLoader(object):
         return files
 
 
-    def _load_data_from_file(self, patient, filename, preprocess=True):
+    def _load_data_from_file(self, patient, filename):
         if filename.find('test') != -1:
             # if filename is a test segment
-            self._load_test_data_from_file(patient, filename, preprocess=preprocess)
+            self._load_test_data_from_file(patient, filename)
         else:
-            self._load_training_data_from_file(patient, filename, preprocess=preprocess)
+            self._load_training_data_from_file(patient, filename)
 
 
-    def _load_training_data_from_file(self, patient, filename, preprocess=True):
+    def _load_training_data_from_file(self, patient, filename):
         """
         Loading single file training data
         :param patient:
@@ -249,14 +243,14 @@ class DataLoader(object):
         params = self.params
         params['fs']=fs
         ### comment if no preprocessing
-        if preprocess==True:
-            eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+        if self.preprocess!=None:
+            eeg_data.eeg_data = self.preprocess.apply(data)
         ###
         x = self.feature_extractor.extract(eeg_data)
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_interictal)
 
-    def _load_test_data_from_file(self, patient, filename, preprocess=True):
+    def _load_test_data_from_file(self, patient, filename):
         """
         Loading single file test data
         :param patient:
@@ -278,8 +272,8 @@ class DataLoader(object):
         params['fs']=fs
 
         ### comment if no preprocessing
-        if preprocess==True:
-            eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+        if self.preprocess!=None:
+            eeg_data.eeg_data = self.preprocess.apply(data)
         x = self.feature_extractor.extract(eeg_data)
         self.features_test.append(np.hstack(x))
 
