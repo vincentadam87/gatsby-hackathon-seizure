@@ -2,10 +2,8 @@ import glob
 from os.path import join
 import os
 from seizures.data.EEGData import EEGData
-from seizures.preprocessing import preprocessing_utils
 import numpy as np
 import random
-from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 
 
