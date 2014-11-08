@@ -66,7 +66,7 @@ class SubmissionFile():
         return [line.rstrip('\n') for line in lines]
         
     def generate_submission(self, predictor_preictal, feature_extractor, output_fname="output.csv",
-                            test_filenames=None, preprocess=True):
+                            test_filenames=None, preprocess=None):
         """
         Generates a submission file for a given pair of predictors, which will
         be trained on all training data per patient/dog instance.
@@ -91,9 +91,9 @@ class SubmissionFile():
             result_lines = []
 
 
-            loader = DataLoader(self.data_path, feature_extractor)
+            loader = DataLoader(self.data_path, feature_extractor,  preprocess=preprocess)
             # X_train is n x d
-            X_train,y_preictal  = loader.training_data(patient, preprocess=preprocess)
+            X_train,y_preictal  = loader.training_data(patient)
 
             print X_train.shape
             print y_preictal.shape
@@ -117,9 +117,9 @@ class SubmissionFile():
                     test_fnames_patient += [fname]
 
             # now predict on all test points
-            loader = DataLoader(self.data_path, feature_extractor)
+            loader = DataLoader(self.data_path, feature_extractor, preprocess=preprocess)
             # X_test: n x d matrix
-            X_test = loader.test_data(patient, preprocess=preprocess)
+            X_test = loader.test_data(patient)
             test_fnames_patient = loader.files
 
             for ifname in range(len(test_fnames_patient)):

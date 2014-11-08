@@ -3,7 +3,7 @@ import random
 from os.path import join
 import os
 from seizures.data.EEGData import EEGData
-from seizures.preprocessing import preprocessing
+from seizures.preprocessing import preprocessing_utils
 import numpy as np
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -186,7 +186,7 @@ class SubjectEEGData(object):
         params['fs'] = fs
 
 
-        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data, params)
+        eeg_data.eeg_data = preprocessing_utils.preprocess_multichannel_data(data, params)
         return (eeg_data, y_seizure)
 
     @staticmethod
@@ -206,6 +206,6 @@ class SubjectEEGData(object):
         data = eeg_data.eeg_data
         params['fs']=fs
 
-        eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data,params)
+        eeg_data.eeg_data = preprocessing_utils.preprocess_multichannel_data(data,params)
         return eeg_data
 

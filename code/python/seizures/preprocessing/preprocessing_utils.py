@@ -1,15 +1,12 @@
 import numpy as np
 from scipy.signal import firwin, kaiserord, convolve2d, decimate
-#from matplotlib import pyplot as plt
 
 # DEFINE FILTERS FOR PREPROCESSING:
 def preprocess_multichannel_data(matrix,params):
-
     """
     :param matrix: multichannel EEG data
     :param fs: sampling frequency
     :return: data without mains, electrical artefacts, aliasing
-
     authors: Lea and Vincent
     """
     assert(type(matrix)==np.ndarray)
@@ -25,8 +22,7 @@ def preprocess_multichannel_data(matrix,params):
     #print 'dc ', matrix.shape
     return matrix
 
-def downsample(matrix,params):
-
+def downsample(matrix, params):
     """
     :param matrix: multichannel EEG data
     :param params: takes in sampling frequency fs from params dict
@@ -41,8 +37,8 @@ def downsample(matrix,params):
     #if dsfactor > maxdsfactor:
     #   dsfactor = maxdsfactor
     #print 'dsfactor used =', dsfactor
-    if dsfactor>1:
-        ds_matrix = decimate(matrix,dsfactor,axis=1)
+    if dsfactor > 1:
+        ds_matrix = decimate(matrix, dsfactor, axis=1)
         return ds_matrix, float(fs/dsfactor)
     else:
         return matrix, float(fs)
