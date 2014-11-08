@@ -3,17 +3,9 @@ from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.data.Instance import Instance
 import scipy.stats as st
 
-class StatsFeatures(FeatureExtractBase):
+class ICAFeatures(FeatureExtractBase):
     """
-    Bunch of basic statistics features e.g., kurtosis, coefficient of variation.
-    Very simple but may be informative in some sense.
-    I don't expect it to be so useful. Just wonder how discriminative these 
-    features are. 
-
-    From simple testing, these features alone give 85% auc on seizure task and 
-    72% on early seizure task on Dog_1 data. Better than coin flips ?
-
-    See scipy's /stats.html#statistical-functions
+    See http://scot-dev.github.io/scot-doc/api/scot/scot.html#scot.plainica.plainica
 
     @author Wittawat 
     """

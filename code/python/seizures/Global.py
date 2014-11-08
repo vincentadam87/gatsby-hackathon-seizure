@@ -67,9 +67,9 @@ class Global():
         # --------------- end Wittawat --------------
 
         # ---------------- Vincent -----------------
-        path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
-        path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips/'
-        path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/'
+        #path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
+        #path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips/'
+        #path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/'
         # --------------- end Vincent -------------
 
 
