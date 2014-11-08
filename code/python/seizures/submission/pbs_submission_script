@@ -1,0 +1,25 @@
+#!/bin/bash -f
+#
+if [ -f /etc/bash.bashrc ]; then
+    . /etc/bash.bashrc
+fi
+
+for guy in "Dog_1" "Dog_2" "Dog_3" "Dog_4" "Patient_1" "Patient_2" "Patient_3" "Patient_4" "Patient_5" "Patient_6" "Patient_7" "Patient_8" 
+do
+cat > script$guy << EOF
+#!/bin/bash -f
+#PBS -l walltime=00:30:00
+#PBS -l mem=1gb
+#PBS -l pmem=1gb
+#PBS -l nodes=1:ppn=1
+cd /nfs/nhome/live/vincenta/Desktop/hackday/gatsby-hackathon-seizure/code/python/seizures/tests
+python submission_forest_predictor.py $guy $guy 
+EOF
+chmod a+x script$guy
+qsub script$guy
+
+done
+
+
+
+
