@@ -14,7 +14,7 @@ from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.data.SubjectEEGData import SubjectEEGData
 from abc import abstractmethod
 from sklearn import cross_validation
-from seizures.preprocessing import preprocessing
+from seizures.preprocessing import preprocessing_utils
 import numpy as np
 
 from IPython.core.debugger import Tracer
@@ -354,7 +354,7 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
                 #print '---------'
                 #print x.eeg_data.shape
                 params['fs']=x.sample_rate
-                x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
+                x.eeg_data = preprocessing_utils.preprocess_multichannel_data(x.eeg_data, params)
                 feat =feature_extractor.extract(x)
                 #print x.eeg_data.shape
                 #print feat.shape
