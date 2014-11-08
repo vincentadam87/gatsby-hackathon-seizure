@@ -133,6 +133,10 @@ class SubmissionFile():
 
 
             csv_fname = patient + '_' + output_fname + '.csv'
+            my_result_folder = Global.path_map('my_result_folder')
+            if not os.path.exists(my_result_folder):
+                os.makedirs(my_result_folder)
+                
             csv_path = Global.get_child_result_folder(csv_fname)
             print "Storing results to", csv_fname
             f = open(csv_path, "w")
