@@ -1,6 +1,6 @@
 from abc import abstractmethod
 
-class SubjectDataBase(object):
+class PatientData(object):
     """"
     A class to declare the data and all the parameters to fully characterize the data associated to a subject
     """
@@ -12,7 +12,8 @@ class SubjectDataBase(object):
     fs = None
 
     @abstractmethod
-    def __init__(self):
+    def __init__(self, patientFolder):
+        self.patientName = ''; # just the folder name
         pass
 
     @abstractmethod
@@ -20,7 +21,15 @@ class SubjectDataBase(object):
         pass
 
     @abstractmethod
-    def loadFile(self, filename):
+    def getSamplingFrequency(self ):
         pass
 
+    @abstractmethod
+    def getSegmentNames(self):
+        pass
+
+
+    @abstractmethod
+    def getSegment(self, name):
+        pass
 

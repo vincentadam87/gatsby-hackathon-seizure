@@ -11,6 +11,16 @@ class PreprocessingBase(object):
         """
         Method to apply preprocessing to signals
         :param X: 2D np.ndarray the unprocessed data
-        :param X: 2D np.ndarray the processed data
+        :return: 2D np.ndarray the processed data
         """
         raise NotImplementedError()
+
+    @abstractmethod
+    def applyToPatientData(self, P):
+        """
+        Method to apply preprocessing to signals
+        :param P: an instance of PatientData
+        :return: PatientData
+        """
+        raise NotImplementedError()
+
