@@ -95,8 +95,8 @@ class SubmissionFile():
             # X_train is n x d
             X_train,y_preictal  = loader.training_data(patient)
 
-            print X_train.shape
-            print y_preictal.shape
+            print 'X shape: ', X_train.shape
+            print 'y_preictal shape', y_preictal.shape
 
             # train both models
             #print

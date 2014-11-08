@@ -7,10 +7,11 @@ class PreprocessingBase(object):
     """
 
     @abstractmethod
-    def apply(self, X):
+    def apply(self, X, fs):
         """
         Method to apply preprocessing to signals
         :param X: 2D np.ndarray the unprocessed data
+        :param fs: sampling frequency
         :return: 2D np.ndarray the processed data
         """
         raise NotImplementedError()
