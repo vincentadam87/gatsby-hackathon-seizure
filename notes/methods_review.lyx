@@ -257,5 +257,64 @@ Feature extraction
 Classifier
 \end_layout
 
+\begin_layout Standard
+Apparently Random Forest is not performing so well in this case.
+ Michael Hills, the winner of the Seizure detection challenge, opted to
+ try different classifiers using the scikit-learn Python package and picked
+ one (of course didn't mention which) that offered a better performance.
+\end_layout
+
+\begin_layout Standard
+Another participant suggested: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+...you might want to configure your RandomForest to output probabilities instead
+ of binary results, maybe by using the regression version instead of classificat
+ion version of the algorithm.
+ This could help you learn more about the predictions made by your model,
+ and get a more fine-grained ROC curve
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+And yet another one said:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Hastie et al point out in 'elements of statistical learning' that random
+ forests suffer if there are too few good variables relative to noisy variables
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+No clue what this exactly means and whether this actually may be causing
+ here some problems.
+\end_layout
+
+\begin_layout Subsection*
+Literature review
+\end_layout
+
+\begin_layout Subsection
+Feature extraction
+\end_layout
+
+\begin_layout Subsection
+Classifier
+\end_layout
+
 \end_body
 \end_document
