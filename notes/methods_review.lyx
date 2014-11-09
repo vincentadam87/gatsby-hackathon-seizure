@@ -253,8 +253,166 @@ Seizure prediction forum discussions
 Feature extraction
 \end_layout
 
+\begin_layout Standard
+Didn't find anything relevant.
+\end_layout
+
 \begin_layout Subsection
 Classifier
+\end_layout
+
+\begin_layout Standard
+Apparently Random Forest is not performing so well in this case.
+ Michael Hills, the winner of the Seizure detection challenge, opted to
+ try different classifiers using the scikit-learn Python package and picked
+ one (of course didn't mention which) that offered a better performance.
+\end_layout
+
+\begin_layout Standard
+Another participant suggested: 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+...you might want to configure your RandomForest to output probabilities instead
+ of binary results, maybe by using the regression version instead of classificat
+ion version of the algorithm.
+ This could help you learn more about the predictions made by your model,
+ and get a more fine-grained ROC curve
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+And yet another one said:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Quotes eld
+\end_inset
+
+Hastie et al point out in 'elements of statistical learning' that random
+ forests suffer if there are too few good variables relative to noisy variables
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+No clue what this exactly means and whether this actually may be causing
+ here some problems.
+\end_layout
+
+\begin_layout Subsection*
+Literature review
+\end_layout
+
+\begin_layout Subsection
+Feature extraction
+\end_layout
+
+\begin_layout Enumerate
+Features based on Lyapunov exponents: short-trem largest Lyapunov exponent,
+ 
+\begin_inset Formula $STL_{max}$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+
+\end_inset
+
+.
+ The motivation for using this measure is that EEG signals are highly nonstation
+ary and seemingly chaotic.
+ The Lyapunov exponents measure the degree of sensitivity to initial conditions
+ for a dynamical system.
+ The magnitude of the exponents indicate the degree of divergence of trajectorie
+s in phase space and the largest Lyapunov exponent is an important indicator
+ to characterize a chaotic system.
+\end_layout
+
+\begin_layout Enumerate
+Note, however, that in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+
+\end_inset
+
+ they report a poor performance of features based on Lyapunov exponents.
+ They use the following bivariate features: Maximal cross-correlation, Nonlinear
+ Interdependence, Difference of Short-Term Lyapunov Exponents, Wavelet Analysis
+ Based Measure of Synchrony.
+\end_layout
+
+\begin_layout Subsection
+Classifier
+\end_layout
+
+\begin_layout Enumerate
+KNN classifier 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+
+\end_inset
+
+: it classifies a new unlabeled sample by comparing the sample with all
+ the samples in the two baseline sets (preseizure and interictal states).
+ For each EEG epoch in the moving window, the KNN method finds its K-nearest
+ (best matching) samples in each baseline, and compares its averaged distances
+ to the two groups of K-nearest neighbors.
+ The epoch is classified to a baseline that is “closer” to it.
+ Distance is measured as simple euclidean distance, T-statistical distance
+ or Dynamic time Wrapping of two time series of 
+\begin_inset Formula $STL_{max}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Logistic Regression, SVMs and Convolutional Networks 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+ Online Seizure Prediction Using an Adaptive Learning Approach.
+ Shouyi Wang, Wanpracha Art Chaovalitwongse and Stephen Wong.
+ IEEE transactions on knowledge and data engineering, 2013.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+
+\end_inset
+
+Comparing SVM and Convolutional Networks for Epileptic Seizure Prediction
+ from Intracranial EEG.
+ Piotr W.
+ Mirowski, Yann LeCun, Deepak Madhavan, and Ruben Kuzniecky.
 \end_layout
 
 \end_body
