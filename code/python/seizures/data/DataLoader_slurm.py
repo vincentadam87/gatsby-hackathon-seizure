@@ -5,11 +5,19 @@ from seizures.data.EEGData import EEGData
 import numpy as np
 import random
 from seizures.features.FeatureExtractBase import FeatureExtractBase
+from os.path import expanduser
 
+import independent_jobs
+from independent_jobs.tools.Log import Log
+from independent_jobs.tools.Log import logger
+from independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
+from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
+from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
+from seizures.data.Data_parallel_job import Data_parallel_job
 
 # Wittawat: Many load_* methods do not actually use the patient_name argument
 
-class DataLoader(object):
+class DataLoader_slurm(object):
     """
     Class to load data (all segments) for a patient
     Loading from individual files (not the stitched data)
@@ -18,7 +26,7 @@ class DataLoader(object):
 
     def __init__(self, base_dir, feature_extractor, preprocess=None):
         """
-        base_dir: path to the directory containing patient folders i.e., directory 
+        base_dir: path to the directory containing patient folders i.e., directory
         containing Dog_1/, Dog_2, ..., Patient_1, Patient_2, ....
         """
         if not os.path.isdir(base_dir):
@@ -45,16 +53,16 @@ class DataLoader(object):
         Loads data for a patient and a type of data into class variables
         No output
         :param patient_name: e.g., Dog_1
-        :param type: training or test 
-        :param max_segments: maximum segments to load. -1 to use the number of 
+        :param type: training or test
+        :param max_segments: maximum segments to load. -1 to use the number of
         total segments available. Otherwise, all segments (ictal and interictal)
-        will be randomly subsampled without replacement. 
+        will be randomly subsampled without replacement.
         """
         self.patient_name = patient_name
         self._reset_lists()
         # For type='training', this will get all interictal and ictal file names
         files = self._get_files_for_patient(type)
-        
+
         # reorder files so as to mix a bit interictal and ictal (to fasten
         # debug I crop the files to its early entries)
         print 'Load with extractor = %s'% (str(self.feature_extractor))
@@ -72,7 +80,7 @@ class DataLoader(object):
 
             files = []
             # The following loop just interleaves preictal and interictal segments
-            # so that we have 
+            # so that we have
             #[preictal_segment1, interictal_segment1, preictal_segment2, ...]
             for i in range(max(len(files_preictal), len(files_interictal))):
                 if i < len(files_preictal):
@@ -103,22 +111,90 @@ class DataLoader(object):
         if type == 'test':
             self.files = files
 
+
+        #-------------------------
+
+
+        Log.set_loglevel(20)
+        logger.info("Start")
+        # create an instance of the SGE engine, with certain parameters
+
+        # create folder name string
+        home = expanduser("~")
+        foldername = os.sep.join([home, "kaggle"])
+        logger.info("Setting engine folder to %s" % foldername)
+
+        # create parameter instance that is needed for any batch computation engine
+        logger.info("Creating batch parameter instance")
+        batch_parameters = BatchClusterParameters(foldername=foldername)
+
+        # create slurm engine (which works locally)
+        logger.info("Creating slurm engine instance")
+        engine = SlurmComputationEngine(batch_parameters)
+
+        # we have to collect aggregators somehow
+        aggregators = []
+
+        # submit job n times
+        logger.info("Starting loop over job submission")
+
         for i, filename in enumerate(self.files):
-            print float(i)/float(len(self.files))*100.," percent complete         \r",
-            # Each call of _load_data_from_file appends data to features_train 
-            # features_test lists depending on the (type) variable. 
+            logger.info("Submitting job %d" % i)
+            print filename
+            #print float(i)/float(len(self.files))*100.," percent complete         \r",
+            # Each call of _load_data_from_file appends data to features_train
+            # features_test lists depending on the (type) variable.
             # It also appends data to type_labels and early_labels.
-            self._load_data_from_file(patient_name, filename)
+            job = Data_parallel_job(SingleResultAggregator(), self.base_dir,
+                                    self.feature_extractor,
+                                    patient_name,
+                                    filename,
+                                    preprocess=self.preprocess)
+
+            aggregators.append(engine.submit_job(job))
+
+        # let the engine finish its business
+        logger.info("Wait for all call in engine")
+        engine.wait_for_all()
+
+        # the reduce part
+        # lets collect the results
+        results = np.zeros(len(aggregators))
+
+
+        logger.info("Collecting results")
+        for i in range(len(aggregators)):
+            logger.info("Collecting result %d" % i)
+            # let the aggregator finalize things, not really needed here but in general
+            aggregators[i].finalize()
+
+            # aggregators[i].get_final_result() returns a ScalarResult instance,
+            # which we need to extract the number from
+
+            xy_list = aggregators[i].get_final_result().result
+
+            self.features_train.append(xy_list[0])
+            self.type_labels.append(xy_list[1])
+
+
         print "\ndone"
+
+        # do the wait
+
+        # agregate
+
+        # push to self
+
+
 
     def training_data(self, patient_name, max_segments=None):
         """
         returns features as a matrix of 1D np.ndarray
         returns classification vectors as 1D np.ndarrays
         :param patient_name:
-        :param max_segments: maximum segments to load. -1 to use the number of 
+        :param max_segments: maximum segments to load. -1 to use the number of
         total segments available. Otherwise, all segments (ictal and interictal)
-        will be randomly subsampled without replacement. 
+        will be randomly subsampled without replacement.
         :return: feature matrix and labels
         """
         print "\nLoading train data for " + patient_name
@@ -128,13 +204,13 @@ class DataLoader(object):
 
     def blocks_for_Xvalidation(self, patient_name, n_fold=3, max_segments=None):
         """
-        Stratified partitions (partition such that class proportion remains same 
-        in each data fold) of data for cross validation. The sum of instances 
+        Stratified partitions (partition such that class proportion remains same
+        in each data fold) of data for cross validation. The sum of instances
         in all partitions may be less than the original total.
 
-        :param max_segments: maximum segments to load. -1 to use the number of 
+        :param max_segments: maximum segments to load. -1 to use the number of
         total segments available. Otherwise, all segments (ictal and interictal)
-        will be randomly subsampled without replacement. 
+        will be randomly subsampled without replacement.
 
         returns
         - a list of 2D ndarrays of features
@@ -182,9 +258,9 @@ class DataLoader(object):
         returns features as a matrix of 1D np.ndarray
         :rtype : numpy 2D ndarray
         :param name: str
-        :param max_segments: maximum segments to load. -1 to use the number of 
+        :param max_segments: maximum segments to load. -1 to use the number of
         total segments available. Otherwise, all segments (ictal and interictal)
-        will be randomly subsampled without replacement. 
+        will be randomly subsampled without replacement.
         """
         print "\nLoading test data for " + patient_name
         self.load_data(patient_name, type='test', max_segments=max_segments)
@@ -211,82 +287,6 @@ class DataLoader(object):
         #self.files_nopath = files_nopath
         return files
 
-
-    def _load_data_from_file(self, patient, filename):
-        if filename.find('test') != -1:
-            # if filename is a test segment
-            self._load_test_data_from_file(patient, filename)
-        else:
-            self._load_training_data_from_file(patient, filename)
-
-
-    def _load_training_data_from_file(self, patient, filename):
-        """
-        Loading single file training data
-        :param patient:
-        :param filename:
-        :return:
-        """
-        #print "\nLoading train data for " + patient + filename
-        eeg_data_tmp = EEGData(filename)
-        # a list of Instance's
-        eeg_data = eeg_data_tmp.get_instances()
-        assert len(eeg_data) == 1
-        # eeg_data is now an Instance
-
-        eeg_data = eeg_data[0]
-        if filename.find('interictal') > -1:
-            y_interictal = 1
-        else:
-            y_interictal = 0
-
-        fs = eeg_data.sampling_rate
-
-        # preprocessing
-        data = eeg_data.eeg_data
-
-        #params = self.params
-        #params['fs']=fs
-        ### comment if no preprocessing
-        if self.preprocess!=None:
-            eeg_data.eeg_data = self.preprocess.apply(data, fs)
-        ###
-        x = self.feature_extractor.extract(eeg_data)
-        #print 'x: ', x.shape
-        self.features_train.append(np.hstack(x))
-        self.type_labels.append(y_interictal)
-
-    def _load_test_data_from_file(self, patient, filename):
-        """
-        Loading single file test data
-        :param patient:
-        :param filename:
-        :return:
-        """
-        assert ( filename.find('test'))
-        print "\nLoading test data for " + patient + filename
-        eeg_data_tmp = EEGData(filename)
-        eeg_data = eeg_data_tmp.get_instances()
-        assert len(eeg_data) == 1
-        eeg_data = eeg_data[0]
-
-        fs = eeg_data.sample_rate
-        # preprocessing
-        data = eeg_data.eeg_data
-
-        #params = self.params
-        #params['fs']=fs
-
-        ### comment if no preprocessing
-        if self.preprocess!=None:
-            eeg_data.eeg_data = self.preprocess.apply(data, fs)
-        x = self.feature_extractor.extract(eeg_data)
-        self.features_test.append(np.hstack(x))
-
-
-    def _get_feature_vector_from_instance(self, instance):
-        return self.feature_extractor.extract(instance)
-
     def _merge_vectors_into_matrix(self, feature_vectors):
         print feature_vectors
         n = len(feature_vectors)
@@ -297,7 +297,102 @@ class DataLoader(object):
         return matrix
 
     def labels(self, patient):
-        # Wittawat: Why do we need patient argument ? 
+        # Wittawat: Why do we need patient argument ?
         assert (self.patient_name == patient)
         return self.type_labels
 
+
+    def _get_feature_vector_from_instance(self, instance):
+        return self.feature_extractor.extract(instance)
+
+
+    # def _load_data_from_file(self, patient, filename):
+    #     if filename.find('test') != -1:
+    #         # if filename is a test segment
+    #         self._load_test_data_from_file(patient, filename)
+    #     else:
+    #         self._load_training_data_from_file(patient, filename)
+    #
+    #
+    # def _load_training_data_from_file(self, patient, filename):
+    #     """
+    #     Loading single file training data
+    #     :param patient:
+    #     :param filename:
+    #     :return:
+    #     """
+    #     #print "\nLoading train data for " + patient + filename
+    #     eeg_data_tmp = EEGData(filename)
+    #     # a list of Instance's
+    #     eeg_data = eeg_data_tmp.get_instances()
+    #     assert len(eeg_data) == 1
+    #     # eeg_data is now an Instance
+    #
+    #     eeg_data = eeg_data[0]
+    #     if filename.find('interictal') > -1:
+    #         y_interictal = 1
+    #     else:
+    #         y_interictal = 0
+    #
+    #     fs = eeg_data.sampling_rate
+    #
+    #     # preprocessing
+    #     data = eeg_data.eeg_data
+    #
+    #     #params = self.params
+    #     #params['fs']=fs
+    #     ### comment if no preprocessing
+    #     if self.preprocess!=None:
+    #         eeg_data.eeg_data = self.preprocess.apply(data, fs)
+    #     ###
+    #     x = self.feature_extractor.extract(eeg_data)
+    #     #print 'x: ', x.shape
+    #     #self.features_train.append(np.hstack(x))
+    #     #self.type_labels.append(y_interictal)
+    #     return np.hstack(x), y_interictal
+    #
+    # def _load_test_data_from_file(self, patient, filename):
+    #     """
+    #     Loading single file test data
+    #     :param patient:
+    #     :param filename:
+    #     :return:
+    #     """
+    #     assert ( filename.find('test'))
+    #     print "\nLoading test data for " + patient + filename
+    #     eeg_data_tmp = EEGData(filename)
+    #     eeg_data = eeg_data_tmp.get_instances()
+    #     assert len(eeg_data) == 1
+    #     eeg_data = eeg_data[0]
+    #
+    #     fs = eeg_data.sample_rate
+    #     # preprocessing
+    #     data = eeg_data.eeg_data
+    #
+    #     #params = self.params
+    #     #params['fs']=fs
+    #
+    #     ### comment if no preprocessing
+    #     if self.preprocess!=None:
+    #         eeg_data.eeg_data = self.preprocess.apply(data, fs)
+    #     x = self.feature_extractor.extract(eeg_data)
+    #     self.features_test.append(np.hstack(x))
+    #
+    #
+    # def _get_feature_vector_from_instance(self, instance):
+    #     return self.feature_extractor.extract(instance)
+    #
+    # def _merge_vectors_into_matrix(self, feature_vectors):
+    #     print feature_vectors
+    #     n = len(feature_vectors)
+    #     d = len(feature_vectors[0])
+    #     matrix = np.zeros((n, d))
+    #     for i, _ in enumerate(feature_vectors):
+    #         matrix[i, :] = feature_vectors[i].T
+    #     return matrix
+    #
+    # def labels(self, patient):
+    #     # Wittawat: Why do we need patient argument ?
+    #     assert (self.patient_name == patient)
+    #     return self.type_labels
+    #
