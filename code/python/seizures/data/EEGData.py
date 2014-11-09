@@ -43,6 +43,8 @@ class EEGData(object):
 
         if len(base_data) > 4: # sequence information only in test data
             self.sequence = base_data[4]
+        else:
+            self.sequence = 0
         # data_length_sec
         self.data_length_sec = base_data[1]
         # sampling_frequency
