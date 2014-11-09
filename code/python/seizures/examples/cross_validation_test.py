@@ -7,6 +7,7 @@ Created on 10 August 2014
 import numpy as np
 import sys
 
+from seizures.preprocessing.PreprocessingLea import PreprocessingLea
 
 from seizures.data.DataLoader import DataLoader
 from seizures.evaluation.XValidation import XValidation
@@ -30,7 +31,7 @@ from seizures.Global import Global
 from sklearn.cross_validation import train_test_split
 
 
-def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1",preprocess=True):
+def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1",preprocess=None,max_segments=None):
     """
     Single patient cross validation
     Returns 2 lists of cross validation performances
@@ -43,10 +44,10 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     # Instantiate the predictor 
     predictor = predictor_cls()
     base_dir = Global.path_map('clips_folder')
-    base_dir = '/nfs/data3/kaggle_seizure/clips/'
-    loader = DataLoader(base_dir, feature_extractor)
+    #base_dir = '/nfs/data3/kaggle_seizure/clips/'
+    loader = DataLoader(base_dir, feature_extractor,preprocess=preprocess)
 
-    X_list,y_seizure, y_early = loader.blocks_for_Xvalidation(patient_name,preprocess=preprocess)
+    X_list,y_seizure = loader.blocks_for_Xvalidation(patient_name,max_segments=max_segments)
     #X_train,y_seizure, y_early = loader.training_data(patient_name)
     #y_train = [y_seizure,y_early]
     #X_list,y_list = train_test_split(X_train,y_train)
@@ -57,14 +58,14 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     result_seizure = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
            % (np.mean(result_seizure), np.std(result_seizure), result_seizure)
-    print "\ncross validation: early_vs_not"
-    result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
-    print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-          % (np.mean(result_early), np.std(result_early), result_early)
-    return result_seizure,result_early
+    #print "\ncross validation: early_vs_not"
+    #result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
+    #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
+    #      % (np.mean(result_early), np.std(result_early), result_early)
+    return result_seizure #,result_early
 
 
-def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1'],preprocess=True):
+def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1'],preprocess=None,max_segments=None):
     ''' Runs cross validation for given predictor class and feature instance on the given list of patients
         INPUT:
         - predictor_cls: a Predictor class (implement)
@@ -74,21 +75,20 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1'],p
 
     assert(isinstance(feature_extractor, FeatureExtractBase))
     results_seizure = []
-    results_early = []
+
     for patient_name in patients_list:
-        result_seizure, result_early = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name, preprocess=preprocess)
+        #result_seizure, result_early = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name, preprocess=preprocess)
+        result_seizure = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name, preprocess=preprocess,max_segments=max_segments)
         results_seizure.append(result_seizure)
-        results_early.append(result_early)
 
     avg_results_seizure = np.mean(np.array(results_seizure),axis=0)
-    avg_results_early = np.mean(np.array(results_early),axis=0)
     print "\ncross validation: seizures vs not (ACROSS ALL SUBJECTS)"
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
            % (np.mean(avg_results_seizure), np.std(avg_results_seizure), avg_results_seizure)
-    print "\ncross validation: early_vs_not (ACROSS ALL SUBJECTS)"
-    print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-          % (np.mean(avg_results_early), np.std(avg_results_early), avg_results_early)
-    return avg_results_seizure, avg_results_early
+    #print "\ncross validation: early_vs_not (ACROSS ALL SUBJECTS)"
+    #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
+    #      % (np.mean(avg_results_early), np.std(avg_results_early), avg_results_early)
+    return avg_results_seizure
     # generate prediction for test data
 
 
@@ -98,35 +98,26 @@ def main():
     #patient_name = sys.argv[1]
 
     # There are Dog_[1-4] and Patient_[1-8]
-    patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 9)]
+    patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 2)]
     patients_list =  ["Dog_%d" % i for i in [1]]  #["Patient_%d" % i for i in range(1, 9)]#++
- 
-    #feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}}])
-    #feature_extractor = PLVFeatures()
-    #feature_extractor = MixFeatures([{'name':"PLVFeatures",'args':{}},{'name':"ARFeatures",'args':{}}])
-    #feature_extractor = ARFeatures()
-    feature1 = ARFeatures()
-    feature2 = PLVFeatures()
+    patients_list =  ["Dog_1" ]
+
+    #feature1 = ARFeatures()
+    #feature2 = PLVFeatures()
     feature3 = SEFeatures()
-    feature_extractor = StackFeatures(feature1,feature2,feature3)
+    feature_extractor = StackFeatures(feature3)
 
-    #feature_extractor = MixFeatures([{'name':"ARFeatures",'args':{}},{'name':"PLVFeatures",'args':{}},{'name':'SEFeatures','args':{}}])
-    #feature_extractor = SEFeatures()
-    #feature_extractor = LyapunovFeatures()
 
-    #feature_extractor = StatsFeatures()
+    preprocess = None # PreprocessingLea()
+    predictor = ForestPredictor
 
-    preprocess = True
-    predictor = SVMPredictor
-    #predictor = XtraTreesPredictor
-
-    if preprocess==True:
+    if preprocess!=None:
         print 'Preprocessing ON'
     else:
         print 'Preprocessing OFF'
 
     print 'predictor: ',predictor
-    Xval_on_patients(predictor,feature_extractor, patients_list,preprocess=preprocess)
+    Xval_on_patients(predictor,feature_extractor, patients_list,preprocess=preprocess,max_segments=30)
 
 if __name__ == '__main__':
     main()

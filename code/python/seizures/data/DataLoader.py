@@ -126,7 +126,7 @@ class DataLoader(object):
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels)
 
-    def blocks_for_Xvalidation(self, patient_name, n_fold=5, max_segments=None):
+    def blocks_for_Xvalidation(self, patient_name, n_fold=3, max_segments=None):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
