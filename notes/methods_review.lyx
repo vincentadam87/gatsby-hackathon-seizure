@@ -339,6 +339,20 @@ s in phase space and the largest Lyapunov exponent is an important indicator
  to characterize a chaotic system.
 \end_layout
 
+\begin_layout Enumerate
+Note, however, that in 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+
+\end_inset
+
+ they report a poor performance of features based on Lyapunov exponents.
+ They use the following bivariate features: Maximal cross-correlation, Nonlinear
+ Interdependence, Difference of Short-Term Lyapunov Exponents, Wavelet Analysis
+ Based Measure of Synchrony.
+\end_layout
+
 \begin_layout Subsection
 Classifier
 \end_layout
@@ -365,6 +379,17 @@ key "key-1"
 .
 \end_layout
 
+\begin_layout Enumerate
+Logistic Regression, SVMs and Convolutional Networks 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+
+\end_inset
+
+.
+\end_layout
+
 \begin_layout Bibliography
 \begin_inset CommandInset bibitem
 LatexCommand bibitem
@@ -375,6 +400,19 @@ key "key-1"
  Online Seizure Prediction Using an Adaptive Learning Approach.
  Shouyi Wang, Wanpracha Art Chaovalitwongse and Stephen Wong.
  IEEE transactions on knowledge and data engineering, 2013.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-2"
+
+\end_inset
+
+Comparing SVM and Convolutional Networks for Epileptic Seizure Prediction
+ from Intracranial EEG.
+ Piotr W.
+ Mirowski, Yann LeCun, Deepak Madhavan, and Ruben Kuzniecky.
 \end_layout
 
 \end_body
