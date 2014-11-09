@@ -9,7 +9,7 @@ import sys
 
 from seizures.preprocessing.PreprocessingLea import PreprocessingLea
 
-from seizures.data.DataLoader import DataLoader
+from seizures.data.DataLoader_slurm import DataLoader_slurm
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -17,6 +17,7 @@ from seizures.features.MixFeatures import MixFeatures, StackFeatures
 from seizures.features.SEFeatures import SEFeatures
 
 from seizures.features.StatsFeatures import StatsFeatures
+from seizures.features.FeatureSplitAndStack import FeatureSplitAndStack
 
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.ARFeatures import ARFeatures
@@ -45,9 +46,9 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     predictor = predictor_cls()
     base_dir = Global.path_map('clips_folder')
     #base_dir = '/nfs/data3/kaggle_seizure/clips/'
-    loader = DataLoader(base_dir, feature_extractor,preprocess=preprocess)
+    loader = DataLoader_slurm(base_dir, feature_extractor,preprocess=preprocess)
 
-    X_list,y_seizure = loader.blocks_for_Xvalidation(patient_name,max_segments=max_segments)
+    X_list,y_seizure = loader.blocks_for_Xvalidation(patient_name, n_fold=3, max_segments=max_segments)
     #X_train,y_seizure, y_early = loader.training_data(patient_name)
     #y_train = [y_seizure,y_early]
     #X_list,y_list = train_test_split(X_train,y_train)
@@ -102,11 +103,12 @@ def main():
     patients_list =  ["Dog_%d" % i for i in [1]]  #["Patient_%d" % i for i in range(1, 9)]#++
     patients_list =  ["Dog_1" ]
 
-    #feature1 = ARFeatures()
-    #feature2 = PLVFeatures()
+    feature1 = ARFeatures()
+    feature2 = PLVFeatures()
     feature3 = SEFeatures()
-    feature_extractor = StackFeatures(feature3)
+    feature_extractor = StackFeatures(feature1, feature2, feature3)
 
+    stack_feature =FeatureSplitAndStack(feature_extractor,60)
 
     preprocess = None # PreprocessingLea()
     predictor = ForestPredictor
@@ -117,7 +119,7 @@ def main():
         print 'Preprocessing OFF'
 
     print 'predictor: ',predictor
-    Xval_on_patients(predictor,feature_extractor, patients_list,preprocess=preprocess,max_segments=30)
+    Xval_on_patients(predictor,stack_feature, patients_list,preprocess=preprocess,max_segments=50)
 
 if __name__ == '__main__':
     main()
