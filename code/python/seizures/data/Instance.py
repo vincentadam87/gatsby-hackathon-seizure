@@ -27,7 +27,7 @@ class Instance(object):
             self.sample_rate = kwargs['instance'].sample_rate
             self.sampling_rate = kwargs['instance'].sample_rate
             self.number_of_channels = kwargs['instance'].number_of_channels
-            if 'eeg_data' in kwargs['instance']:
+            if 'eeg_data' in kwargs:
                 #2d array of #channels x time
                 self.eeg_data = kwargs['eeg_data']
             else:
