@@ -4,14 +4,14 @@ if [ -f /etc/bash.bashrc ]; then
     . /etc/bash.bashrc
 fi
 
-for guy in "Dog_1" "Dog_2" "Dog_3" "Dog_4" "Patient_1" "Patient_2" "Patient_3" "Patient_4" "Patient_5" "Patient_6" "Patient_7" "Patient_8"
+for guy in "Dog_1" "Dog_2" "Dog_3" "Dog_4"  "Dog_5" "Patient_1" "Patient_2"
 do
 cat > scriptx$guy << EOF
 #!/bin/bash -f
-#SBATCH -n1 --time=40:00:00 --mem-per-cpu=1gb
-#SBATCH -J bafa_pf
+#SBATCH -n1 --time=10:00:00 --mem-per-cpu=1gb
+#SBATCH -J hackathon
 
-cd /nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/seizures/tests/
+cd /nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python/seizures/submission/
 python submission_forest_predictor.py "$guy" "$guy"
 EOF
 chmod a+x scriptx$guy
