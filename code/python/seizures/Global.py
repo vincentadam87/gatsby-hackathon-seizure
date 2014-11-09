@@ -56,7 +56,8 @@ class Global():
         # full path to folder containing subject-specific folders i.e., Dog_1/,
         # Patien_1, ... To get a subject specific folder, use 
         # Global.get_subject_folder('Dog_1') for example.
-        path_dict['clips_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_data'
+        #path_dict['clips_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_data'
+        path_dict['clips_folder'] = '/home/nuke/Dropbox/gatsby/hackathon/clips/'
 
         # full path to the result folder. This folder can be anywhere. 
         # This is mainly used for containing, for example, trained models, 
@@ -67,9 +68,9 @@ class Global():
         # --------------- end Wittawat --------------
 
         # ---------------- Vincent -----------------
-        path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
-        path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction/'
-        path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_final_final/'
+        #path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
+        #path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction/'
+        #path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_final_final/'
         # --------------- end Vincent -------------
 
 

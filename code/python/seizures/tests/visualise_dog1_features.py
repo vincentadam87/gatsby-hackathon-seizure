@@ -24,9 +24,7 @@ def visualise():
     plt.figure()
     for i in range(len(X_list)):
         X = X_list[i]
-        
         y_seizure = y_list[i]
-        
         _, _, V = np.linalg.svd(X, full_matrices=True)
         plt.plot(V[0][y_seizure == 0], V[1][y_seizure == 0], 'bo')
         plt.plot(V[0][y_seizure == 1], V[1][y_seizure == 1], 'ro')

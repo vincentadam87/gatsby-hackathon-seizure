@@ -2,10 +2,8 @@ import glob
 from os.path import join
 import os
 from seizures.data.EEGData import EEGData
-from seizures.preprocessing import preprocessing_utils
 import numpy as np
 import random
-from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 
 
@@ -42,7 +40,7 @@ class DataLoader(object):
         self.files_nopath = None
         self.preprocess = preprocess
 
-    def load_data(self, patient_name, type='training', max_segments=-1):
+    def load_data(self, patient_name, type='training', max_segments=None):
         """
         Loads data for a patient and a type of data into class variables
         No output
@@ -60,10 +58,11 @@ class DataLoader(object):
         # reorder files so as to mix a bit interictal and ictal (to fasten
         # debug I crop the files to its early entries)
         print 'Load with extractor = %s'% (str(self.feature_extractor))
-        print 'Load with params = %s'% (str(self.params))
+        #print 'Load with params = %s'% (str(self.params))
 
         random.seed(0)
         if type == 'training':
+            print 'files: ', files
             files_interictal = [f for f in files if f.find("interictal_") >= 0 ]
             random.shuffle(files_interictal)
             print '%d interictal segments for %s'%(len(files_interictal), patient_name)
@@ -90,7 +89,11 @@ class DataLoader(object):
         else:
             total_segments = len(files)
 
-        subsegments = min(max_segments, total_segments)
+        if max_segments is None:
+            subsegments = total_segments
+        else:
+            subsegments = min(max_segments, total_segments)
+
         print 'subsampling from %d segments to %d'% (total_segments, subsegments)
         #self.files = [files[i] for i in I[0:subsegments]]
         self.files = files[0:subsegments]
@@ -108,7 +111,7 @@ class DataLoader(object):
             self._load_data_from_file(patient_name, filename)
         print "\ndone"
 
-    def training_data(self, patient_name, max_segments=-1):
+    def training_data(self, patient_name, max_segments=None):
         """
         returns features as a matrix of 1D np.ndarray
         returns classification vectors as 1D np.ndarrays
@@ -123,7 +126,7 @@ class DataLoader(object):
         X = self._merge_vectors_into_matrix(self.features_train)
         return X, np.array(self.type_labels)
 
-    def blocks_for_Xvalidation(self, patient_name, n_fold=5, max_segments=-1):
+    def blocks_for_Xvalidation(self, patient_name, n_fold=5, max_segments=None):
         """
         Stratified partitions (partition such that class proportion remains same 
         in each data fold) of data for cross validation. The sum of instances 
@@ -174,7 +177,7 @@ class DataLoader(object):
 
         return Xp,y1p
 
-    def test_data(self, patient_name, max_segments=-1):
+    def test_data(self, patient_name, max_segments=None):
         """
         returns features as a matrix of 1D np.ndarray
         :rtype : numpy 2D ndarray
@@ -196,7 +199,9 @@ class DataLoader(object):
         assert (type in ["test", "training"])
         if type == "training":
             self.features_train = []
+            print self.base_dir, '....', self.patient_name
             files = glob.glob(join(self.base_dir, self.patient_name + '/*ictal*'))
+            #print 'fff: ', files
 
         elif type == "test":
             self.features_test = []
@@ -240,13 +245,14 @@ class DataLoader(object):
         # preprocessing
         data = eeg_data.eeg_data
 
-        params = self.params
-        params['fs']=fs
+        #params = self.params
+        #params['fs']=fs
         ### comment if no preprocessing
         if self.preprocess!=None:
-            eeg_data.eeg_data = self.preprocess.apply(data)
+            eeg_data.eeg_data = self.preprocess.apply(data, fs)
         ###
         x = self.feature_extractor.extract(eeg_data)
+        print 'x: ', x.shape
         self.features_train.append(np.hstack(x))
         self.type_labels.append(y_interictal)
 
@@ -268,12 +274,12 @@ class DataLoader(object):
         # preprocessing
         data = eeg_data.eeg_data
 
-        params = self.params
-        params['fs']=fs
+        #params = self.params
+        #params['fs']=fs
 
         ### comment if no preprocessing
         if self.preprocess!=None:
-            eeg_data.eeg_data = self.preprocess.apply(data)
+            eeg_data.eeg_data = self.preprocess.apply(data, fs)
         x = self.feature_extractor.extract(eeg_data)
         self.features_test.append(np.hstack(x))
 
@@ -282,6 +288,7 @@ class DataLoader(object):
         return self.feature_extractor.extract(instance)
 
     def _merge_vectors_into_matrix(self, feature_vectors):
+        print feature_vectors
         n = len(feature_vectors)
         d = len(feature_vectors[0])
         matrix = np.zeros((n, d))

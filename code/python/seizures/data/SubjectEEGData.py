@@ -4,9 +4,6 @@ from os.path import join
 import os
 from seizures.data.EEGData import EEGData
 from seizures.preprocessing import preprocessing_utils
-import numpy as np
-from seizures.features.FFTFeatures import FFTFeatures
-from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.Global import Global
 
 
@@ -107,8 +104,8 @@ class SubjectEEGData(object):
             for i, filename in enumerate(loaded_train_fnames):
                 print float(i)/len(loaded_train_fnames)*100.," percent complete         \r",
                 # y_seizure is binary
-                tr_instance, y_interictal = SubjectEEGData.load_train_data_from_file(patient_name, filename,self.params)
-                train_data.append( (tr_instance, y_interictal) )
+                #tr_instance, y_interictal = SubjectEEGData.load_train_data_from_file(patient_name, filename,self.params)
+                #train_data.append( (tr_instance, y_interictal) )
             print "\ndone"
             loaded_train_data = train_data
 

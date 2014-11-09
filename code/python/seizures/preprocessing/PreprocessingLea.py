@@ -23,5 +23,7 @@ class PreprocessingLea(PreprocessingBase):
         else:
             self.params = params
 
-    def apply(self, X):
-        return preprocess_multichannel_data(X,self.params)
+    def apply(self, X, fs):
+        tmp_params = self.params
+        tmp_params['fs'] = fs
+        return preprocess_multichannel_data(X, tmp_params)

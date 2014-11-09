@@ -2,7 +2,6 @@ __author__ = 'Matthieu'
 
 from Instance import Instance
 import scipy.io
-import h5py
 import numpy as np
 
 class EEGData(object):
