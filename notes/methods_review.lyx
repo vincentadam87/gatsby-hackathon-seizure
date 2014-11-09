@@ -253,6 +253,10 @@ Seizure prediction forum discussions
 Feature extraction
 \end_layout
 
+\begin_layout Standard
+Didn't find anything relevant.
+\end_layout
+
 \begin_layout Subsection
 Classifier
 \end_layout
@@ -312,8 +316,65 @@ Literature review
 Feature extraction
 \end_layout
 
+\begin_layout Enumerate
+Features based on Lyapunov exponents: short-trem largest Lyapunov exponent,
+ 
+\begin_inset Formula $STL_{max}$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+
+\end_inset
+
+.
+ The motivation for using this measure is that EEG signals are highly nonstation
+ary and seemingly chaotic.
+ The Lyapunov exponents measure the degree of sensitivity to initial conditions
+ for a dynamical system.
+ The magnitude of the exponents indicate the degree of divergence of trajectorie
+s in phase space and the largest Lyapunov exponent is an important indicator
+ to characterize a chaotic system.
+\end_layout
+
 \begin_layout Subsection
 Classifier
+\end_layout
+
+\begin_layout Enumerate
+KNN classifier 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1"
+
+\end_inset
+
+: it classifies a new unlabeled sample by comparing the sample with all
+ the samples in the two baseline sets (preseizure and interictal states).
+ For each EEG epoch in the moving window, the KNN method finds its K-nearest
+ (best matching) samples in each baseline, and compares its averaged distances
+ to the two groups of K-nearest neighbors.
+ The epoch is classified to a baseline that is “closer” to it.
+ Distance is measured as simple euclidean distance, T-statistical distance
+ or Dynamic time Wrapping of two time series of 
+\begin_inset Formula $STL_{max}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+key "key-1"
+
+\end_inset
+
+ Online Seizure Prediction Using an Adaptive Learning Approach.
+ Shouyi Wang, Wanpracha Art Chaovalitwongse and Stephen Wong.
+ IEEE transactions on knowledge and data engineering, 2013.
 \end_layout
 
 \end_body
