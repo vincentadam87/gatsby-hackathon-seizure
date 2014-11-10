@@ -147,7 +147,7 @@ class DataLoader_slurm(object):
             # It also appends data to type_labels and early_labels.
             job = Data_parallel_job(SingleResultAggregator(), self.base_dir,
                                     self.feature_extractor,
-                                    patient_name,
+                                    self.patient_name,
                                     filename,
                                     preprocess=self.preprocess)
 

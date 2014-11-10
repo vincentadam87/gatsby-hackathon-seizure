@@ -236,9 +236,9 @@ class DataLoader(object):
 
         eeg_data = eeg_data[0]
         if filename.find('interictal') > -1:
-            y_interictal = 1
-        else:
             y_interictal = 0
+        else:
+            y_interictal = 1
 
         fs = eeg_data.sampling_rate
 

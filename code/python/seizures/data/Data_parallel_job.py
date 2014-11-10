@@ -68,20 +68,14 @@ class Data_parallel_job(IndependentJob):
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
         # eeg_data is now an Instance
-
         eeg_data = eeg_data[0]
         if filename.find('interictal') > -1:
-            y_interictal = 1
-        else:
             y_interictal = 0
-
+        else:
+            y_interictal = 1
         fs = eeg_data.sampling_rate
-
         # preprocessing
         data = eeg_data.eeg_data
-
-        #params = self.params
-        #params['fs']=fs
         ### comment if no preprocessing
         if self.preprocess!=None:
             eeg_data.eeg_data = self.preprocess.apply(data, fs)
@@ -98,7 +92,7 @@ class Data_parallel_job(IndependentJob):
         :return:
         """
         assert ( filename.find('test'))
-        print "\nLoading test data for " + patient + filename
+        #print "\nLoading test data for " + patient + filename
         eeg_data_tmp = EEGData(filename)
         eeg_data = eeg_data_tmp.get_instances()
         assert len(eeg_data) == 1
