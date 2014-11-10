@@ -113,7 +113,7 @@ class SubmissionFile_slurm():
 
         # create parameter instance that is needed for any batch computation engine
         logger.info("Creating batch parameter instance")
-        batch_parameters = BatchClusterParameters(foldername=foldername)
+        batch_parameters = BatchClusterParameters(max_walltime=3600*24, foldername=foldername)
 
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")
