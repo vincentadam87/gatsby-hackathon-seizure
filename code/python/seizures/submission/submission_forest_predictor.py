@@ -51,7 +51,8 @@ if __name__ == '__main__':
     feature_extractor = MixFeatures(feature_list)
 
     test_files = None       # for submission
-    test_files = 'train'    # for local evaluation
+    #test_files = 'train'    # for local evaluation
+
     data_path = Global.path_map('clips_folder')
 
     submission = SubmissionFile(data_path, patients=patients)

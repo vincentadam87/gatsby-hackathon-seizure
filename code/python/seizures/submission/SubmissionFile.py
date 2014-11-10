@@ -85,7 +85,6 @@ class SubmissionFile():
         test_filenames = SubmissionFile.get_submission_filenames()
         train_filenames = SubmissionFile.get_train_filenames()
         
-        all_result_lines = []
 
         for patient in self.patients:
             result_lines = []
@@ -136,7 +135,7 @@ class SubmissionFile():
             my_result_folder = Global.path_map('my_result_folder')
             if not os.path.exists(my_result_folder):
                 os.makedirs(my_result_folder)
-                
+
             csv_path = Global.get_child_result_folder(csv_fname)
             print "Storing results to", csv_fname
             f = open(csv_path, "w")
@@ -145,7 +144,6 @@ class SubmissionFile():
                 f.write(line + '\n')
             f.close()
 
-            all_result_lines.append(result_lines)
 
 
 

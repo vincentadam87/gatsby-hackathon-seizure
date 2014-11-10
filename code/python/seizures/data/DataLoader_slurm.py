@@ -159,7 +159,6 @@ class DataLoader_slurm(object):
 
         # the reduce part
         # lets collect the results
-        results = np.zeros(len(aggregators))
 
 
         logger.info("Collecting results")
