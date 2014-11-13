@@ -1,9 +1,10 @@
 from abc import abstractmethod
 import numpy as np
 from sklearn.svm import SVC
+from seizures.prediction.PredictorBase import PredictorBase
 
 
-class SVMPredictor(object):
+class SVMPredictor(PredictorBase):
     """"
     A simple application of SVM classifier
 
