@@ -8,28 +8,17 @@ import numpy as np
 import sys
 
 from seizures.preprocessing.PreprocessingLea import PreprocessingLea
-
 from seizures.data.DataLoader_slurm import DataLoader_slurm
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.features.MixFeatures import MixFeatures, StackFeatures
 from seizures.features.SEFeatures import SEFeatures
-
-from seizures.features.StatsFeatures import StatsFeatures
 from seizures.features.FeatureSplitAndStack import FeatureSplitAndStack
-
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.ARFeatures import ARFeatures
-from seizures.features.LyapunovFeatures import LyapunovFeatures
-
 from seizures.prediction.ForestPredictor import ForestPredictor
-from seizures.prediction.SVMPredictor import SVMPredictor
-
-from seizures.prediction.XtraTreesPredictor import XtraTreesPredictor
-
 from seizures.Global import Global
-from sklearn.cross_validation import train_test_split
 
 
 def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1",preprocess=None,max_segments=None):
@@ -45,25 +34,18 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     # Instantiate the predictor 
     predictor = predictor_cls()
     base_dir = Global.path_map('clips_folder')
-    #base_dir = '/nfs/data3/kaggle_seizure/clips/'
-    loader = DataLoader_slurm(base_dir, feature_extractor,preprocess=preprocess)
+    loader = DataLoader_slurm(base_dir, feature_extractor, preprocess=preprocess)
+    X_list, y_preictal = loader.blocks_for_Xvalidation(patient_name, n_fold=3, max_segments=max_segments)
 
-    X_list,y_seizure = loader.blocks_for_Xvalidation(patient_name, n_fold=3, max_segments=max_segments)
-    #X_train,y_seizure, y_early = loader.training_data(patient_name)
-    #y_train = [y_seizure,y_early]
-    #X_list,y_list = train_test_split(X_train,y_train)
 
     # running cross validation
     print patient_name
     print "\ncross validation: seizures vs not"
-    result_seizure = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
+    result_seizure = XValidation.evaluate(X_list, y_preictal, predictor, evaluation=auc)
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
            % (np.mean(result_seizure), np.std(result_seizure), result_seizure)
-    #print "\ncross validation: early_vs_not"
-    #result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
-    #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-    #      % (np.mean(result_early), np.std(result_early), result_early)
-    return result_seizure #,result_early
+
+    return result_seizure
 
 
 def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1'],preprocess=None,max_segments=None):
@@ -78,39 +60,32 @@ def Xval_on_patients(predictor_cls, feature_extractor, patients_list=['Dog_1'],p
     results_seizure = []
 
     for patient_name in patients_list:
-        #result_seizure, result_early = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name, preprocess=preprocess)
         result_seizure = Xval_on_single_patient(predictor_cls, feature_extractor, patient_name, preprocess=preprocess,max_segments=max_segments)
         results_seizure.append(result_seizure)
 
-    avg_results_seizure = np.mean(np.array(results_seizure),axis=0)
-    print "\ncross validation: seizures vs not (ACROSS ALL SUBJECTS)"
+    avg_results_seizure = np.mean(np.array(results_seizure), axis=0)
+    print "\ncross validation: preictal vs interictal"
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
            % (np.mean(avg_results_seizure), np.std(avg_results_seizure), avg_results_seizure)
-    #print "\ncross validation: early_vs_not (ACROSS ALL SUBJECTS)"
-    #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-    #      % (np.mean(avg_results_early), np.std(avg_results_early), avg_results_early)
+
     return avg_results_seizure
-    # generate prediction for test data
 
 
 
 def main():
     # code run at script launch
-    #patient_name = sys.argv[1]
 
-    # There are Dog_[1-4] and Patient_[1-8]
+    # There are Dog_[1-5] and Patient_[1-2]
     patients_list = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 2)]
-    patients_list =  ["Dog_%d" % i for i in [1]]  #["Patient_%d" % i for i in range(1, 9)]#++
     patients_list =  ["Dog_1" ]
 
     feature1 = ARFeatures()
     feature2 = PLVFeatures()
     feature3 = SEFeatures()
     feature_extractor = StackFeatures(feature1, feature2, feature3)
+    stack_feature =FeatureSplitAndStack(feature_extractor, 60)
 
-    stack_feature =FeatureSplitAndStack(feature_extractor,60)
-
-    preprocess = None # PreprocessingLea()
+    preprocess = PreprocessingLea()
     predictor = ForestPredictor
 
     if preprocess!=None:
@@ -118,8 +93,12 @@ def main():
     else:
         print 'Preprocessing OFF'
 
-    print 'predictor: ',predictor
-    Xval_on_patients(predictor,stack_feature, patients_list,preprocess=preprocess,max_segments=50)
+    print 'predictor: ', predictor
+    Xval_on_patients(predictor,
+                     stack_feature,
+                     patients_list,
+                     preprocess=preprocess,
+                     max_segments=50)
 
 if __name__ == '__main__':
     main()
