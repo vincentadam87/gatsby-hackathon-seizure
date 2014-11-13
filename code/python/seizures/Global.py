@@ -49,6 +49,9 @@ class Global():
         # Ideally configuration file should be outside version control. 
         # But anyway...
 
+        home = os.path.expanduser("~")
+        path_dict['slurm_jobs_folder'] = os.sep.join([home, "kaggle_slurm"])
+
         # ---------------- Wittawat -----------------
         #full path to ..../code/python/
         path_dict['python_root'] = '/home/nuke/git/gatsby-hackathon-seizure/code/python'
@@ -67,10 +70,13 @@ class Global():
         path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result' 
         # --------------- end Wittawat --------------
 
+
+
         # ---------------- Vincent -----------------
         path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
-        path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction/'
+        path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction_ds/'
         path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_prediction/'
+        path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/vincenta/kaggle_slurm/'
         # --------------- end Vincent -------------
 
 
