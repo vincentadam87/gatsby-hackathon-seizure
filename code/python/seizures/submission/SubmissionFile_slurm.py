@@ -107,8 +107,7 @@ class SubmissionFile_slurm():
         # create an instance of the SGE engine, with certain parameters
 
         # create folder name string
-        home = expanduser("~")
-        foldername = os.sep.join([home, "kaggle_submit"])
+        foldername = Global.path_map('slurm_jobs_folder')+'/Submission'
         logger.info("Setting engine folder to %s" % foldername)
 
         # create parameter instance that is needed for any batch computation engine
@@ -171,10 +170,8 @@ class SubmissionFile_slurm():
 
         for i in range(len(results)):
             result_lines = results[i]
-
             for line in result_lines[i]:
                 f.write(line + '\n')
-
         f.close()
 
 

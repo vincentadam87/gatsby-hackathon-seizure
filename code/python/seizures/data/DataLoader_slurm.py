@@ -6,6 +6,7 @@ import numpy as np
 import random
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from os.path import expanduser
+from seizures.Global import Global
 
 import independent_jobs
 from independent_jobs.tools.Log import Log
@@ -120,8 +121,7 @@ class DataLoader_slurm(object):
         # create an instance of the SGE engine, with certain parameters
 
         # create folder name string
-        home = expanduser("~")
-        foldername = os.sep.join([home, "kaggle"])
+        foldername = Global.path_map('slurm_jobs_folder')+'/DataLoader'
         logger.info("Setting engine folder to %s" % foldername)
 
         # create parameter instance that is needed for any batch computation engine
@@ -305,93 +305,3 @@ class DataLoader_slurm(object):
         return self.feature_extractor.extract(instance)
 
 
-    # def _load_data_from_file(self, patient, filename):
-    #     if filename.find('test') != -1:
-    #         # if filename is a test segment
-    #         self._load_test_data_from_file(patient, filename)
-    #     else:
-    #         self._load_training_data_from_file(patient, filename)
-    #
-    #
-    # def _load_training_data_from_file(self, patient, filename):
-    #     """
-    #     Loading single file training data
-    #     :param patient:
-    #     :param filename:
-    #     :return:
-    #     """
-    #     #print "\nLoading train data for " + patient + filename
-    #     eeg_data_tmp = EEGData(filename)
-    #     # a list of Instance's
-    #     eeg_data = eeg_data_tmp.get_instances()
-    #     assert len(eeg_data) == 1
-    #     # eeg_data is now an Instance
-    #
-    #     eeg_data = eeg_data[0]
-    #     if filename.find('interictal') > -1:
-    #         y_interictal = 1
-    #     else:
-    #         y_interictal = 0
-    #
-    #     fs = eeg_data.sampling_rate
-    #
-    #     # preprocessing
-    #     data = eeg_data.eeg_data
-    #
-    #     #params = self.params
-    #     #params['fs']=fs
-    #     ### comment if no preprocessing
-    #     if self.preprocess!=None:
-    #         eeg_data.eeg_data = self.preprocess.apply(data, fs)
-    #     ###
-    #     x = self.feature_extractor.extract(eeg_data)
-    #     #print 'x: ', x.shape
-    #     #self.features_train.append(np.hstack(x))
-    #     #self.type_labels.append(y_interictal)
-    #     return np.hstack(x), y_interictal
-    #
-    # def _load_test_data_from_file(self, patient, filename):
-    #     """
-    #     Loading single file test data
-    #     :param patient:
-    #     :param filename:
-    #     :return:
-    #     """
-    #     assert ( filename.find('test'))
-    #     print "\nLoading test data for " + patient + filename
-    #     eeg_data_tmp = EEGData(filename)
-    #     eeg_data = eeg_data_tmp.get_instances()
-    #     assert len(eeg_data) == 1
-    #     eeg_data = eeg_data[0]
-    #
-    #     fs = eeg_data.sample_rate
-    #     # preprocessing
-    #     data = eeg_data.eeg_data
-    #
-    #     #params = self.params
-    #     #params['fs']=fs
-    #
-    #     ### comment if no preprocessing
-    #     if self.preprocess!=None:
-    #         eeg_data.eeg_data = self.preprocess.apply(data, fs)
-    #     x = self.feature_extractor.extract(eeg_data)
-    #     self.features_test.append(np.hstack(x))
-    #
-    #
-    # def _get_feature_vector_from_instance(self, instance):
-    #     return self.feature_extractor.extract(instance)
-    #
-    # def _merge_vectors_into_matrix(self, feature_vectors):
-    #     print feature_vectors
-    #     n = len(feature_vectors)
-    #     d = len(feature_vectors[0])
-    #     matrix = np.zeros((n, d))
-    #     for i, _ in enumerate(feature_vectors):
-    #         matrix[i, :] = feature_vectors[i].T
-    #     return matrix
-    #
-    # def labels(self, patient):
-    #     # Wittawat: Why do we need patient argument ?
-    #     assert (self.patient_name == patient)
-    #     return self.type_labels
-    #
