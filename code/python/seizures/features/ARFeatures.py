@@ -40,7 +40,7 @@ class VarLagsARFeatures(FeatureExtractBase):
     @author Wittawat 
     """
 
-    def __init__(self, lags):
+    def __init__(self, lags=2):
         # lags to be used when finding autoregressive coefficients
         # expect an integer.
         self.lags = lags

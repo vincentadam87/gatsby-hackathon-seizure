@@ -26,3 +26,6 @@ class PreprocessingChain(PreprocessingBase):
         raise NotImplementedError()
 
 
+    @abstractmethod
+    def __str__(self):
+        pass

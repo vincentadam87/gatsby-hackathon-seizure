@@ -25,7 +25,7 @@ from seizures.prediction.SVMPredictor import SVMPredictor
 from seizures.Global import Global
 
 
-def Xval_on_single_patient(predictor_cls,
+def Xval_on_single_patient(predictor,
                            feature_extractor,
                            patient_name="Dog_1",
                            preprocess=None,
@@ -40,9 +40,7 @@ def Xval_on_single_patient(predictor_cls,
     :param patient_name:
     :return:
     """
-    # predictor_cls is a handle to an instance of PredictorBase
-    # Instantiate the predictor 
-    predictor = predictor_cls()
+
     loader = DataLoader_slurm(path_dict, feature_extractor, preprocess=preprocess)
     X_list, y_preictal = loader.blocks_for_Xvalidation(patient_name, n_fold=n_fold, max_segments=max_segments)
 
@@ -60,7 +58,7 @@ def Xval_on_single_patient(predictor_cls,
     return result_seizure
 
 
-def Xval_on_patients(predictor_cls,
+def Xval_on_patients(predictor,
                      feature_extractor,
                      patients_list=['Dog_1'],
                      preprocess=None,
@@ -80,7 +78,7 @@ def Xval_on_patients(predictor_cls,
     result_str_ind = ""
 
     for patient_name in patients_list:
-        result_seizure = Xval_on_single_patient(predictor_cls,
+        result_seizure = Xval_on_single_patient(predictor,
                                                 feature_extractor,
                                                 patient_name,
                                                 preprocess=preprocess,
@@ -89,7 +87,7 @@ def Xval_on_patients(predictor_cls,
                                                 n_fold=n_fold)
         results_seizure.append(result_seizure)
         result_str_ind += "Patient: "+patient_name+"\n"
-        result_str_ind += "Predictor: "+str(predictor_cls())+"\n"
+        result_str_ind += "Predictor: "+str(predictor)+"\n"
         x = PrettyTable(["Feature(s)", "AUC mean", "AUC std"])
         x.float_format = "1.4"
         x.align["AUC mean"] = "l"
@@ -106,10 +104,10 @@ def Xval_on_patients(predictor_cls,
     # ------- pretty tabling
     result_str = "working with dataset: "+  path_dict['clips_folder'] +"\n"
     result_str += "Xval, nfold = "+ str(n_fold)+"\n"
-    result_str += "Preprocessing:\n"+ str(preprocess)
+    result_str += "Preprocessing:\n"+ str(preprocess)+"\n"
     result_str += result_str_ind
     result_str += "Patients: "+str(patients_list)+"\n"
-    result_str += "Predictor: "+str(predictor_cls())+"\n"
+    result_str += "Predictor: "+str(predictor)+"\n"
     x = PrettyTable(["Feature(s)", "AUC mean", "AUC std"])
     x.float_format = "1.4"
     x.align["AUC mean"] = "l"
@@ -139,33 +137,55 @@ def main():
     # code run at script launch
 
 
-    #----------- Declare features
-    feature1 = VarLagsARFeatures(lags=2)
-    feature2 = PLVFeatures()
-    feature3 = SEFeatures()
-    feature_extractor = StackFeatures(feature1, feature2, feature3)
-    stack_feature = FeatureSplitAndStack(feature_extractor, 10)
-    #----------- Declare predictors
-    predictor = ForestPredictor
-    #----------- Declare preprocessing
-    preprocess = PreprocessingLea()
+
+    # Loop over
+    # - features
+    #   - features alone
+    #   - combinations
+    # - parameters
+    #   -
+    # - splitting
+    # - downsampling ?
+    # - predictors
+
+
+    # Easy first test
+    # features alone (3 PLV, AR, SE)
+    # split and stack in 10 or not (2) or split and average
+    # preprocess fs = 400, 800 (2)
+    # forest trees # estimators 100 - 500 (2)
+
     #----------- Declare paths
     path_dict = Global.custom_path_dict('vincent')
     path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction'
+
     # There are Dog_[1-5] and Patient_[1-2]
-    patients_list = ["Dog_%d" % i for i in range(1, 6)] + ["Patient_%d" % i for i in range(1, 3)]
-    patients_list =  ["Dog_1"]
-    #patients_list =  ["Whitenoise_1" ]
+    patients_list = ["Dog_%d" % i for i in range(1, 2)] + ["Patient_%d" % i for i in range(1, 2)]
 
-    #----------- running cross-validation
+    Features = [VarLagsARFeatures(lags=2),
+                VarLagsARFeatures(lags=3),
+                PLVFeatures(),
+                SEFeatures(fmax=1000,nband=60),
+                SEFeatures(fmax=500,nband=60)]
 
-    Xval_on_patients(predictor,
-                     feature_extractor,
-                     patients_list,
-                     preprocess=preprocess,
-                     max_segments=None,
-                     path_dict=path_dict,
-                     n_fold=3)
+    for feature in Features:
+        for n_split in [1,10, 60]:
+            for targetrate in [400, 800, 1600]:
+                for n_estimators in [100,500,1000]:
+                    #----------- Declare features
+                    stack_feature = FeatureSplitAndStack(feature, n_split)
+                    #----------- Declare predictors
+                    predictor = ForestPredictor(n_estimators=n_estimators)
+                    #----------- Declare preprocessing
+                    preprocess = PreprocessingLea(targetrate=targetrate)
+                    #----------- running cross-validation
+                    Xval_on_patients(predictor,
+                                     stack_feature,
+                                     patients_list,
+                                     preprocess=preprocess,
+                                     max_segments=None,
+                                     path_dict=path_dict,
+                                     n_fold=3)
 
 if __name__ == '__main__':
     main()

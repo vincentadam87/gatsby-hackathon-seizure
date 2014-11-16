@@ -40,7 +40,11 @@ class EEGData(object):
             + 1e-6 * np.random.randn(n_rows_zero_variance, self.eeg_data.shape[1])
 
         # sequence
-        self.sequence = base_data[4]
+
+        if len(base_data) > 4: # sequence information only in test data
+            self.sequence = base_data[4]
+        else:
+            self.sequence = 0
         # data_length_sec
         self.data_length_sec = base_data[1]
         # sampling_frequency
