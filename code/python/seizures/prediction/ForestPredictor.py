@@ -15,6 +15,8 @@ class ForestPredictor(PredictorBase):
     def __init__(self, n_estimators=100, max_features='auto'):
         self.clf = RandomForestClassifier(n_estimators=n_estimators, 
                 max_features=max_features)
+        self.n_estimators = n_estimators
+        self.max_features = max_features
 
     @abstractmethod
     def fit(self, X, y):
@@ -41,7 +43,7 @@ class ForestPredictor(PredictorBase):
         return self.clf.predict_proba(X)[:, 1]
 
     def __str__(self):
-        return "Forest"
+        return "Forest (%d)"% self.n_estimators
 
 if __name__ == '__main__':
     N = 1000

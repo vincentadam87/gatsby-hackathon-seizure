@@ -35,19 +35,24 @@ class SVMPredictor(PredictorBase):
         """
         return self.clf.predict_proba(X)[:, 1]
 
+
+    def __str__(self):
+        return "SVC"
+
+
 if __name__ == '__main__':
-    N = 1000
+    N = 100
     D = 2
     X = np.random.rand(N, D)
     y = np.random.randint(0, 2, N)
 
-    predictor = SVMPredictor()
-    predictor.fit(X, y)
+    predictor1 = SVMPredictor()
+    predictor1.fit(X, y)
 
     x = np.random.rand(1, D)
-    pred = predictor.predict(x)
+    pred1 = predictor1.predict(x)
 
-    print pred
+    print pred1
 
 
 
