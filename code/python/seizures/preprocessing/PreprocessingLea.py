@@ -11,8 +11,8 @@ class PreprocessingLea(PreprocessingBase):
 
     params = None
 
-    def __init__(self, params=None):
-        if (params == None):
+    def __init__(self, **kwargs):
+        if ('params' not in kwargs):
             self.params =  { 'anti_alias_cutoff': 500.,
           'anti_alias_width': 30.,
           'anti_alias_attenuation' : 40,
@@ -21,7 +21,14 @@ class PreprocessingLea(PreprocessingBase):
           'elec_noise_cutoff' : [59.,61.],
           'targetrate':400}
         else:
-            self.params = params
+            self.params = kwargs['params']
+
+        if 'targetrate' in kwargs:
+            self.params['targetrate'] = kwargs['targetrate']
+        if 'anti_alias_cutoff' in kwargs:
+            self.params['anti_alias_cutoff'] = kwargs['anti_alias_cutoff']
+
+
 
     def apply(self, X, fs):
         tmp_params = self.params
@@ -29,4 +36,4 @@ class PreprocessingLea(PreprocessingBase):
         return preprocess_multichannel_data(X, tmp_params)
 
     def __str__(self):
-        return str(self.params)+"\n"
+        return str(self.params)+""
