@@ -112,7 +112,11 @@ class SubmissionFile_slurm():
 
         # create parameter instance that is needed for any batch computation engine
         logger.info("Creating batch parameter instance")
-        batch_parameters = BatchClusterParameters(max_walltime=3600*24, foldername=foldername)
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+
+        batch_parameters = BatchClusterParameters(max_walltime=3600*24,
+                                                  foldername=foldername,
+                                                  job_name_base="kaggle_submit_"+timestr+"_")
 
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")
