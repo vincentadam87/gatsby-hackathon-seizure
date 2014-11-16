@@ -286,7 +286,7 @@ class DataLoader_slurm(object):
         return files
 
     def _merge_vectors_into_matrix(self, feature_vectors):
-        print feature_vectors
+        #print feature_vectors
         n = len(feature_vectors)
         d = len(feature_vectors[0])
         matrix = np.zeros((n, d))
