@@ -36,7 +36,9 @@ class FeatureSplitAndAverage(FeatureExtractBase):
 
         return sum(extracted_features_list)/self.k
 
-
+    def __str__(self):
+        subs = [str(e) for e in self.feature_generators]
+        return 'SplitAndAverage' + '(%s' % (', '.join(subs))+', %d)' % self.k
 
 
 

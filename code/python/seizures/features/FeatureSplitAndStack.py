@@ -36,7 +36,8 @@ class FeatureSplitAndStack(FeatureExtractBase):
 
         return np.hstack(extracted_features_list)
 
-
+    def __str__(self):
+        return 'SplitAndStack' + '(%s' % str(self.feature) +', %d)' % self.k
 
 
 
