@@ -27,3 +27,6 @@ class PreprocessingLea(PreprocessingBase):
         tmp_params = self.params
         tmp_params['fs'] = fs
         return preprocess_multichannel_data(X, tmp_params)
+
+    def __str__(self):
+        return str(self.params)+"\n"

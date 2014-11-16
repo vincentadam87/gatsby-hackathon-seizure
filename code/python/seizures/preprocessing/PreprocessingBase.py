@@ -25,3 +25,6 @@ class PreprocessingBase(object):
         """
         raise NotImplementedError()
 
+    @abstractmethod
+    def __str__(self):
+        raise NotImplementedError()
