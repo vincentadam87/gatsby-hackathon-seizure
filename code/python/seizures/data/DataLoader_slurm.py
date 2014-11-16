@@ -1,12 +1,10 @@
 import glob
 from os.path import join
 import os
-from seizures.data.EEGData import EEGData
 import numpy as np
 import random
 from seizures.features.FeatureExtractBase import FeatureExtractBase
-from os.path import expanduser
-from seizures.Global import Global
+import time
 
 import independent_jobs
 from independent_jobs.tools.Log import Log
@@ -25,17 +23,20 @@ class DataLoader_slurm(object):
     @author Vincent (from Shaun original loader)
     """
 
-    def __init__(self, base_dir, feature_extractor, preprocess=None):
+    def __init__(self, path_dict, feature_extractor, preprocess=None):
         """
         base_dir: path to the directory containing patient folders i.e., directory
         containing Dog_1/, Dog_2, ..., Patient_1, Patient_2, ....
         """
+        assert 'clips_folder' in path_dict
+        base_dir = path_dict['clips_folder']
         if not os.path.isdir(base_dir):
             raise ValueError('%s is not a directory.' % base_dir)
         if not isinstance(feature_extractor, FeatureExtractBase):
             raise ValueError('feature_extractor must be an instance of FeatureExtractBase')
 
         self.base_dir = base_dir
+        self.path_dict = path_dict
         self.feature_extractor = feature_extractor
         # patient_name = e.g., Dog_1
         self.patient_name = None
@@ -121,12 +122,17 @@ class DataLoader_slurm(object):
         # create an instance of the SGE engine, with certain parameters
 
         # create folder name string
-        foldername = Global.path_map('slurm_jobs_folder')+'/DataLoader'
+        assert 'slurm_jobs_folder' in self.path_dict
+        foldername = self.path_dict['slurm_jobs_folder'] +'/DataLoader'
         logger.info("Setting engine folder to %s" % foldername)
 
         # create parameter instance that is needed for any batch computation engine
         logger.info("Creating batch parameter instance")
-        batch_parameters = BatchClusterParameters(foldername=foldername)
+
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        batch_parameters = BatchClusterParameters(max_walltime=3600*24,
+                                                  foldername=foldername,
+                                                  job_name_base="kaggle_loader_"+timestr+"_")
 
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")
@@ -145,7 +151,8 @@ class DataLoader_slurm(object):
             # Each call of _load_data_from_file appends data to features_train
             # features_test lists depending on the (type) variable.
             # It also appends data to type_labels and early_labels.
-            job = Data_parallel_job(SingleResultAggregator(), self.base_dir,
+            job = Data_parallel_job(SingleResultAggregator(),
+                                    self.base_dir,
                                     self.feature_extractor,
                                     self.patient_name,
                                     filename,
@@ -158,8 +165,6 @@ class DataLoader_slurm(object):
         engine.wait_for_all()
 
         # the reduce part
-        # lets collect the results
-
 
         logger.info("Collecting results")
         for i in range(len(aggregators)):
@@ -177,12 +182,6 @@ class DataLoader_slurm(object):
 
 
         print "\ndone"
-
-        # do the wait
-
-        # agregate
-
-        # push to self
 
 
 
