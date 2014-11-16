@@ -51,6 +51,7 @@ class Global():
 
         home = os.path.expanduser("~")
         path_dict['slurm_jobs_folder'] = os.sep.join([home, "kaggle_slurm"])
+        path_dict['my_xval_folder'] = os.sep.join([home, "xval_results"])
 
         # ---------------- Wittawat -----------------
         #full path to ..../code/python/
@@ -70,12 +71,11 @@ class Global():
         path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result' 
         # --------------- end Wittawat --------------
 
-
-
         # ---------------- Vincent -----------------
         path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
         path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction_ds/'
         path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_prediction/'
+        path_dict['my_xval_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_prediction/xval/'
         path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/vincenta/kaggle_slurm/'
         # --------------- end Vincent -------------
 
@@ -87,3 +87,57 @@ class Global():
 
 
 
+    @staticmethod
+    def custom_path_dict(name):
+
+        path_dict = {}
+
+        # ... READ THIS ....
+        # Not sure how to share configurations among collaborators.
+        # Not ideal. But for now, change the following paths to your own by
+        # copying the relevant lines and modify. Leave paths of other users
+        # commented. Do not remove other users' paths. You don't need to commit
+        # this file if there is no new key. If you define a new key, write
+        # comment and you may commit it so other users can define the same key
+        # pointing to his/her own path.
+        #
+        # Ideally configuration file should be outside version control.
+        # But anyway...
+
+        home = os.path.expanduser("~")
+        path_dict['slurm_jobs_folder'] = os.sep.join([home, "kaggle_slurm"])
+        path_dict['my_xval_folder'] = os.sep.join([home, "xval_results"])
+
+        assert name in ['vincent', 'wittawat']
+
+        if name == 'wittawat':
+            # ---------------- Wittawat -----------------
+            #full path to ..../code/python/
+            path_dict['python_root'] = '/home/nuke/git/gatsby-hackathon-seizure/code/python'
+
+            # full path to folder containing subject-specific folders i.e., Dog_1/,
+            # Patien_1, ... To get a subject specific folder, use
+            # Global.get_subject_folder('Dog_1') for example.
+            #path_dict['clips_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_data'
+            path_dict['clips_folder'] = '/home/nuke/Dropbox/gatsby/hackathon/clips/'
+
+            # full path to the result folder. This folder can be anywhere.
+            # This is mainly used for containing, for example, trained models,
+            # prediction result files, ..
+            # To get a subfolder in this result folder, use
+            # Global.get_child_result_folder('subfolder')
+            path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result'
+            # --------------- end Wittawat --------------
+        elif name == 'vincent':
+            # ---------------- Vincent -----------------
+            path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
+            path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction_ds/'
+            path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_prediction/'
+            path_dict['my_xval_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_prediction/xval/'
+            path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/vincenta/kaggle_slurm/'
+            # --------------- end Vincent -------------
+
+        else:
+            raise AttributeError()
+
+        return path_dict
