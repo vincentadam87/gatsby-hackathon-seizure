@@ -13,7 +13,9 @@ class SEFeatures(FeatureExtractBase):
     @author Vincent
     """
 
-    def __init__(self):
+    def __init__(self, nband=60, fmax=200):
+        self.nband = nband
+        self.fmax = fmax
         pass
 
     def extract(self, instance):
@@ -28,11 +30,9 @@ class SEFeatures(FeatureExtractBase):
         SEdata = np.real(np.fft.fft(data,axis=1))**2
 
         I = range(time)
-        fmax = 200.
-        If = [i for i in I if freqs[i]*fs <fmax] # indices of freq below X Hz
+        If = [i for i in I if freqs[i]*fs <self.fmax] # indices of freq below X Hz
 
-        NBAND = 60
-        L = len(If)/min(NBAND,len(If)) # cutting spectrum in homogenous bands
+        L = len(If)/min(self.nband,len(If)) # cutting spectrum in homogenous bands
         edges = If[0::L] # bands of length L
         bands = [range(edges[i],edges[i+1]) for i in range(len(edges)-1) ]
         n_band = len(bands)
@@ -46,6 +46,6 @@ class SEFeatures(FeatureExtractBase):
         return np.hstack(features)
 
     def __str__(self):
-        return "SE"
+        return "SE"+'(%d,%dHz)'% (self.nband, self.fmax)
 
 
