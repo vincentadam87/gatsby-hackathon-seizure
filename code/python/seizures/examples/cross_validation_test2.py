@@ -11,6 +11,8 @@ from prettytable import PrettyTable
 
 from seizures.preprocessing.PreprocessingLea import PreprocessingLea
 from seizures.data.DataLoader_slurm import DataLoader_slurm
+from seizures.data.DataLoader import DataLoader
+
 from seizures.evaluation.XValidation import XValidation
 from seizures.evaluation.performance_measures import accuracy, auc
 from seizures.features.FeatureExtractBase import FeatureExtractBase
@@ -20,12 +22,13 @@ from seizures.features.FeatureSplitAndStack import FeatureSplitAndStack
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.ARFeatures import ARFeatures, VarLagsARFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
+from seizures.prediction.XtraTreesPredictor import XtraTreesPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor
 
 from seizures.Global import Global
 
 
-def Xval_on_single_patient(predictor,
+def Xval_on_single_patient(predictors,
                            feature_extractor,
                            patient_name="Dog_1",
                            preprocess=None,
@@ -42,23 +45,29 @@ def Xval_on_single_patient(predictor,
     """
 
     loader = DataLoader_slurm(path_dict, feature_extractor, preprocess=preprocess)
+
     X_list, y_preictal = loader.blocks_for_Xvalidation(patient_name, n_fold=n_fold, max_segments=max_segments)
 
 
     # running cross validation
     print patient_name
-    print "\ncross validation: seizures vs not"
-    result_seizure = XValidation.evaluate(X_list, y_preictal, predictor, evaluation=auc)
-    print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-           % (np.mean(result_seizure), np.std(result_seizure), result_seizure)
+    print "\ncross validation: preictal vs interictal"
+
+    result_seizure_preds = []
+    for predictor in predictors:
+
+        # for a single predictor
+        result_seizure_pred = XValidation.evaluate(X_list, y_preictal, predictor, evaluation=auc)
+        # stacking together
+        result_seizure_preds.append(result_seizure_pred)
+        print str(predictor) + 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
+               % (np.mean(result_seizure_pred), np.std(result_seizure_pred), result_seizure_pred)
 
 
+    return result_seizure_preds
 
 
-    return result_seizure
-
-
-def Xval_on_patients(predictor,
+def Xval_on_patients(predictors,
                      feature_extractor,
                      patients_list=['Dog_1'],
                      preprocess=None,
@@ -73,46 +82,63 @@ def Xval_on_patients(predictor,
     '''
 
     assert(isinstance(feature_extractor, FeatureExtractBase))
-    results_seizure = []
 
     result_str_ind = ""
 
-    for patient_name in patients_list:
-        result_seizure = Xval_on_single_patient(predictor,
-                                                feature_extractor,
-                                                patient_name,
-                                                preprocess=preprocess,
-                                                max_segments=max_segments,
-                                                path_dict=path_dict,
-                                                n_fold=n_fold)
-        results_seizure.append(result_seizure)
+    results_xval = []
+
+    header = ["Feature(s)"]
+    for i_pred in range(len(predictors)):
+        predictor = predictors[i_pred]
+        header += [ "AUC mean -"+str(predictor), "AUC std-"+str(predictor)]
+
+
+    for i_name in range(len(patients_list)):
+        patient_name = patients_list[i_name]
+        result_seizure_preds = Xval_on_single_patient(predictors,
+                                                    feature_extractor,
+                                                    patient_name,
+                                                    preprocess=preprocess,
+                                                    max_segments=max_segments,
+                                                    path_dict=path_dict,
+                                                    n_fold=n_fold)
+        results_xval.append(result_seizure_preds)
+
+
         result_str_ind += "Patient: "+patient_name+"\n"
-        result_str_ind += "Predictor: "+str(predictor)+"\n"
-        x = PrettyTable(["Feature(s)", "AUC mean", "AUC std"])
+        row = [str(feature_extractor)]
+        for i_pred in range(len(predictors)):
+            row += [np.mean(result_seizure_preds[i_pred]), np.std(result_seizure_preds[i_pred])]
+        x = PrettyTable(header)
         x.float_format = "1.4"
-        x.align["AUC mean"] = "l"
-        x.align["AUC std"] = "l"
-        x.add_row([str(feature_extractor), np.mean(result_seizure), np.std(result_seizure)])
+        x.align = "l"
+        x.add_row(row)
         result_str_ind += str(x)+"\n"
 
 
-    avg_results_seizure = np.mean(np.array(results_seizure), axis=0)
-    print "\ncross validation: preictal vs interictal"
-    print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
-           % (np.mean(avg_results_seizure), np.std(avg_results_seizure), avg_results_seizure)
+    results_pred = [[] for i in range(len(predictors))]
 
+    for i_pred in range(len(predictors)):
+        results_pred_patients = []
+        for i_name in range(len(patients_list)):
+            results_pred_patients.append(np.mean(results_xval[i_name][i_pred]))
+        results_pred[i_pred] = np.mean(results_pred_patients)
+
+
+    result_str = ""
     # ------- pretty tabling
-    result_str = "working with dataset: "+  path_dict['clips_folder'] +"\n"
+    result_str += "working with dataset: "+  path_dict['clips_folder'] +"\n"
     result_str += "Xval, nfold = "+ str(n_fold)+"\n"
     result_str += "Preprocessing:\n"+ str(preprocess)+"\n"
     result_str += result_str_ind
     result_str += "Patients: "+str(patients_list)+"\n"
-    result_str += "Predictor: "+str(predictor)+"\n"
-    x = PrettyTable(["Feature(s)", "AUC mean", "AUC std"])
+    x = PrettyTable(header)
     x.float_format = "1.4"
-    x.align["AUC mean"] = "l"
-    x.align["AUC std"] = "l"
-    x.add_row([str(feature_extractor), np.mean(avg_results_seizure), np.std(avg_results_seizure)])
+    x.align = "l"
+    row = [str(feature_extractor)]
+    for i_pred in range(len(predictors)):
+        row += [np.mean(results_pred[i_pred]), np.std(results_pred[i_pred])]
+    x.add_row(row)
     result_str += str(x)+"\n"
 
     # -------- writing txt file
@@ -129,7 +155,7 @@ def Xval_on_patients(predictor,
 
     print str(result_str)
 
-    return avg_results_seizure
+    #return avg_results_seizure
 
 
 
@@ -160,32 +186,29 @@ def main():
     path_dict['clips_folder'] = '/nfs/data3/kaggle_prediction'
 
     # There are Dog_[1-5] and Patient_[1-2]
-    patients_list = ["Dog_%d" % i for i in range(1, 2)] + ["Patient_%d" % i for i in range(1, 2)]
+    patients_list = ["Dog_%d" % i for i in range(1, 6)] + ["Patient_%d" % i for i in range(1, 3)]
 
-    Features = [VarLagsARFeatures(lags=2),
-                VarLagsARFeatures(lags=3),
-                PLVFeatures(),
-                SEFeatures(fmax=1000,nband=60),
-                SEFeatures(fmax=500,nband=60)]
+    Features = [StackFeatures(VarLagsARFeatures(lags=2), PLVFeatures(), SEFeatures(fmax=1000,nband=100) )]
 
     for feature in Features:
-        for n_split in [1,10, 60]:
-            for targetrate in [400, 800, 1600]:
-                for n_estimators in [100,500,1000]:
-                    #----------- Declare features
-                    stack_feature = FeatureSplitAndStack(feature, n_split)
-                    #----------- Declare predictors
-                    predictor = ForestPredictor(n_estimators=n_estimators)
-                    #----------- Declare preprocessing
-                    preprocess = PreprocessingLea(targetrate=targetrate)
-                    #----------- running cross-validation
-                    Xval_on_patients(predictor,
-                                     stack_feature,
-                                     patients_list,
-                                     preprocess=preprocess,
-                                     max_segments=None,
-                                     path_dict=path_dict,
-                                     n_fold=3)
+        for n_split in [1]:
+            for targetrate in [ 800 ]:
+
+                #----------- Declare features
+                stack_feature = FeatureSplitAndStack(feature, n_split)
+                #----------- Declare predictors
+                predictors = [ForestPredictor(n_estimators=500),
+                              XtraTreesPredictor(n_estimators=500)]
+                #----------- Declare preprocessing
+                preprocess = PreprocessingLea(targetrate=targetrate)
+                #----------- running cross-validation
+                Xval_on_patients(predictors,
+                                 stack_feature,
+                                 patients_list,
+                                 preprocess=preprocess,
+                                 max_segments=None,
+                                 path_dict=path_dict,
+                                 n_fold=3)
 
 if __name__ == '__main__':
     main()
