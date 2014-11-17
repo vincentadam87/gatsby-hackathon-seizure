@@ -8,6 +8,8 @@ from seizures.features.ARFeatures import ARFeatures
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.MixFeatures import MixFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
+from seizures.prediction.SVMPredictor import SVMPredictor
+
 from seizures.preprocessing.PreprocessingLea import PreprocessingLea
 from seizures.submission.SubmissionFile_slurm import SubmissionFile_slurm
 from seizures.Global import Global
@@ -30,7 +32,7 @@ if __name__ == '__main__':
 
 
     preprocess = PreprocessingLea()
-    predictor_seizure = ForestPredictor()
+    predictor_seizure = SVMPredictor()
     feature_extractor = MixFeatures(feature_list)
 
     data_path = Global.path_map('clips_folder')
