@@ -114,9 +114,13 @@ class SubmissionFile_slurm():
         logger.info("Creating batch parameter instance")
         timestr = time.strftime("%Y%m%d-%H%M%S")
 
+
+        johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
+
         batch_parameters = BatchClusterParameters(max_walltime=3600*24,
                                                   foldername=foldername,
-                                                  job_name_base="kaggle_submit_"+timestr+"_")
+                                                  job_name_base="kaggle_submit_"+timestr+"_",
+                                                  parameter_prefix=johns_slurm_hack)
 
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")

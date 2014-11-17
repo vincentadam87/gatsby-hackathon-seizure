@@ -129,10 +129,12 @@ class DataLoader_slurm(object):
         # create parameter instance that is needed for any batch computation engine
         logger.info("Creating batch parameter instance")
 
+        johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         timestr = time.strftime("%Y%m%d-%H%M%S")
         batch_parameters = BatchClusterParameters(max_walltime=3600*24,
                                                   foldername=foldername,
-                                                  job_name_base="kaggle_loader_"+timestr+"_")
+                                                  job_name_base="kaggle_loader_"+timestr+"_",
+                                                  parameter_prefix=johns_slurm_hack)
 
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")
