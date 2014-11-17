@@ -13,13 +13,14 @@ class PreprocessingLea(PreprocessingBase):
 
     def __init__(self, **kwargs):
         if ('params' not in kwargs):
-            self.params =  { 'anti_alias_cutoff': 500.,
-          'anti_alias_width': 30.,
-          'anti_alias_attenuation' : 40,
+            self.params =  {'anti_alias_attenuation' : 40,
           'elec_noise_width' :3.,
           'elec_noise_attenuation' : 60.0,
           'elec_noise_cutoff' : [59.,61.],
           'targetrate':400}
+          #'anti_alias_cutoff': 500.,
+          #'anti_alias_width': 30.,
+
         else:
             self.params = kwargs['params']
 

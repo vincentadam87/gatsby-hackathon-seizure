@@ -10,13 +10,13 @@ def preprocess_multichannel_data(matrix,params):
     authors: Lea and Vincent
     """
     assert(type(matrix)==np.ndarray)
+    #matrix = anti_alias_filter(matrix,params)
     #print 'downsample...'
     matrix,fs = downsample(matrix,params)
     params['fs']=fs # update sampling rate
     #print 'initial ', matrix.shape
     matrix = remove_elec_noise(matrix,params)
     #print 'elec noise ', matrix.shape
-    matrix = anti_alias_filter(matrix,params)
     #print 'anti alias ', matrix.shape
     matrix = remove_dc(matrix)
     #print 'dc ', matrix.shape
