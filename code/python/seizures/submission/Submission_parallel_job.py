@@ -12,21 +12,22 @@ class Submission_parallel_job(IndependentJob):
     def __init__(self, aggregator,
                  feature_extractor,
                  predictor_preictal,
-                 preprocess, patient, data_path):
+                 preprocess, patient, path_dict):
 
         IndependentJob.__init__(self, aggregator)
         self.preprocess = preprocess
         self.feature_extractor = feature_extractor
         self.predictor_preictal = predictor_preictal
         self.patient = patient
-        self.data_path = data_path
+        self.data_path = path_dict['clips_folder']
+        self.path_dict = path_dict
 
     def compute(self):
         logger.info("computing")
         # create ScalarResult instance
 
         result_lines = []
-        loader = DataLoader_slurm(self.data_path,
+        loader = DataLoader_slurm(self.path_dict,
                                   self.feature_extractor,
                                   preprocess=self.preprocess)
         # X_train is n x d
@@ -49,7 +50,7 @@ class Submission_parallel_job(IndependentJob):
 
 
         # now predict on all test points
-        loader = DataLoader_slurm(self.data_path, self.feature_extractor, preprocess=self.preprocess)
+        loader = DataLoader_slurm(self.path_dict, self.feature_extractor, preprocess=self.preprocess)
         # X_test: n x d matrix
         X_test = loader.test_data(self.patient)
         test_fnames_patient = loader.files

@@ -22,7 +22,7 @@ class SubmissionFile_slurm():
     @author Vincent and Alessandro
     """
     
-    def __init__(self, data_path, patients=None):
+    def __init__(self, path_dict, patients=None):
         """
         Constructor
         
@@ -31,10 +31,13 @@ class SubmissionFile_slurm():
         containing e.g., Dog_1/, Dog_2/, ....
         patients - a list of patient names e.g., ['Dog_1', 'Patient_2', ...]
         """
+        assert 'clips_folder' in path_dict
+        data_path = path_dict['clips_folder']
         if not os.path.isdir(data_path):
             raise ValueError('%s is not a directory.'%data_path)
 
-        self.data_path = Global.path_map('clips_folder')
+        self.data_path = data_path
+        self.path_dict = path_dict
 
         if patients == None:
             self.patients = ["Dog_%d" % i for i in range(1, 5)] + ["Patient_%d" % i for i in range(1, 2)]
@@ -107,7 +110,7 @@ class SubmissionFile_slurm():
         # create an instance of the SGE engine, with certain parameters
 
         # create folder name string
-        foldername = Global.path_map('slurm_jobs_folder')+'/Submission'
+        foldername = self.path_dict['slurm_jobs_folder']+'/Submission'
         logger.info("Setting engine folder to %s" % foldername)
 
         # create parameter instance that is needed for any batch computation engine
@@ -138,7 +141,7 @@ class SubmissionFile_slurm():
                                           predictor_preictal,
                                           preprocess,
                                           patient,
-                                          self.data_path)
+                                          self.path_dict)
 
             aggregators.append(engine.submit_job(job))
 
@@ -168,7 +171,7 @@ class SubmissionFile_slurm():
 
         timestr = time.strftime("%Y%m%d-%H%M%S")
         csv_fname = 'submission_' + timestr + '_'+ output_fname + '.csv'
-        my_result_folder = Global.path_map('my_result_folder')
+        my_result_folder = self.path_dict['my_result_folder']
         if not os.path.exists(my_result_folder):
             os.makedirs(my_result_folder)
         csv_path = Global.get_child_result_folder(csv_fname)

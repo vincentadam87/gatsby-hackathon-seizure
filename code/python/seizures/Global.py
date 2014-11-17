@@ -68,7 +68,9 @@ class Global():
         # prediction result files, ..
         # To get a subfolder in this result folder, use
         # Global.get_child_result_folder('subfolder')
-        path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result' 
+        path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result'
+        path_dict['my_xval_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/kaggle_xval/'
+        path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/kaggle_slurm/'
         # --------------- end Wittawat --------------
 
         # ---------------- Vincent -----------------
@@ -126,7 +128,10 @@ class Global():
             # prediction result files, ..
             # To get a subfolder in this result folder, use
             # Global.get_child_result_folder('subfolder')
-            path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result'
+            path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result/'
+
+            path_dict['my_xval_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/kaggle_xval/'
+            path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/kaggle_slurm/'
             # --------------- end Wittawat --------------
         elif name == 'vincent':
             # ---------------- Vincent -----------------
