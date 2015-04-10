@@ -63,6 +63,10 @@
 Methods review
 \end_layout
 
+\begin_layout Date
+9 November 2014
+\end_layout
+
 \begin_layout Section
 Seizure detection
 \end_layout
@@ -348,9 +352,7 @@ key "key-2"
 \end_inset
 
  they report a poor performance of features based on Lyapunov exponents.
- They use the following bivariate features: Maximal cross-correlation, Nonlinear
- Interdependence, Difference of Short-Term Lyapunov Exponents, Wavelet Analysis
- Based Measure of Synchrony.
+ 
 \end_layout
 
 \begin_layout Subsection
