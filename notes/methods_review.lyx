@@ -64,19 +64,23 @@ Methods review
 \end_layout
 
 \begin_layout Date
-9 November 2014
+9th November 2014 / 10th April 2015
 \end_layout
 
 \begin_layout Section
-Seizure detection
-\end_layout
-
-\begin_layout Subsection*
-Seizure detection winner
+Seizure detection (August 2014)
 \end_layout
 
 \begin_layout Standard
-The code and documentation can be find at:
+Summary of the methods used:
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
+\end_layout
+
+\begin_layout Standard
+The code and documentation can be found at:
 \end_layout
 
 \begin_layout Standard
@@ -101,21 +105,10 @@ target "https://github.com/MichaelHills/seizure-detection/raw/master/seizure-det
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset VSpace medskip
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-Summary of the methods used:
-\end_layout
-
 \begin_layout Enumerate
-Feature vector: FFT 1-47Hz + inter-channel correlation coefficients, CC,
- both in time and frequency domains + CC matrix eigenvalues in both time
- and frequency domains.
+Features: FFT magnitudes 1-47Hz + inter-channel correlation coefficients,
+ CC, both in time and frequency domains + CC matrix eigenvalues in both
+ time and frequency domains.
 \end_layout
 
 \begin_layout Enumerate
@@ -125,6 +118,10 @@ Classifier: per-patient Random Forest classifiers (3000 trees), trained
 
 \begin_layout Subsection
 Feature extraction
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
 \end_layout
 
 \begin_layout Standard
@@ -217,6 +214,10 @@ on).
 Classifier
 \end_layout
 
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
+\end_layout
+
 \begin_layout Standard
 The chosen method for classification was selected with the help of the scikit-le
 arn python machine learning library, which provides a common-interface for
@@ -236,33 +237,228 @@ RandomForestClassifier(n_estimators=3000,min_samples_split=1,bootstrap=False,
  random_state=0)
 \end_layout
 
-\begin_layout Subsection
-Ictal training data generation
+\begin_layout Subsection*
+Notes
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
 \end_layout
 
 \begin_layout Standard
-He created additional data using overlapping segments.
+Ictal training data generation: He created additional data using overlapping
+ segments.
  Note, however, that this was not used at the end in the winning submission.
 \end_layout
 
 \begin_layout Section
-Seizure prediction
+Seizure prediction (November 2014)
 \end_layout
 
-\begin_layout Subsection*
-Seizure prediction forum discussions
+\begin_layout Standard
+Summary of the methods used:
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Medial-Research, winner)
+\end_layout
+
+\begin_layout Standard
+They rejected the prize because they didn't want to release the code- they
+ are a company, so they may use it for some other medical applications.
+ In the forum, however, they provided a rather detailed description of their
+ methods.
+\end_layout
+
+\begin_layout Standard
+The algorithm was developed from scratch in native C on Visual C++ environment.
+\end_layout
+
+\begin_layout Enumerate
+Features: Energy based features in 15s time bands, for each channel + FFT
+ log energy in different frequency bands, for each channel and for all channels
+ avg + across channels correlation of the previous measure + SQRT or POW
+ for each feature (to capture non-liniarities (?)).
+\end_layout
+
+\begin_layout Enumerate
+Classifier: iterative LS Ensemble (?), highly regulated against overfitting.
+\end_layout
+
+\begin_layout Standard
+One more “trick” was the post processing (although he believes that he could
+ have won the competition even without this).
+ He found pairs of 10 minutes that are most likely to be together in time,
+ and generally he did a MAX function of this pair scores (?).
+\end_layout
+
+\begin_layout Subsubsection*
+b) 2nd position (ESAI-CEU-UCH)
+\end_layout
+
+\begin_layout Standard
+The code and documentation can be found at:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "https://github.com/ESAI-CEU-UCH/kaggle-epilepsy"
+target "https://github.com/ESAI-CEU-UCH/kaggle-epilepsy"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "https://github.com/ESAI-CEU-UCH/kaggle-epilepsy/raw/master/report.pdf"
+target "https://github.com/ESAI-CEU-UCH/kaggle-epilepsy/raw/master/report.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Features: FFT + PCA/ICA based and eigenvalues of pairwise channels correlation
+ matrix.
+\end_layout
+
+\begin_layout Enumerate
+Classifier: Ensemble of KNN and ANN
 \end_layout
 
 \begin_layout Subsection
 Feature extraction
 \end_layout
 
+\begin_layout Subsubsection*
+a) 1st position (Medial-Research, winner)
+\end_layout
+
 \begin_layout Standard
-Didn't find anything relevant.
+The leading author created a one-out LS (LeastSquares?) ensemble environment
+ for finding best features.
+ Apparently the C implementation allowed to incorporate many of them (900-1500
+ depending on the channels).
+ The best features were based on:
+\end_layout
+
+\begin_layout Itemize
+General energy average and energy STDV over time (15 seconds bands), for
+ each channel.
+\end_layout
+
+\begin_layout Itemize
+FFT, log of energy in different frequency bands for each channel.
+\end_layout
+
+\begin_layout Itemize
+FFT, log of energy, and total energy (without log) in different frequency
+ bands for the average of all the channels.
+\end_layout
+
+\begin_layout Itemize
+Correlation of energy in frequency bands between channels.
+\end_layout
+
+\begin_layout Itemize
+SQRT or POW for each feature, in order to exploit nonlinear behavior of
+ each feature.
+\end_layout
+
+\begin_layout Subsubsection*
+b) 2nd position (ESAI-CEU-UCH)
+\end_layout
+
+\begin_layout Standard
+The best features were based on FFT combined with PCA/ICA.
+\end_layout
+
+\begin_layout Itemize
+FFT of 60s overlapping windows, for every channel, filtered with a Hamming
+ window.
+ Log of mean power in several frequency bands is computed: delta (0.1Hz —
+ 4Hz), theta (4Hz — 8Hz), alpha (8Hz — 12Hz), beta (12Hz — 30Hz), low-gamma
+ (30Hz — 70Hz), high-gamma (70Hz — 180Hz).
+\end_layout
+
+\begin_layout Itemize
+PCA/ICA transformation (?) on the whole training data FFT matrices (concatenated
+ by rows) is performed in order to remove linear correlations between features.
+\end_layout
+
+\begin_layout Standard
+Two additional features were based on Michael Hills solution:
+\end_layout
+
+\begin_layout Itemize
+Eigenvalues of pairwise channels correlation matrix: Correlations between
+ the channels with windows covering 60s were calculated and the eigenvalues
+ of the correlation matrix were taken as features.
+\end_layout
+
+\begin_layout Itemize
+Additionally, for each channel, a transformed signal is obtained with the
+ difference between two consecutive values of the signal.
+ The correlations of these differentiated signals form new features that
+ added to the correlation of the original signals increase the predictive
+ performance with KNN models.
+\end_layout
+
+\begin_layout Standard
+Finally, there were some additional features based on differences found
+ in the variability of the signal between the ictal and inter-ictal segments.
+\end_layout
+
+\begin_layout Itemize
+A fourier basis representation (with 15 elements) was calculated for every
+ data set.
+ Pre-ictal signals coefficients displayed lower coefficients (closer to
+ 0) while inter-ictal signals coefficients presented greater disparity between
+ them.
+ The summary measure that was taken to account for this behavior was the
+ (mean across channels of) the standard deviation of these coefficients.
 \end_layout
 
 \begin_layout Subsection
 Classifier
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Medial-Research, winner)
+\end_layout
+
+\begin_layout Standard
+Given that the amount of training data is actually quite small, a major
+ concern for the author was to find an algorithm very well regulated against
+ overfitting.
+ He argued that KNN or tree-based algorithms couldn't work good enough (?)
+ (I suspect that they didn't really try them).
+ He chose a 
+\begin_inset Quotes eld
+\end_inset
+
+special
+\begin_inset Quotes erd
+\end_inset
+
+ custom-designed iterative LS Ensemble (?), highly regulated against overfitting.
+\end_layout
+
+\begin_layout Subsubsection*
+b) 2nd position (ESAI-CEU-UCH)
+\end_layout
+
+\begin_layout Subsection*
+Seizure prediction forum discussions.
+\end_layout
+
+\begin_layout Subsubsection*
+About the classifier:
 \end_layout
 
 \begin_layout Standard
@@ -312,7 +508,7 @@ No clue what this exactly means and whether this actually may be causing
  here some problems.
 \end_layout
 
-\begin_layout Subsection*
+\begin_layout Section
 Literature review
 \end_layout
 
