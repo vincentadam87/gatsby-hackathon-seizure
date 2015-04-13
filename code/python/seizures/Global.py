@@ -51,25 +51,29 @@ class Global():
 
         # ---------------- Wittawat -----------------
         #full path to ..../code/python/
-        path_dict['python_root'] = '/home/nuke/git/gatsby-hackathon-seizure/code/python'
-        
+        #path_dict['python_root'] = '/home/nuke/git/gatsby-hackathon-seizure/code/python'
+        path_dict['python_root'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/code/python'
+
         # full path to folder containing subject-specific folders i.e., Dog_1/,
         # Patien_1, ... To get a subject specific folder, use 
         # Global.get_subject_folder('Dog_1') for example.
-        path_dict['clips_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_data'
+        #path_dict['clips_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_data'
+        #path_dict['clips_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/wj_data/'
+        path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips'
 
         # full path to the result folder. This folder can be anywhere. 
         # This is mainly used for containing, for example, trained models, 
         # prediction result files, ..
         # To get a subfolder in this result folder, use
         # Global.get_child_result_folder('subfolder')
-        path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result' 
+        #path_dict['my_result_folder'] = '/home/nuke/git/gatsby-hackathon-seizure/wj_result'
+        path_dict['my_result_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/wj_result'
         # --------------- end Wittawat --------------
 
         # ---------------- Vincent -----------------
-        path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
-        path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips/'
-        path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_final_final/'
+        #path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
+        #path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips/'
+        #path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_final_final/'
         # --------------- end Vincent -------------
 
 

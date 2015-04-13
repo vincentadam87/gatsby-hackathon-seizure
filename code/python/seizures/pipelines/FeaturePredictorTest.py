@@ -328,8 +328,14 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
         #  'elec_noise_attenuation' : 60.0,
         #  'elec_noise_cutoff' : [49.,51.]}
         # list of preprocessed tuples
-        params = self.params
+        if not self.params:
+            params = loader.params
+        else:
+            params = self.params
+
         params['fs']=fs
+        print 'Preprocessing params: '
+        print params
 #        for (x, y_seizure, y_early) in train_data:
 #            x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, self.params)
 
