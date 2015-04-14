@@ -16,8 +16,34 @@ from abc import abstractmethod
 from sklearn import cross_validation
 from seizures.preprocessing import preprocessing
 import numpy as np
+import time
 
-from IPython.core.debugger import Tracer
+
+from independent_jobs.tools.Log import Log
+from independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
+from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
+from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
+from independent_jobs.jobs.IndependentJob import IndependentJob
+from independent_jobs.results.SingleResult import SingleResult
+from independent_jobs.tools.Log import logger
+
+class Data_parallel_job(IndependentJob):
+    def __init__(self, aggregator,feature_extractor,x,params):
+        IndependentJob.__init__(self, aggregator)
+        self.x = x
+        self.feature_extractor = feature_extractor
+        self.params = params
+
+    def compute(self):
+        logger.info("computing")
+        # create ScalarResult instance
+        self.params['fs']=self.x.sample_rate
+        self.x.eeg_data = preprocessing.preprocess_multichannel_data(self.x.eeg_data, self.params)
+        feat =self.feature_extractor.extract(self.x)
+        result = SingleResult(feat)
+        # submit the result to my own aggregator
+        self.aggregator.submit_result(result)
+        logger.info("done computing")
 
 class FeaturePredictorTestBase(object):
     """
@@ -33,8 +59,6 @@ class FeaturePredictorTestBase(object):
         data_path: full path to directory containing Dog_1, .. Patient_1,..
         """
 
-        #assert(isinstance(feature_extractor, FeatureExtractBase))
-        #assert(isinstance(predictor, PredictorBase))
         assert(isinstance(patient, basestring))
 
     @abstractmethod
@@ -278,18 +302,16 @@ class FeaturesPredictsTable(object):
     def __str__(self):
         self.print_ascii_table('seizure_mean_auc')
 
-
 class CachedCVFeaPredTester(FeaturePredictorTestBase):
     """
-    An implementation of FeaturesPredictorsTestBase which test 
-    by cross validation the given predictors using features from each 
-    feature_extractor on the patient data. Cache loaded raw data so that 
-    loading is done only once. 
-
-    @author: Wittawat 
+    An implementation of FeaturesPredictorsTestBase which test
+    by cross validation the given predictors using features from each
+    feature_extractor on the patient data. Cache loaded raw data so that
+    loading is done only once.
+    @author: Wittawat
     """
 
-    def __init__(self, feature_extractors, predictors, patient, 
+    def __init__(self, feature_extractors, predictors, patient,
             data_path=Global.path_map('clips_folder'),params=None):
 
         assert(type(feature_extractors)==type([]))
@@ -303,31 +325,20 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
 
     def test_combination(self, fold=3, max_segments=-1):
         """
-        Test the predictors using features given by each feature_extractor 
+        Test the predictors using features given by each feature_extractor
         in feature_extractors on the data specified by the patient argument.
-
-        :param max_segments: maximum segments to load. -1 to use the number of 
+        :param max_segments: maximum segments to load. -1 to use the number of
         total segments available. Otherwise, all segments (ictal and interictal)
-        will be randomly subsampled without replacement. 
-
+        will be randomly subsampled without replacement.
         return: an instance of FeaturesPredictsTable         """
 
-        loader = SubjectEEGData(self._patient, self._data_path, use_cache=True, 
+        loader = SubjectEEGData(self._patient, self._data_path, use_cache=True,
                 max_train_segments=max_segments)
 
         # a list of (Instance, y_seizure, y_early)'s
         train_data = loader.get_train_data()
         fs = train_data[0][0].sample_rate
 
-        # preprocessing. 
-        #params = {'fs':fs,
-        #  'anti_alias_cutoff': 100.,
-        ##  'anti_alias_width': 30.,
-        #  'anti_alias_attenuation' : 40,
-        #  'elec_noise_width' :3.,
-        #  'elec_noise_attenuation' : 60.0,
-        #  'elec_noise_cutoff' : [49.,51.]}
-        # list of preprocessed tuples
         if not self.params:
             params = loader.params
         else:
@@ -336,35 +347,89 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
         params['fs']=fs
         print 'Preprocessing params: '
         print params
-#        for (x, y_seizure, y_early) in train_data:
-#            x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, self.params)
 
-        #train_data2 = []
-        #for (x, y_seizure, y_early) in train_data:
-        #    x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
-        #    train_data2.append(((x, y_seizure, y_early)))
-        #train_data =train_data2
-
-        # pre-extract features 
         features = [] # list of feature tuples. list length = len(self._feature_extractors)
         Y_seizure = np.array([y_seizure for (x, y_seizure, y_early) in train_data])
         Y_early = np.array([y_early for (x, y_seizure, y_early) in train_data])
         skf_seizure = cross_validation.StratifiedKFold(Y_seizure, n_folds=fold)
         skf_early = cross_validation.StratifiedKFold(Y_early, n_folds=fold)
         for i, feature_extractor in enumerate(self._feature_extractors):
-            #print 'Extracting features with %s'%str(feature_extractor)
-            #Xlist = [feature_extractor.extract(x) for  (x, y_seizure, y_early)
-            #        in train_data]
+            print 'Extracting features with %s'%str(feature_extractor)
             Xlist = []
-            for (x, y_seizure, y_early) in train_data:
-                #print '---------'
-                #print x.eeg_data.shape
-                params['fs']=x.sample_rate
-                x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
-                feat =feature_extractor.extract(x)
-                #print x.eeg_data.shape
-                #print feat.shape
-                Xlist.append(feat)
+
+            typ = 'local'
+            # -----------------------------
+            if typ == 'local':
+
+                print 'extracting features...'
+                i_ = 0
+                for (x, y_seizure, y_early) in train_data:
+                    i_+=1
+                    print float(i_)/len(train_data)*100.," percent complete         \r",
+                    #print '---------'
+                    #print x.eeg_data.shape
+                    params['fs']=x.sample_rate
+                    x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
+                    feat =feature_extractor.extract(x)
+                    #print x.eeg_data.shape
+                    #print feat.shape
+                    Xlist.append(feat)
+
+            # -----------------------------
+            else:
+
+                # --- Preparation ---
+                Log.set_loglevel(20)
+                logger.info("Start")
+                # create folder name string
+                foldername = Global.path_map('slurm_jobs_folder') +'/DataLoader'
+                logger.info("Setting engine folder to %s" % foldername)
+                # create parameter instance that is needed for any batch computation engine
+                logger.info("Creating batch parameter instance")
+                johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
+                timestr = time.strftime("%Y%m%d-%H%M%S")
+                batch_parameters = BatchClusterParameters(max_walltime=60,
+                            foldername=foldername,
+                            job_name_base="kaggle_loader_"+timestr+"_",
+                            parameter_prefix=johns_slurm_hack)
+                # create slurm engine (which works locally)
+                logger.info("Creating slurm engine instance")
+                engine = SlurmComputationEngine(batch_parameters)
+                # we have to collect aggregators somehow
+                aggregators = []
+                # submit job n times
+                logger.info("Starting loop over job submission")
+
+
+                # --- Submission ---
+
+                for (x, y_seizure, y_early) in train_data:
+                    #print '---------'
+                    #print x.eeg_data.shape
+
+                    logger.info("Submitting job...")
+                    job = Data_parallel_job(SingleResultAggregator(),
+                                      feature_extractor,
+                                      x,
+                                      params)
+                    aggregators.append(engine.submit_job(job))
+
+                # let the engine finish its business
+                logger.info("Wait for all call in engine")
+                engine.wait_for_all()
+                # the reduce part
+                logger.info("Collecting results")
+                for i in range(len(aggregators)):
+                    logger.info("Collecting result %d" % i)
+                    # let the aggregator finalize things, not really needed here but in general
+                    aggregators[i].finalize()
+                    # aggregators[i].get_final_result() returns a ScalarResult instance,
+                    # which we need to extract the number from
+                    feat = aggregators[i].get_final_result().result
+                    Xlist.append(feat)
+
+            # -----------------------------
+
             #Tracer()()
             # Xlist = list of ndarray's
             #print len(Xlist), Xlist[0].shape,len(Xlist[0])
@@ -396,7 +461,7 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
                 y_early.append(Y_early[tr_I])
             features.append( (X_seizure, y_seizure, X_early, y_early) )
 
-        T = CVFeaturesPredictorsTester.test_all_combinations(features, 
+        T = CVFeaturesPredictorsTester.test_all_combinations(features,
                 self._feature_extractors, self._predictors)
         return T
 
