@@ -62,6 +62,8 @@ class SubjectEEGData(object):
         # early_labels = a list of {0, 1}. Indicators of an early seizure 
         # (1 for an early seizure).
         self.early_labels = None
+
+        # Preprocessing parameters
         self.params = { 'anti_alias_cutoff': 500.,
             'anti_alias_width': 30.,
             'anti_alias_attenuation' : 40,
@@ -69,6 +71,7 @@ class SubjectEEGData(object):
             'elec_noise_attenuation' : 60.0,
             'elec_noise_cutoff' : [59.,61.],
             'targetrate':500}
+
     def get_train_data(self):
         """
         Loads training data for the patient data. 
