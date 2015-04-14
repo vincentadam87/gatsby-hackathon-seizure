@@ -1,14 +1,9 @@
 import numpy as np
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.features.ARFeatures import ARFeatures
-from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.PLVFeatures import PLVFeatures
-from seizures.features.RandomFeatures import RandomFeatures
 from seizures.features.SEFeatures import SEFeatures
-from seizures.features.LyapunovFeatures import LyapunovFeatures
-from seizures.features.StatsFeatures import StatsFeatures
 
-StatsFeatures
 class MixFeatures(FeatureExtractBase):
     """
     Class to concatenate output of individual feature classes.
@@ -25,12 +20,9 @@ class MixFeatures(FeatureExtractBase):
 
     def extract(self, instance):
         feature_class_dict = {"ARFeatures":ARFeatures,
-                              "FFTFeatures":FFTFeatures,
                               "PLVFeatures":PLVFeatures,
-                              "RandomFeatures":RandomFeatures,
                               "SEFeatures":SEFeatures,
-                              "LyapunovFeatures":LyapunovFeatures,
-                              "StatsFeatures":StatsFeatures}
+                              }
 
         extracted_features_list = []
         for feature_string in self.features_list:

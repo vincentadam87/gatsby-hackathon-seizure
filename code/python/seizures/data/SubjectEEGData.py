@@ -5,7 +5,6 @@ import os
 from seizures.data.EEGData import EEGData
 from seizures.preprocessing import preprocessing
 import numpy as np
-from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.Global import Global
 

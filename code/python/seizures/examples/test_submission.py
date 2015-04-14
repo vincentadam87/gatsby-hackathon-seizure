@@ -30,4 +30,4 @@ submissionfile = SubmissionFile(data_path)
 # Make final file
 submissionfile.generate_submission(predictor_seizure, predictor_early,
                             feature_extractor, output_fname="output.csv",
-                            test_filenames=None):
+                            test_filenames=None)

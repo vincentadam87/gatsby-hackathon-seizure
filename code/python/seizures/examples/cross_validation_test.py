@@ -15,11 +15,9 @@ from seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.features.MixFeatures import MixFeatures
 from seizures.features.SEFeatures import SEFeatures
 
-from seizures.features.StatsFeatures import StatsFeatures
 
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.ARFeatures import ARFeatures
-from seizures.features.LyapunovFeatures import LyapunovFeatures
 
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.prediction.SVMPredictor import SVMPredictor

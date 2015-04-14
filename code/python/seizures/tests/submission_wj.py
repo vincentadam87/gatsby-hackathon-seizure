@@ -4,14 +4,12 @@ Created on 18 August 2014
 @author: Wittawat 
 '''
 
-from seizures.features.FFTFeatures import FFTFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.submission.SubmissionFile import SubmissionFile
 from seizures.Global import Global
 from seizures.features.ARFeatures import *
 from seizures.features.MixFeatures import StackFeatures
 from seizures.features.PLVFeatures import PLVFeatures
-from seizures.features.XCHUHFeatures import XCHUHFeatures
 import numpy as np
 import sys
 
@@ -23,7 +21,7 @@ if __name__ == '__main__':
 	    patient = sys.argv[2]
     else:
         patient = None
-    feature_gen = StackFeatures(ARFeatures(),  PLVFeatures(), XCHUHFeatures())
+    feature_gen = StackFeatures(ARFeatures(),  PLVFeatures())
 
     print '---------'
     print 'argv1: ' + output_fname

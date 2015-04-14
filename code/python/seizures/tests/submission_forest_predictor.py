@@ -5,7 +5,6 @@ Created on 28 Jun 2014
 '''
 
 from seizures.features.ARFeatures import ARFeatures
-from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.MixFeatures import MixFeatures
 from seizures.prediction.ForestPredictor import ForestPredictor
 from seizures.submission.SubmissionFile import SubmissionFile
