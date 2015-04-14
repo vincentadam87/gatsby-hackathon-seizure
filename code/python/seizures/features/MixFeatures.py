@@ -4,7 +4,6 @@ from seizures.features.ARFeatures import ARFeatures
 from seizures.features.FFTFeatures import FFTFeatures
 from seizures.features.PLVFeatures import PLVFeatures
 from seizures.features.RandomFeatures import RandomFeatures
-from seizures.features.XCHUHFeatures import XCHUHFeatures
 from seizures.features.SEFeatures import SEFeatures
 from seizures.features.LyapunovFeatures import LyapunovFeatures
 from seizures.features.StatsFeatures import StatsFeatures
