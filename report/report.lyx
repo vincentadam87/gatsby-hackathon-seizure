@@ -158,9 +158,8 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-As part of a hackathon, post-graduate students of the gatsby computational
- neuroscience unit (UCL, London) took part in the seizure Detection Challenge
- 
+As part of a hackathon, graduate students of the Gatsby Computational Neuroscien
+ce unit (UCL, London) took part in the seizure Detection Challenge 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SeizureChallengeKaggle"
@@ -180,7 +179,7 @@ Data
 \end_layout
 
 \begin_layout Standard
-The data consisted in 1s long multi-channel intracranial eeg recordings
+The data consisted in 1s long multi-channel intra-cranial EEG recordings
  (segments) from 4 dogs and 8 human patients.
  Each patient had a fixed number of implanted electrodes from which signal
  was recorded (
@@ -1334,10 +1333,6 @@ key "gomez2008measuring,billinger2014scot"
 \end_inset
 
 
-\end_layout
-
-\begin_layout Section
-References
 \end_layout
 
 \begin_layout Standard
