@@ -5,6 +5,13 @@
 \textclass article
 \begin_preamble
 \usepackage{proceed2e}
+\usepackage{enumitem}
+\setlist{nolistsep}
+\usepackage{titlesec}
+
+\titlespacing\section{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -158,8 +165,13 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-As part of a hackathon, graduate students of the Gatsby Computational Neuroscien
-ce unit (UCL, London) took part in the seizure Detection Challenge 
+Accurate early seizure detection is key to building effective devices to
+ treat epilepsy.
+ Intracranial electroencephalography (iEEG) provides a signal rich enough
+ to both detect and predict epileptic seizures online when coupled with
+ efficient computational algorithms.
+ As part of a hackathon, graduate students of the Gatsby Computational Neuroscie
+nce unit (UCL, London) took part in the seizure Detection Challenge 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SeizureChallengeKaggle"
@@ -168,14 +180,27 @@ key "SeizureChallengeKaggle"
 
  hosted by the machine learning competition organizer Kaggle.
  We ranked 9/205 and here describe the method we used.
+ In this project, we applied machine learning algorithms to detect seizure
+ occurrence using training datasets collected from both dog and human subjects.
+ Specifically, we aimed to classify small ieeg segments into ictal and intericta
+l events, and whether or not the ictal segment was early on into a ictal
+ epoch in both dog and human subjects with naturally occurring epilepsy.
 \end_layout
 
 \begin_layout Section
 Data and Task
 \end_layout
 
-\begin_layout Subsection
+\begin_layout Subsection*
 Data
+\end_layout
+
+\begin_layout Standard
+Intracranial EEG data analyzed for this study was provided by the UPenn
+ - Mayo Clinic Seizure Detection Challenge on kaggle.com, sponsored by the
+ American Epilepsy Society, and the data is available via the NIH-sponsored
+ International Epilepsy Electrophysiology Portal (ieeg.org).
+ 
 \end_layout
 
 \begin_layout Standard
@@ -194,7 +219,7 @@ The data consisted in 1s long multi-channel intra-cranial EEG recordings
  No information was given about the localization of the electrodes.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsection*
 Labels
 \end_layout
 
@@ -202,10 +227,11 @@ Labels
 Training data was classified as ictal or interictal.
  Ictal segments belonged to episodes lasting multiple second.
  For those ictal segments, time since episode onset was given.
+ A segment was labelled early if its time since onset was below 15s.
 \end_layout
 
-\begin_layout Subsection
-Task
+\begin_layout Subsection*
+Classification Tasks
 \end_layout
 
 \begin_layout Standard
@@ -240,8 +266,8 @@ Interesting book to read: EEG Signal Processing (Saeid and Cambers).
 \end_layout
 
 \begin_layout Standard
-We proceeded in 3 steps from the raw signal to the classification output:
- preprocessing, feature extraction, classification.
+We proceeded in 3 steps from the raw signal to the classification output:(1)
+ preprocessing, (2) feature extraction, (3) classification.
  Our approach follows closely that of 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -266,26 +292,26 @@ Signal was downsampled to the divisor of the initial sampling rate
 \end_inset
 
 .
+ This downsampling also low pass filters the signal.
  The aim was to reduce dimensionality to speedup feature extraction with
  minimal loss of information.
- Electrical noise (United States) was then removed.
- Signal was finally low pass filtered.
+ Electrical noise (United States) was then removed using a band stop filter.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 Downsampling
 \end_layout
 
 \begin_layout Standard
-We downsampled each signal by integer factXlist_patientsor 
+We downsampled each signal by integer factor 
 \begin_inset Formula $k=\lfloor f_{s}/f_{s}^{target}\rfloor$
 \end_inset
 
 .
- This step consists in a low pass filtering followed by downsampling
+ 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 Bandpass filtering
 \end_layout
 
@@ -306,7 +332,7 @@ on: cutoff frequencies :
 .
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 Low pass filtering
 \end_layout
 
@@ -344,17 +370,9 @@ medskip
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
+\begin_inset Float table
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
@@ -446,7 +464,7 @@ Target sampling rate
 \uwave off
 \noun off
 \color none
-\begin_inset Formula $500Hz$
+\begin_inset Formula $400Hz$
 \end_inset
 
 
@@ -594,7 +612,7 @@ cutoff
 \begin_inset Text
 
 \begin_layout Plain Layout
-\begin_inset Formula $500Hz$
+\begin_inset Formula $400Hz$
 \end_inset
 
 
@@ -664,6 +682,18 @@ attenuation in band
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Preprocessing Parameters
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \end_inset
 
 
@@ -674,16 +704,16 @@ Feature extraction
 \end_layout
 
 \begin_layout Standard
-We tried multiple features that can be classified as single or multichannel
+We used multiple features that can be classified as single or multichannel
  features.
  Single channel features are motivated from the observation that marginally,
- statistics of signal of a single channels varies with the conditions of
- interest.
+ stationary statistics of signal of a single channels varies with the conditions
+ of interest.
  Multiple channel features focus on capturing the variation of the dependence
  between channels as conditions changes.
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 Single channel feature
 \end_layout
 
@@ -720,7 +750,7 @@ Spectral energy (squared modulus of fourier transform) was computed.
 
 \end_layout
 
-\begin_layout Subsubsection
+\begin_layout Subsubsection*
 Multiple channel features
 \end_layout
 
@@ -815,17 +845,9 @@ medskip
 \end_layout
 
 \begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
+\begin_inset Float table
+wide false
+sideways false
 status open
 
 \begin_layout Plain Layout
@@ -983,9 +1005,34 @@ lag
 
 \end_layout
 
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Feature Parameters
+\end_layout
+
 \end_inset
 
 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Feature combination
+\end_layout
+
+\begin_layout Standard
+We were interested in assessing the relative performance of our features.
+ For this reason we tested various combinations of the described features.
 \end_layout
 
 \begin_layout Subsection
@@ -993,22 +1040,17 @@ Classification
 \end_layout
 
 \begin_layout Standard
-We tested two classification methods.
- Both were trained on the whole training data.
+Classifiers were trained individually per subject
 \end_layout
 
-\begin_layout Subsubsection
-Support vector machine
+\begin_layout Subsubsection*
+Random forest
 \end_layout
 
 \begin_layout Standard
-This classification method finds the maximum margin classifier of the data
- in an infinite dimensional feature space (the reproducing kernel hilbert
- space of the gaussian kernel).
-\end_layout
-
-\begin_layout Subsubsection
-Random forest
+We used Random forest classifiers parameterized by the number of tree.
+ We used the scikit-learn implementation RandomForestClassifier (version?)
+ with other parameters set to their default value.
 \end_layout
 
 \begin_layout Standard
@@ -1028,7 +1070,7 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Tabular
-<lyxtabular version="3" rows="6" columns="2">
+<lyxtabular version="3" rows="3" columns="2">
 <features tabularvalignment="middle">
 <column alignment="center" valignment="top" width="0">
 <column alignment="center" valignment="top" width="0">
@@ -1047,77 +1089,6 @@ Name
 
 \begin_layout Plain Layout
 Value
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell multicolumn="1" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Support vector machine
-\end_layout
-
-\end_inset
-</cell>
-<cell multicolumn="2" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-Gaussian kernel width 
-\begin_inset Formula $\sigma_{svm}$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-?
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-misclassification penalty 
-\begin_inset Formula $C$
-\end_inset
-
-
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Plain Layout
-\begin_inset Formula $1$
-\end_inset
-
-
 \end_layout
 
 \end_inset
@@ -1182,6 +1153,16 @@ number of trees
 
 \end_layout
 
+\begin_layout Subsubsection*
+Metrics
+\end_layout
+
+\begin_layout Standard
+We evaluate our classifiers using the Area Under the ROC Curve (AUC) as
+ a metric.
+ We report mean and standard deviation of the AUC score for each classifier
+\end_layout
+
 \begin_layout Section
 Results
 \end_layout
@@ -1220,6 +1201,10 @@ scipy.signal (signal filtering, downsampling)
 \begin_layout Itemize
 numpy (fourier transform)
 \end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
 
 \begin_layout Subsection
 Code Structure
@@ -1261,6 +1246,11 @@ Preprocessing module
 \end_layout
 
 \end_deeper
+\end_inset
+
+
+\end_layout
+
 \begin_layout Section*
 Remarks & additional info
 \end_layout
