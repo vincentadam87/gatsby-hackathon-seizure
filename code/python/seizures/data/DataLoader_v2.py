@@ -6,8 +6,8 @@ from seizures.preprocessing import preprocessing
 import numpy as np
 import random
 from seizures.features.FeatureExtractBase import FeatureExtractBase
-
-
+from seizures.Global import Global
+import csv
 # Wittawat: Many load_* methods do not actually use the patient_name argument
 
 class DataLoader(object):
@@ -52,6 +52,7 @@ class DataLoader(object):
           'elec_noise_attenuation' : 60.0,
           'elec_noise_cutoff' : [59.,61.],
           'targetrate':400}
+        self.test_labels = make_test_label_dict()
 
     def load_data(self, patient_name, type='training', max_segments=-1,preprocess=True):
         """
@@ -109,7 +110,9 @@ class DataLoader(object):
         #self.files = [files[i] for i in I[0:200]]
 
         if type == 'test':
-            self.files = files
+            total_segments = len(files)
+            subsegments = min(max_segments, total_segments)
+            self.files = files[0:subsegments]
 
         for i, filename in enumerate(self.files):
             print float(i)/float(len(self.files))*100.," percent complete         \r",
@@ -327,4 +330,13 @@ class DataLoader(object):
         # Wittawat: Why do we need patient argument ? 
         assert (self.patient_name == patient)
         return self.type_labels, self.early_labels
+
+def make_test_label_dict():
+    sols = Global.path_map('test_labels')+'revised_solution.csv'
+    with open(sols, mode='r') as infile:
+        reader = csv.reader(infile)
+        next(reader)
+        d = {rows[0]:{'seizure':int( int(rows[1])>0 ),
+                      'early':int(rows[2]) } for rows in reader}  # -1 no seizures # 0 : not early
+    return d
 
