@@ -182,7 +182,7 @@ key "SeizureChallengeKaggle"
  We ranked 9/205 and here describe the method we used.
  In this project, we applied machine learning algorithms to detect seizure
  occurrence using training datasets collected from both dog and human subjects.
- Specifically, we aimed to classify small ieeg segments into ictal and intericta
+ Specifically, we aimed to classify small iEEG segments into ictal and intericta
 l events, and whether or not the ictal segment was early on into a ictal
  epoch in both dog and human subjects with naturally occurring epilepsy.
 \end_layout
@@ -225,9 +225,9 @@ Labels
 
 \begin_layout Standard
 Training data was classified as ictal or interictal.
- Ictal segments belonged to episodes lasting multiple second.
+ Ictal segments belonged to episodes lasting multiple seconds.
  For those ictal segments, time since episode onset was given.
- A segment was labelled early if its time since onset was below 15s.
+ A segment was labeled early if its time since onset was below 15s.
 \end_layout
 
 \begin_layout Subsection*
@@ -266,8 +266,8 @@ Interesting book to read: EEG Signal Processing (Saeid and Cambers).
 \end_layout
 
 \begin_layout Standard
-We proceeded in 3 steps from the raw signal to the classification output:(1)
- preprocessing, (2) feature extraction, (3) classification.
+We proceeded in 3 steps from the raw signal to the classification output:
+ (1) preprocessing, (2) feature extraction, (3) classification.
  Our approach follows closely that of 
 \begin_inset CommandInset citation
 LatexCommand cite
@@ -1165,6 +1165,23 @@ We evaluate our classifiers using the Area Under the ROC Curve (AUC) as
 
 \begin_layout Section
 Results
+\end_layout
+
+\begin_layout Standard
+Report per-subject accuracy and overall results (mean score and generalized
+ score)
+\end_layout
+
+\begin_layout Itemize
+Seizure detection: x% accuracy (AUC, report false positives, etc)
+\end_layout
+
+\begin_layout Itemize
+Early seizure detection: y% accuracy
+\end_layout
+
+\begin_layout Itemize
+Overall performance? (as in kaggle)
 \end_layout
 
 \begin_layout Section
