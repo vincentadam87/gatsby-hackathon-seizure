@@ -278,7 +278,7 @@ Downsampling
 \end_layout
 
 \begin_layout Standard
-We downsampled each signal by integer factor 
+We downsampled each signal by integer factXlist_patientsor 
 \begin_inset Formula $k=\lfloor f_{s}/f_{s}^{target}\rfloor$
 \end_inset
 
