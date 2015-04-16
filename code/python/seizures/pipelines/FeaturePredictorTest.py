@@ -1,7 +1,6 @@
 """
 package containing classes for testing combination of features, predictor 
 on specified datasets
-
 @arthor: Wittawat
 """
 
@@ -48,7 +47,6 @@ class Data_parallel_job(IndependentJob):
 class FeaturePredictorTestBase(object):
     """
     Abstract class for all feature-predictor testers.
-
     @author: Wittawat
     """
     def __init__(self, feature_extractor, predictor, patient, data_path):
@@ -75,7 +73,6 @@ class FeaturesPredictorsTestBase(object):
     Abstract class for all features-predictors testers.
     The only difference to FeaturePredictorTestBase is that this class
     accepts a list of feature_extractor's and a list of predictor's.
-
     @author: Wittawat
     """
     def __init__(self, feature_extractors, predictors, patient, data_path):
@@ -105,7 +102,6 @@ class CVFeaturePredictorTester(FeaturePredictorTestBase):
     An implementation of FeaturePredictorTestBase which test 
     by cross validation the given predictor using features from
     feature_extractor on the patient data.
-
     @author: Wittawat 
     """
 
@@ -131,11 +127,9 @@ class CVFeaturePredictorTester(FeaturePredictorTestBase):
         Test the predictor using features given by feature_extractor 
         on the data specified by the patient argument.
         Based on examples/cross_validation_test.py
-
         :param max_segments: maximum segments to load. -1 to use the number of 
         total segments available. Otherwise, all segments (ictal and interictal)
         will be randomly subsampled without replacement. 
-
         return: a dictionary containing error report
         """
         predictor = self._predictor
@@ -177,7 +171,6 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
     An implementation of FeaturesPredictorsTestBase which test 
     by cross validation the given predictors using features from each 
     feature_extractor on the patient data.
-
     @author: Wittawat 
     """
 
@@ -198,7 +191,6 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
         features is a list [(X_seizure, y_seizure, X_early, y_early)] where each element 
         in the tuple is itself a list of length = fold containing data in each 
         CV fold
-
         return an instance of FeaturesPredictsTable
         """
         # these loops can be parallelized.
@@ -230,11 +222,9 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
         """
         Test the predictors using features given by each feature_extractor 
         in feature_extractors on the data specified by the patient argument.
-
         :param max_segments: maximum segments to load. -1 to use the number of 
         total segments available. Otherwise, all segments (ictal and interictal)
         will be randomly subsampled without replacement. 
-
         return: an instance of FeaturesPredictsTable         """
         # preload data and extract features 
         features = [] # list of feature tuples. list length = len(self._feature_extractors)
@@ -256,7 +246,6 @@ class FeaturesPredictsTable(object):
     
     To export the results in other ways, 
     just add your own methods here. See print_ascii_table() as an example.
-
     @author Wittawat
     """
     def __init__(self, features_predictors_results):
