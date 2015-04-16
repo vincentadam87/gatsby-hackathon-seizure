@@ -70,12 +70,15 @@ class Global():
         path_dict['my_result_folder'] = '/nfs/nhome/live/wittawat/git/gatsby-hackathon-seizure/wj_result'
         # --------------- end Wittawat --------------
 
+
         # ---------------- Vincent -----------------
         path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
         path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips'
         path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_detection/'
         path_dict['my_xval_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_detection/xval/'
-        path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/vincenta/kaggle_slurm/'        # --------------- end Vincent -------------
+        path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/vincenta/kaggle_slurm/'
+        path_dict['test_labels'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/data/'
+         # --------------- end Vincent -------------
 
 
         # ----------- don't need to modify the followings ----------
