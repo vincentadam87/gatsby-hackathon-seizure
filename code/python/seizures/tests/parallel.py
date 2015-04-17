@@ -63,12 +63,19 @@ class Parallel_job(IndependentJob):
             score_seizure = auc(y_seizure_true, y_seizure_pred)
 
 
+
             r = {}
             r['feature_extractor'] = str(feature_extractor)
             # total features extracted. X_i is n x d
             r['seizure_auc'] = score_seizure
             r['early_auc'] = score_early
             r['predictor'] = 'Random Forest'
+            r['filenames'] = fnames
+            r['y_early_true'] = y_early_true
+            r['y_early_pred'] = y_early_pred
+            r['y_seizure_true'] = y_seizure_true
+            r['y_seizure_pred'] = y_seizure_pred
+
             result_list.append(r)
 
         #table = FeaturesPredictsTable([feature_list])
@@ -76,7 +83,7 @@ class Parallel_job(IndependentJob):
         print self.patient
         print result_list
 
-        pickle.dump( result_list, open( self.sav_path+"result_"+self.patient+".p", "wb" ) )
+        pickle.dump( result_list, open( self.sav_path+"result_detail_"+self.patient+".p", "wb" ) )
         result = SingleResult([])
         # submit the result to my own aggregator
         self.aggregator.submit_result(result)

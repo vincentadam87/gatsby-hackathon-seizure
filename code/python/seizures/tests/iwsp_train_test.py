@@ -90,7 +90,7 @@ if __name__ == "__main__":
         logger.info("Creating batch parameter instance")
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        batch_parameters = BatchClusterParameters(max_walltime=60*60*4,
+        batch_parameters = BatchClusterParameters(max_walltime=60*60*6,
                     foldername=foldername,
                     job_name_base="kaggle_iwsp_loader_"+timestr+"_",
                     parameter_prefix=johns_slurm_hack)
