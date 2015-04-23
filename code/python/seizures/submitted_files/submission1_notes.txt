@@ -1,2 +1,0 @@
-AR features
-Random forest classifier with 100 trees

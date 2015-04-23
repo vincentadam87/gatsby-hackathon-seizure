@@ -1,2 +1,0 @@
-AR features only (this time with consistent test/train loading)
-forest predictor 100 trees

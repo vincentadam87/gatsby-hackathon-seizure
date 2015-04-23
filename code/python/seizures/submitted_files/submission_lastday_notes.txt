@@ -1,4 +1,0 @@
-Preprocessing: target 500
-AR(2)+PLV+SE(100,40)
-random forest 100
-
