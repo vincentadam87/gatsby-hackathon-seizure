@@ -705,7 +705,7 @@ Feature extraction
 
 \begin_layout Standard
 We used multiple features that can be classified as single or multichannel
- features.
+ features, both linear and non-linear.
  Single channel features are motivated from the observation that marginally,
  stationary statistics of signal of a single channels varies with the conditions
  of interest.
@@ -718,7 +718,8 @@ Single channel feature
 \end_layout
 
 \begin_layout Itemize
-Spectral energy
+Spectral energy (linear, univariate, focus: energy content in different
+ frequency bands changes between interictal and ictal periods)
 \end_layout
 
 \begin_layout Standard
@@ -762,7 +763,8 @@ key "lutkepohl2005new"
 
 \end_inset
 
-
+ (linear,multivariate, focus: good for seizure detection- EEG becomes more
+ like a multivariate linear system during seizures)
 \end_layout
 
 \begin_layout Standard
@@ -788,7 +790,7 @@ key "lachaux1999measuring"
 
 \end_inset
 
-
+ (nonlinear!, bivariate, focus: synchrony)
 \end_layout
 
 \begin_layout Standard
