@@ -1191,7 +1191,8 @@ We used a Random forest classifier, parameterized by tree width (with
 \end_inset
 
  number of trees).
- We used the scikit-learn implementation RandomForestClassifier (version?).
+ We used the scikit-learn implementation RandomForestClassifier (version?
+ to compare it with Michael Hills version).
  The rest of parameters were set to their default value.
 \end_layout
 
@@ -1331,7 +1332,7 @@ Early seizure detection: y% accuracy
 \end_layout
 
 \begin_layout Itemize
-Overall performance? (as in kaggle)
+Overall performance (as in kaggle) with features comparison table
 \end_layout
 
 \begin_layout Subsection
@@ -1371,11 +1372,11 @@ Other participants from kaggle:
 \end_layout
 
 \begin_layout Standard
-Summary of the methods used (see Appendix for further detail):
+Summary of the methods used (see Appendix for further details):
 \end_layout
 
 \begin_layout Subsubsection*
-a) 1st position (Michael Hills, winner) 
+1st position (Michael Hills, winner) 
 \end_layout
 
 \begin_layout Standard
@@ -1387,7 +1388,7 @@ The code and documentation can be found at:
 \size small
 \begin_inset CommandInset href
 LatexCommand href
-name "Michael HIlls code and documentation"
+name "Michael Hills code and documentation"
 target "https://github.com/MichaelHills/seizure-detection"
 
 \end_inset
@@ -1409,14 +1410,22 @@ target "https://github.com/MichaelHills/seizure-detection/raw/master/seizure-det
 \end_layout
 
 \begin_layout Enumerate
-Features: FFT magnitudes 1-47Hz + inter-channel correlation coefficients,
- CC, both in time and frequency domains + CC matrix eigenvalues in both
+
+\bar under
+Features
+\bar default
+: FFT log magnitudes in the 1-47Hz range + inter-channel correlation coefficient
+s, CC, both in time and frequency domains + CC matrix eigenvalues in both
  time and frequency domains.
 \end_layout
 
 \begin_layout Enumerate
-Classifier: per-patient Random Forest classifiers (3000 trees), trained
- on data from each patient.
+
+\bar under
+Classifier
+\bar default
+: per-patient Random Forest classifiers (3000 trees), trained on data from
+ each patient.
 \end_layout
 
 \begin_layout Section
@@ -1593,16 +1602,18 @@ Appendix
 \end_layout
 
 \begin_layout Standard
-We report in here a summary of the methods used by other kaggle participants
+In here we report a summary of the methods used by other kaggle participants
  (for comparison purposes).
 \end_layout
 
 \begin_layout Subsection*
+
+\bar under
 Feature extraction
 \end_layout
 
 \begin_layout Subsubsection*
-a) 1st position (Michael Hills, winner) 
+1st position (Michael Hills, winner) 
 \end_layout
 
 \begin_layout Standard
@@ -1645,7 +1656,7 @@ FFT magnitudes matrix dimensions:
 
 \end_deeper
 \begin_layout Enumerate
-Correlation coefficients, CC, between EEG channels
+Correlation coefficients, CC, between iEEG channels
 \end_layout
 
 \begin_deeper
@@ -1656,15 +1667,13 @@ The FFT magnitudes matrix is first normalized across frequencies, column
 \begin_inset Formula $(\#_{channels}*\#_{channels})$
 \end_inset
 
- is then calculated for this normalized matrix.
- Finally, just the upper triangular matrix is taken for the features, as
- taking the whole matrix would be redundant.
+ is then calculated for this normalized matrix, taking the upper triangular
+ bit for the features.
 \end_layout
 
 \begin_layout Standard
-The same is performed using the time-series data (not sure about the normalizati
-on), by computing the CC matrix from the original data matrix with dimensions
- 
+The same is performed using the time-series data, by computing the CC matrix
+ from the original iEEG data matrix, with dimensions 
 \begin_inset Formula $(\#_{channels}*time)$
 \end_inset
 
@@ -1678,30 +1687,28 @@ Eigenvalues
 
 \begin_deeper
 \begin_layout Standard
-Eigenvalues are computed from the CC matrix.
+Eigenvalues are computed from the CC matrices, from both time and frequency
+ domains.
  All real eigenvalues and the magnitude of the complex eigenvalues are taken
  as features.
  These values are then sorted by magnitude.
  
 \end_layout
 
-\begin_layout Standard
-The same is performed using the time-series data (not sure about the normalizati
-on).
-\end_layout
-
 \end_deeper
 \begin_layout Subsection*
+
+\bar under
 Classifier
 \end_layout
 
 \begin_layout Subsubsection*
-a) 1st position (Michael Hills, winner) 
+1st position (Michael Hills, winner) 
 \end_layout
 
 \begin_layout Standard
 The chosen method for classification was selected with the help of the scikit-le
-arn python machine learning library, which provides a common-interface for
+arn python machine learning library, which provides a common interface for
  trying many different classifiers very easily.
  Random Forest offered the best performance.
 \end_layout
