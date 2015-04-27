@@ -170,8 +170,12 @@ Accurate early seizure detection is key to building effective devices to
  Intracranial electroencephalography (iEEG) provides a signal rich enough
  to both detect and predict epileptic seizures online when coupled with
  efficient computational algorithms.
- As part of a hackathon, graduate students of the Gatsby Computational Neuroscie
-nce unit (UCL, London) took part in the seizure Detection Challenge 
+ As part of a 
+\emph on
+hackathon
+\emph default
+, graduate students of the Gatsby Computational Neuroscience unit (UCL,
+ London) took part in the seizure Detection Challenge 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "SeizureChallengeKaggle"
@@ -180,11 +184,16 @@ key "SeizureChallengeKaggle"
 
  hosted by the machine learning competition organizer Kaggle.
  We ranked 9/205 and here describe the method we used.
- In this project, we applied machine learning algorithms to detect seizure
- occurrence using training datasets collected from both dog and human subjects.
- Specifically, we aimed to classify small iEEG segments into ictal and intericta
-l events, and whether or not the ictal segment was early on into a ictal
- epoch in both dog and human subjects with naturally occurring epilepsy.
+ 
+\end_layout
+
+\begin_layout Standard
+In this project, we applied machine learning algorithms to detect seizure
+ occurrence using training datasets collected from both dog and human subjects
+ with naturally occurring epilepsy.
+ Specifically, we aimed to classify small iEEG segments as ictal or interictal
+ events, and further, assess whether the ictal segments occurred early into
+ the seizure.
 \end_layout
 
 \begin_layout Section
@@ -704,31 +713,68 @@ Feature extraction
 \end_layout
 
 \begin_layout Standard
-We used multiple features that can be classified as single or multichannel
- features, both linear and non-linear.
- Single channel features are motivated from the observation that marginally,
- stationary statistics of signal of a single channels varies with the conditions
- of interest.
- Multiple channel features focus on capturing the variation of the dependence
- between channels as conditions changes.
-\end_layout
-
-\begin_layout Subsubsection*
-Single channel feature
-\end_layout
-
-\begin_layout Itemize
-Spectral energy (linear, univariate, focus: energy content in different
- frequency bands changes between interictal and ictal periods)
+The aim of feature extraction is to obtain a set of parameters (feature
+ vectors) which summarize the statistics of the iEEG data.
+ These feature vectors can then be used for classification, allowing to
+ identify data segments believed to have originated during different brain
+ regimes.
+ In our case, these regimes correspond to the ictal and interictal periods.
 \end_layout
 
 \begin_layout Standard
-Spectral energy (squared modulus of fourier transform) was computed.
+We used several features based on single-channel and multichannel measures.
+ Single-channel measures are motivated from the observation that marginally,
+ stationary statistics of the signal coming from a single channel vary within
+ different brain states.
+ Multiple-channel measures focus on capturing interdependence variations
+ between channels as state conditions change.
+\end_layout
+
+\begin_layout Standard
+A combination of these type of features was used to train the classifier.
+\end_layout
+
+\begin_layout Subsubsection
+Single-channel feature (univariate)
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Spectral
+\series default
+ 
+\series bold
+energy
+\series default
+ (
+\series bold
+SE
+\series default
+)
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Rationale
+\bar default
+: energy content in different frequency bands changes between interictal
+ and ictal periods.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Method
+\bar default
+: the spectral energy of the signal - the squared modulus of the signal's
+ Fourier transform-, was computed.
  Energy below 
 \begin_inset Formula $f_{max}$
 \end_inset
 
- was averged into 
+ was averaged into 
 \begin_inset Formula $N_{bands}$
 \end_inset
 
@@ -751,24 +797,143 @@ Spectral energy (squared modulus of fourier transform) was computed.
 
 \end_layout
 
-\begin_layout Subsubsection*
-Multiple channel features
+\begin_layout Subsubsection
+Multiple-channel features (bivariate and multivariate)
 \end_layout
 
 \begin_layout Itemize
-Fitted parameters of vector autoregressive models 
+
+\series bold
+Phase
+\series default
+ 
+\series bold
+Locking
+\series default
+ 
+\series bold
+Value
+\series default
+ (
+\series bold
+PLV
+\series default
+)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "lachaux1999measuring"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Rationale
+\bar default
+: signals between channels become more synchronized during seizures.
+ Phase Locking Value quantifies 
+\emph on
+locking
+\emph default
+ between the phases of the signals from two distinct electrodes.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Method
+\bar default
+: first, for each channel 
+\begin_inset Formula $i$
+\end_inset
+
+, we extract the instantaneous phase 
+\begin_inset Formula $\phi_{i}^{a}(t)$
+\end_inset
+
+ of the analytical signal 
+\begin_inset Formula $x_{i}^{a}(t)$
+\end_inset
+
+ of the time series 
+\begin_inset Formula $x_{i}(t)$
+\end_inset
+
+.
+ For that, we use a Hilbert transform, which turns the original signal into
+ a time series of complex numbers, 
+\begin_inset Formula $x_{i}^{a}$
+\end_inset
+
+ , with real part 
+\begin_inset Formula $x_{i}$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+Then, for each pair 
+\begin_inset Formula $(i,j)$
+\end_inset
+
+ of channels, we compute the modulus of the time averaged phase difference
+ mapped onto the unit circle
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $PLV_{ij}=\left|\frac{1}{T}\sum_{t}e^{i(\phi_{i}^{a}(t)-\phi_{j}^{a}(t))}\right|$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\series bold
+Vector
+\series default
+ 
+\series bold
+autoregressive
+\series default
+ (
+\series bold
+VAR
+\series default
+) 
+\series bold
+models
+\series default
+ 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "lutkepohl2005new"
 
 \end_inset
 
- (linear,multivariate, focus: good for seizure detection- EEG becomes more
- like a multivariate linear system during seizures)
+ 
 \end_layout
 
 \begin_layout Standard
-Signal was assumed to be generated from a vector autoregressive model
+
+\bar under
+Rationale
+\bar default
+: signals from all channels become more synchronized and structured during
+ seizures, being well described by a time-coupled multivariate linear system.
+ This feature is therefore good for seizure detection.
+\end_layout
+
+\begin_layout Standard
+
+\bar under
+Method
+\bar default
+: the signal was assumed to be generated from a vector autoregressive model
 \end_layout
 
 \begin_layout Standard
@@ -782,52 +947,36 @@ Signal was assumed to be generated from a vector autoregressive model
 
 \end_layout
 
-\begin_layout Itemize
-Phase Locking value for pairs of signal 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "lachaux1999measuring"
-
-\end_inset
-
- (nonlinear!, bivariate, focus: synchrony)
-\end_layout
-
 \begin_layout Standard
-For each channel 
-\begin_inset Formula $i$
-\end_inset
+Once the model was fitted to the data, the learned parameters 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
 
-, we extract the phase 
-\begin_inset Formula $\phi_{i}^{a}$
-\end_inset
-
- of analytical signal 
-\begin_inset Formula $x_{i}^{a}$
-\end_inset
-
- of time series 
-\begin_inset Formula $x_{i}$
-\end_inset
-
-.
- 
-\begin_inset Newline newline
-\end_inset
-
-For each pair 
-\begin_inset Formula $(i,j)$
-\end_inset
-
- of channels, we compute the modulus of the time averaged phase difference
- mapped onto the unit circle
-\end_layout
-
-\begin_layout Standard
-\begin_inset Formula $PLV_{ij}=\left|\frac{1}{N}\sum_{t}e^{i(\phi_{i}^{a}-\phi_{j}^{a})}\right|$
+\begin_inset Formula $[A_{1},A_{2},...,A_{\tau},Q]$
 \end_inset
 
 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ were taken as features.
 \end_layout
 
 \begin_layout Standard
@@ -1004,14 +1153,14 @@ lag
 
 \end_inset
 
-
+ 
 \end_layout
 
 \begin_layout Plain Layout
 \begin_inset Caption
 
 \begin_layout Plain Layout
-Feature Parameters
+Features Parameters
 \end_layout
 
 \end_inset
@@ -1019,22 +1168,9 @@ Feature Parameters
 
 \end_layout
 
-\begin_layout Plain Layout
-
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\begin_layout Subsubsection*
-Feature combination
-\end_layout
-
-\begin_layout Standard
-We were interested in assessing the relative performance of our features.
- For this reason we tested various combinations of the described features.
 \end_layout
 
 \begin_layout Subsection
@@ -1042,17 +1178,21 @@ Classification
 \end_layout
 
 \begin_layout Standard
-Classifiers were trained individually per subject
+Different classifiers were trained individually for each subject.
 \end_layout
 
-\begin_layout Subsubsection*
-Random forest
+\begin_layout Subsubsection
+Random forest classifier
 \end_layout
 
 \begin_layout Standard
-We used Random forest classifiers parameterized by the number of tree.
- We used the scikit-learn implementation RandomForestClassifier (version?)
- with other parameters set to their default value.
+We used a Random forest classifier, parameterized by tree width (with 
+\begin_inset Formula $N_{trees}$
+\end_inset
+
+ number of trees).
+ We used the scikit-learn implementation RandomForestClassifier (version?).
+ The rest of parameters were set to their default value.
 \end_layout
 
 \begin_layout Standard
@@ -1169,9 +1309,17 @@ We evaluate our classifiers using the Area Under the ROC Curve (AUC) as
 Results
 \end_layout
 
+\begin_layout Subsection
+Small training dataset (Kaggle competition style)
+\end_layout
+
 \begin_layout Standard
-Report per-subject accuracy and overall results (mean score and generalized
- score)
+Report here Kaggle score?
+\end_layout
+
+\begin_layout Standard
+Report per-subject accuracy and overall results (computing mean score across
+ subjects and generalized score, as in kaggle)
 \end_layout
 
 \begin_layout Itemize
@@ -1186,8 +1334,89 @@ Early seizure detection: y% accuracy
 Overall performance? (as in kaggle)
 \end_layout
 
+\begin_layout Subsection
+Large training dataset
+\end_layout
+
+\begin_layout Subsection
+Feature analysis
+\end_layout
+
+\begin_layout Standard
+We were interested in assessing the relative performance of our features.
+ Furthermore, we wanted to understand how well individual features work
+ as the seizure progresses.
+ For this reason, we tested various combinations of the features and compared
+ classification performance vs seizure latency.
+\end_layout
+
 \begin_layout Section
 Discussion
+\end_layout
+
+\begin_layout Standard
+Summarize results here.
+\end_layout
+
+\begin_layout Subsection
+Comparison to other methods
+\end_layout
+
+\begin_layout Standard
+The approach taken in this work differs from previous methods in that...
+\end_layout
+
+\begin_layout Standard
+Other participants from kaggle:
+\end_layout
+
+\begin_layout Standard
+Summary of the methods used (see Appendix for further detail):
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
+\end_layout
+
+\begin_layout Standard
+The code and documentation can be found at:
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset CommandInset href
+LatexCommand href
+name "Michael HIlls code and documentation"
+target "https://github.com/MichaelHills/seizure-detection"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset CommandInset href
+LatexCommand href
+name "Michael Hills report"
+target "https://github.com/MichaelHills/seizure-detection/raw/master/seizure-detection.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+Features: FFT magnitudes 1-47Hz + inter-channel correlation coefficients,
+ CC, both in time and frequency domains + CC matrix eigenvalues in both
+ time and frequency domains.
+\end_layout
+
+\begin_layout Enumerate
+Classifier: per-patient Random Forest classifiers (3000 trees), trained
+ on data from each patient.
 \end_layout
 
 \begin_layout Section
@@ -1301,7 +1530,7 @@ key "daly2014exploration"
 \end_layout
 
 \begin_layout Itemize
-cross power spectrum 
+Cross power spectrum 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "krusienski2012value"
@@ -1312,7 +1541,7 @@ key "krusienski2012value"
 \end_layout
 
 \begin_layout Itemize
-mixture of features for classification 
+Mixture of features for classification 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "valderrama2012identifying,laurent2010source"
@@ -1323,7 +1552,7 @@ key "valderrama2012identifying,laurent2010source"
 \end_layout
 
 \begin_layout Itemize
-Spatial feature? 
+Spatial features? 
 \begin_inset CommandInset citation
 LatexCommand cite
 key "shoeb2010application"
@@ -1353,6 +1582,140 @@ options "plain"
 \end_inset
 
 
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Part*
+Appendix
+\end_layout
+
+\begin_layout Standard
+We report in here a summary of the methods used by other kaggle participants
+ (for comparison purposes).
+\end_layout
+
+\begin_layout Subsection*
+Feature extraction
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
+\end_layout
+
+\begin_layout Standard
+Features were kept or discarded based on their cross-validation performance.
+ Combinations of multiple features eventually proved to provide a better
+ classification score once the right features were combined.
+\end_layout
+
+\begin_layout Standard
+\begin_inset VSpace smallskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Three sources of features are used to form the whole feature-set:
+\end_layout
+
+\begin_layout Enumerate
+log10(FFT magnitudes) in the low frequency range 1-47 Hz.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+This frequency range offered the best result compared to other frequency
+ ranges.
+ These features alone, combined with the selected classifier (Random Forest),
+ offered already excellent performance.
+\end_layout
+
+\begin_layout Standard
+FFT magnitudes matrix dimensions: 
+\begin_inset Formula $(\#_{channels}*47$
+\end_inset
+
+).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Correlation coefficients, CC, between EEG channels
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+The FFT magnitudes matrix is first normalized across frequencies, column
+ by column, subtracting the mean and dividing by the std.
+ The correlation coefficient CC matrix 
+\begin_inset Formula $(\#_{channels}*\#_{channels})$
+\end_inset
+
+ is then calculated for this normalized matrix.
+ Finally, just the upper triangular matrix is taken for the features, as
+ taking the whole matrix would be redundant.
+\end_layout
+
+\begin_layout Standard
+The same is performed using the time-series data (not sure about the normalizati
+on), by computing the CC matrix from the original data matrix with dimensions
+ 
+\begin_inset Formula $(\#_{channels}*time)$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Eigenvalues 
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Eigenvalues are computed from the CC matrix.
+ All real eigenvalues and the magnitude of the complex eigenvalues are taken
+ as features.
+ These values are then sorted by magnitude.
+ 
+\end_layout
+
+\begin_layout Standard
+The same is performed using the time-series data (not sure about the normalizati
+on).
+\end_layout
+
+\end_deeper
+\begin_layout Subsection*
+Classifier
+\end_layout
+
+\begin_layout Subsubsection*
+a) 1st position (Michael Hills, winner) 
+\end_layout
+
+\begin_layout Standard
+The chosen method for classification was selected with the help of the scikit-le
+arn python machine learning library, which provides a common-interface for
+ trying many different classifiers very easily.
+ Random Forest offered the best performance.
+\end_layout
+
+\begin_layout Standard
+The following python scikit-learn classifier was used to train the winning
+ submission:
+\end_layout
+
+\begin_layout Standard
+
+\emph on
+RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False,
+ random_state=0)
 \end_layout
 
 \end_body
