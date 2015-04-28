@@ -1394,10 +1394,86 @@ Experiment 1
 \end_layout
 
 \begin_layout Standard
-Report here Kaggle score?
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/kaggle_2_train_test_seizure.svg
+	width 8cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Seizure Detection
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/kaggle_2_train_test_early.svg
+	width 8cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Early/Late Prediction
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Report here Kaggle score?
+\end_layout
+
+\begin_layout Plain Layout
 Report per-subject accuracy and overall results (computing mean score across
  subjects and generalized score, as in kaggle)
 \end_layout
@@ -1414,8 +1490,47 @@ Early seizure detection: y% accuracy
 Overall performance (as in kaggle) with features comparison table
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Experiment 2
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/Patient_2_latency.svg
+	width 8cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Seizure and Early/Late prediction as a function of latency
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
