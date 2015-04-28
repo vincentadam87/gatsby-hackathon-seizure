@@ -12,6 +12,7 @@
 \titlespacing\section{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\subsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
 \titlespacing\subsubsection{0pt}{12pt plus 4pt minus 2pt}{0pt plus 2pt minus 2pt}
+\newcommand{\code}[1]{\texttt{#1}}
 \end_preamble
 \use_default_options true
 \maintain_unincluded_children false
@@ -184,6 +185,8 @@ key "SeizureChallengeKaggle"
 
  hosted by the machine learning competition organizer Kaggle.
  We ranked 9/205 and here describe the method we used.
+ Using further information obtained after the competition, we provide a
+ more in depth analysis of our solution.
  
 \end_layout
 
@@ -233,10 +236,11 @@ Labels
 \end_layout
 
 \begin_layout Standard
-Training data was classified as ictal or interictal.
+Training data was manually classified as ictal or interictal.
  Ictal segments belonged to episodes lasting multiple seconds.
  For those ictal segments, time since episode onset was given.
- A segment was labeled early if its time since onset was below 15s.
+ A segment was labeled early if its time since onset was below 15s, with
+ onset also manually determined by human experts.
 \end_layout
 
 \begin_layout Subsection*
@@ -714,7 +718,7 @@ Feature extraction
 
 \begin_layout Standard
 The aim of feature extraction is to obtain a set of parameters (feature
- vectors) which summarize the statistics of the iEEG data.
+ vectors) which summarize the task-relevant statistics of the iEEG data.
  These feature vectors can then be used for classification, allowing to
  identify data segments believed to have originated during different brain
  regimes.
@@ -731,7 +735,8 @@ We used several features based on single-channel and multichannel measures.
 \end_layout
 
 \begin_layout Standard
-A combination of these type of features was used to train the classifier.
+In our final solution, a combination (stack) of these type of features was
+ used and fed the classifier.
 \end_layout
 
 \begin_layout Subsubsection
@@ -863,7 +868,12 @@ Method
 \end_inset
 
 .
- For that, we use a Hilbert transform, which turns the original signal into
+ 
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+For that, we use a Hilbert transform, which turns the original signal into
  a time series of complex numbers, 
 \begin_inset Formula $x_{i}^{a}$
 \end_inset
@@ -873,6 +883,11 @@ Method
 \end_inset
 
 .
+\end_layout
+
+\end_inset
+
+
 \begin_inset Newline newline
 \end_inset
 
@@ -904,6 +919,10 @@ autoregressive
 \series bold
 VAR
 \series default
+
+\begin_inset Formula $\left[\tau\right]$
+\end_inset
+
 ) 
 \series bold
 models
@@ -937,7 +956,7 @@ Method
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula $x_{t}=\sum_{\tau=1}^{2}A_{\tau}x_{t-\tau}+\epsilon_{t}$
+\begin_inset Formula $x_{t}=\sum_{k=1}^{\tau}A_{k}x_{t-k}+\epsilon_{t}$
 \end_inset
 
 , where 
@@ -948,7 +967,24 @@ Method
 \end_layout
 
 \begin_layout Standard
-Once the model was fitted to the data, the learned parameters 
+In this model, the 
+\begin_inset Formula $i^{th}$
+\end_inset
+
+channel at time 
+\begin_inset Formula $t$
+\end_inset
+
+ depends on all the other channels withing 
+\begin_inset Formula $[t-\tau,t-1]$
+\end_inset
+
+ through matrices 
+\begin_inset Formula $\left\{ A_{k}\right\} _{k\in[t-\tau,t-1]}$
+\end_inset
+
+.
+ Once the model was fitted to the data, the learned parameters 
 \family roman
 \series medium
 \shape up
@@ -1191,8 +1227,20 @@ We used a Random forest classifier, parameterized by tree width (with
 \end_inset
 
  number of trees).
- We used the scikit-learn implementation RandomForestClassifier (version?
- to compare it with Michael Hills version).
+ We used the scikit-learn implementation 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+code{RandomForestClassifier}
+\end_layout
+
+\end_inset
+
+ (version 0.14.1).
  The rest of parameters were set to their default value.
 \end_layout
 
@@ -1307,11 +1355,42 @@ We evaluate our classifiers using the Area Under the ROC Curve (AUC) as
 \end_layout
 
 \begin_layout Section
+Experiments
+\end_layout
+
+\begin_layout Standard
+In order to get a better understanding of both the dataset and our algorithm,
+ we ran a set of experiment beyond the reproduction of the averaged score
+ of the kaggle competition
+\end_layout
+
+\begin_layout Subsection*
+Experiment 1: Reproducing the Kaggle results
+\end_layout
+
+\begin_layout Standard
+We trained and tested our algorithm on the same dataset as the one used
+ in the competition.
+ However we report the scores per task and per subject for each feature
+ combination tested instead of a unique agregated score.
+\end_layout
+
+\begin_layout Subsection*
+Experiment 2: Classification performance as a function of latency
+\end_layout
+
+\begin_layout Standard
+We reversed the training and test sets and present and analyze prediction
+ confidence of ictal segments as a function of latency.
+ The rationale here is to assess how different features early signs of seizures.
+\end_layout
+
+\begin_layout Section
 Results
 \end_layout
 
 \begin_layout Subsection
-Small training dataset (Kaggle competition style)
+Experiment 1
 \end_layout
 
 \begin_layout Standard
@@ -1336,7 +1415,7 @@ Overall performance (as in kaggle) with features comparison table
 \end_layout
 
 \begin_layout Subsection
-Large training dataset
+Experiment 2
 \end_layout
 
 \begin_layout Subsection
@@ -1357,21 +1436,26 @@ Discussion
 
 \begin_layout Standard
 Summarize results here.
-\end_layout
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Note Comment
+status open
 
 \begin_layout Subsection
 Comparison to other methods
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The approach taken in this work differs from previous methods in that...
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Other participants from kaggle:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Summary of the methods used (see Appendix for further details):
 \end_layout
 
@@ -1379,11 +1463,11 @@ Summary of the methods used (see Appendix for further details):
 1st position (Michael Hills, winner) 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 The code and documentation can be found at:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \size small
 \begin_inset CommandInset href
@@ -1396,7 +1480,7 @@ target "https://github.com/MichaelHills/seizure-detection"
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \size small
 \begin_inset CommandInset href
@@ -1426,6 +1510,11 @@ Classifier
 \bar default
 : per-patient Random Forest classifiers (3000 trees), trained on data from
  each patient.
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Section
@@ -1508,11 +1597,15 @@ Preprocessing module
 
 \end_layout
 
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
 \begin_layout Section*
 Remarks & additional info
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 Unexplored features and existing literature
 \end_layout
 
@@ -1576,6 +1669,11 @@ Directional coupling (connectivity based)
 \begin_inset CommandInset citation
 LatexCommand cite
 key "gomez2008measuring,billinger2014scot"
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -1714,15 +1812,24 @@ arn python machine learning library, which provides a common interface for
 \end_layout
 
 \begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
 The following python scikit-learn classifier was used to train the winning
  submission:
 \end_layout
 
-\begin_layout Standard
+\begin_layout Plain Layout
 
 \emph on
 RandomForestClassifier(n_estimators=3000, min_samples_split=1, bootstrap=False,
  random_state=0)
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body
