@@ -141,13 +141,13 @@ class CVFeaturePredictorTester(FeaturePredictorTestBase):
         # running cross validation
         #print 'Testing %d-fold CV on data of %s'%(fold, self._patient)
         #print "\ncross validation: seizures vs not"
-        result_seizure = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
+        result_seizure,_ = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
         #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
                 #% (np.mean(result_seizure), np.std(result_seizure), result_seizure)
 
 
         #print "\ncross validation: early_vs_not"
-        result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
+        result_early,_ = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
         #print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
                 #% (np.mean(result_early), np.std(result_early), result_early)
 
@@ -201,9 +201,9 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
             X_seizure, y_seizure, X_early, y_early = features[i]
             for j, predictor in enumerate(predictors):
                 print 'Evaluating feat: %s + pred: %s on seizure task'%(str(feature_extractor), str(predictor) )
-                result_seizure = XValidation.evaluate(X_seizure, y_seizure, predictor, evaluation=auc)
+                result_seizure, y_seizure_pred  = XValidation.evaluate(X_seizure, y_seizure, predictor, evaluation=auc)
                 print 'Evaluating feat: %s + pred: %s on early seizure task'%(str(feature_extractor), str(predictor) )
-                result_early = XValidation.evaluate(X_early, y_early, predictor, evaluation=auc)
+                result_early, y_early_pred = XValidation.evaluate(X_early, y_early, predictor, evaluation=auc)
                 r = {}
                 r['predictor'] = predictor
                 r['feature_extractor'] = feature_extractor
@@ -214,9 +214,13 @@ class CVFeaturesPredictorsTester(FeaturePredictorTestBase):
                 r['seizure_std_auc'] = np.std(result_seizure)
                 r['early_mean_auc'] = np.mean(result_early)
                 r['early_std_auc'] = np.std(result_early)
+                r['y_early_true'] = y_early
+                r['y_early_pred'] = y_early_pred
+                r['y_seizure_true'] = y_seizure
+                r['y_seizure_pred'] = y_seizure_pred
                 feature_list.append(r)
             L.append(feature_list)
-        return FeaturesPredictsTable(L)
+        return L #FeaturesPredictsTable(L)
 
     def test_combination(self, fold=3, max_segments=-1):
         """
@@ -301,7 +305,7 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
     """
 
     def __init__(self, feature_extractors, predictors, patient,
-            data_path=Global.path_map('clips_folder'),params=None):
+            data_path=None,params=None):
 
         assert(type(feature_extractors)==type([]))
         assert(type(predictors)==type([]))
@@ -320,6 +324,7 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
         total segments available. Otherwise, all segments (ictal and interictal)
         will be randomly subsampled without replacement.
         return: an instance of FeaturesPredictsTable         """
+
 
         loader = SubjectEEGData(self._patient, self._data_path, use_cache=True,
                 max_train_segments=max_segments)
@@ -358,7 +363,8 @@ class CachedCVFeaPredTester(FeaturePredictorTestBase):
                     #print '---------'
                     #print x.eeg_data.shape
                     params['fs']=x.sample_rate
-                    x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
+                    #x.eeg_data = preprocessing.preprocess_multichannel_data(x.eeg_data, params)
+
                     feat =feature_extractor.extract(x)
                     #print x.eeg_data.shape
                     #print feat.shape

@@ -1,5 +1,7 @@
 from seizures.data.DataLoader_v2 import DataLoader, make_test_label_dict
 
+import sys
+
 from independent_jobs.tools.Log import Log
 from independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
 from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
@@ -11,8 +13,9 @@ import time
 import numpy as np
 from seizures.evaluation.performance_measures import auc
 import pickle
+from seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
 
-class Parallel_job(IndependentJob):
+class Parallel_job_train_test(IndependentJob):
     def __init__(self, aggregator,patient,predictor_early,
                  predictor_seizure,feature_extractors,data_path,sav_path):
         IndependentJob.__init__(self, aggregator)
@@ -31,7 +34,7 @@ class Parallel_job(IndependentJob):
             print str(feature_extractor)
 
             # Load training data for patient
-            print "Loading training data for" + self.patient
+            print "Loading training data for " + self.patient
 
             loader = DataLoader(self.data_path, feature_extractor)
             X_train, y_seizure, y_early = loader.training_data(self.patient,max_segments=-1)
@@ -88,3 +91,31 @@ class Parallel_job(IndependentJob):
         # submit the result to my own aggregator
         self.aggregator.submit_result(result)
         logger.info("done computing")
+
+
+
+class Parallel_job_Xval(IndependentJob):
+    def __init__(self, aggregator,feature_extractors,
+                 predictors,
+                 patient,
+                 clips_folder,
+                 max_segments,
+                 sav_path):
+        IndependentJob.__init__(self, aggregator)
+        self.feature_extractors=feature_extractors
+        self.predictors=predictors
+        self.patient=patient
+        self.clips_folder=clips_folder
+        self.max_segments=max_segments
+        self.sav_path=sav_path
+
+    def compute(self):
+        logger.info("computing")
+        tester = CachedCVFeaPredTester(self.feature_extractors,
+                                       self.predictors,
+                                       self.patient,
+                                       data_path=self.clips_folder)
+
+        result_list = tester.test_combination(fold=10, max_segments=self.max_segments)
+
+        pickle.dump( result_list, open( self.sav_path+"slurm_xval_result_"+self.patient+".p", "wb" ) )

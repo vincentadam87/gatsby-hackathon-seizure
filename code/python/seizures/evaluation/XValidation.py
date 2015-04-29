@@ -110,4 +110,4 @@ class XValidation():
             result.append(score)
         
         # return as 2d array
-        return np.asarray(result)
+        return np.asarray(result), y_predict

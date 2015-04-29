@@ -73,7 +73,9 @@ class Global():
 
         # ---------------- Vincent -----------------
         path_dict['python_root'] = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/code/python'
-        path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips'
+        path_dict['clips_folder'] = '/nfs/data3/kaggle_seizure/clips/clips_notest/'
+        path_dict['clips_folder_initial'] = '/nfs/data3/kaggle_seizure/clips/'
+
         path_dict['my_result_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_detection/'
         path_dict['my_xval_folder'] = '/nfs/nhome/live/vincenta/Desktop/seizures_detection/xval/'
         path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/vincenta/kaggle_slurm/'

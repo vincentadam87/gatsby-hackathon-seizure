@@ -19,7 +19,7 @@ from independent_jobs.engines.SerialComputationEngine import SerialComputationEn
 from independent_jobs.jobs.IndependentJob import IndependentJob
 from independent_jobs.results.SingleResult import SingleResult
 from independent_jobs.tools.Log import logger
-import time
+import time,os
 
 from seizures.evaluation.performance_measures import auc
 
@@ -39,13 +39,14 @@ from seizures.data.DataLoader_v2 import DataLoader, make_test_label_dict
 
 import pickle
 
-from seizures.tests.parallel import Parallel_job
+from seizures.tests.parallel import Parallel_job_train_test
 
 if __name__ == "__main__":
 
     patients = ['Dog_1','Dog_2','Dog_3','Dog_4',
                 'Patient_1','Patient_2','Patient_3','Patient_4',
                 'Patient_5','Patient_6','Patient_7','Patient_8']
+    patients = ['Patient_5']
 
     feature_extractors = [
         ARFeatures(),
@@ -62,7 +63,10 @@ if __name__ == "__main__":
         StackFeatures(VarLagsARFeatures(2), VarLagsARFeatures(4), PLVFeatures(), SEFeatures())
     ]
 
-    data_path = Global.path_map('clips_folder')
+    data_path = Global.path_map('clips_folder_initial')
+
+
+
     predictor_seizure = ForestPredictor(n_estimators=100)
     predictor_early = ForestPredictor(n_estimators=100)
 
@@ -70,14 +74,14 @@ if __name__ == "__main__":
     max_segments = -1
 
 
-    sav_path = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/results/'
+    sav_path = '/nfs/nhome/live/vincenta/git/gatsby-hackathon-seizure/results/kaggle_2_train_test/'
+    if not os.path.exists(sav_path):
+        os.makedirs(sav_path)
 
     cluster = 'on'
     type = 'slurm'
 
     if cluster == 'on':
-
-
 
 
         # --- Preparation ---
@@ -90,7 +94,7 @@ if __name__ == "__main__":
         logger.info("Creating batch parameter instance")
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        batch_parameters = BatchClusterParameters(max_walltime=60*60*6,
+        batch_parameters = BatchClusterParameters(max_walltime=60*60*20,
                     foldername=foldername,
                     job_name_base="kaggle_iwsp_loader_"+timestr+"_",
                     parameter_prefix=johns_slurm_hack)
@@ -110,9 +114,6 @@ if __name__ == "__main__":
         # submit job n times
         logger.info("Starting loop over job submission")
 
-
-
-
         # Iterate over subjects
 
         for patient in patients:
@@ -122,7 +123,7 @@ if __name__ == "__main__":
             result_list = []
 
             logger.info("Submitting job...")
-            job = Parallel_job(SingleResultAggregator(),patient,predictor_early,
+            job = Parallel_job_train_test(SingleResultAggregator(),patient,predictor_early,
                      predictor_seizure,feature_extractors,data_path, sav_path)
 
             aggregators.append(engine.submit_job(job))
@@ -160,6 +161,8 @@ if __name__ == "__main__":
                 fnames = loader.files
                 fnames = [fname.split('/')[-1] for fname in fnames]
                 d = make_test_label_dict()
+
+
                 y_early_true = np.array([d[fname]['early'] for fname in fnames])
                 y_seizure_true = np.array([d[fname]['seizure'] for fname in fnames])
 

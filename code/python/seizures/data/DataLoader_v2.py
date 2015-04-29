@@ -68,7 +68,6 @@ class DataLoader(object):
         self._reset_lists()
         # For type='training', this will get all interictal and ictal file names
         files = self._get_files_for_patient(type)
-        
         # reorder files so as to mix a bit interictal and ictal (to fasten
         # debug I crop the files to its early entries)
         print 'Load with extractor = %s'% (str(self.feature_extractor))
@@ -119,7 +118,7 @@ class DataLoader(object):
             # Each call of _load_data_from_file appends data to features_train 
             # features_test lists depending on the (type) variable. 
             # It also appends data to type_labels and early_labels.
-            self._load_data_from_file(patient_name, filename,preprocess=preprocess)
+            self._load_data_from_file(patient_name, filename,preprocess=preprocess,type=type)
         print "\ndone"
 
     def training_data(self, patient_name, max_segments=-1,preprocess=True):
@@ -237,9 +236,36 @@ class DataLoader(object):
         #self.files_nopath = files_nopath
         return files
 
+    def _get_files_for_patient2(self, type="training"):
+        """
+        Transformation of files
+        test files were transformed, and contain ictal/interictal + txxx (xxx being a number)
 
-    def _load_data_from_file(self, patient, filename, preprocess=True):
-        if filename.find('test') != -1:
+        - test files become train
+        - train files become test
+        """
+        assert (type in ["test", "training"])
+        if type == "training":
+            # select the *ictal_t*
+            self.features_train = []
+            files = glob.glob(join(self.base_dir, self.patient_name + '/*ictal_segment_t*'))
+
+        elif type == "test":
+            # select the _ictal_ that do not contain t
+            self.features_test = []
+            self.early_labels = []
+            self.type_labels = []
+            files = glob.glob(join(self.base_dir, self.patient_name + '/*ictal_*'))
+            files_t = glob.glob(join(self.base_dir, self.patient_name + '/*ictal_segment_t*'))
+            files = list(set(files) - set(files_t))
+        # files_nopath = [os.path.basename(x) for x in files]
+        #self.files_nopath = files_nopath
+        return files
+
+
+
+    def _load_data_from_file(self, patient, filename, preprocess=True, type=None):
+        if type=='test': #filename.find('test') != -1:
             # if filename is a test segment
             self._load_test_data_from_file(patient, filename,preprocess=preprocess)
         else:
@@ -294,7 +320,7 @@ class DataLoader(object):
         :param filename:
         :return:
         """
-        assert ( filename.find('test'))
+        #assert ( filename.find('test'))
         print "\nLoading test data for " + patient + filename
         eeg_data_tmp = EEGData(filename)
         eeg_data = eeg_data_tmp.get_instances()

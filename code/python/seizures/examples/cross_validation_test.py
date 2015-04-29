@@ -52,11 +52,11 @@ def Xval_on_single_patient(predictor_cls, feature_extractor, patient_name="Dog_1
     # running cross validation
     print patient_name
     print "\ncross validation: seizures vs not"
-    result_seizure = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
+    result_seizure,_ = XValidation.evaluate(X_list, y_seizure, predictor, evaluation=auc)
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
            % (np.mean(result_seizure), np.std(result_seizure), result_seizure)
     print "\ncross validation: early_vs_not"
-    result_early = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
+    result_early,_ = XValidation.evaluate(X_list, y_early, predictor, evaluation=auc)
     print 'cross-validation results: mean = %.3f, sd = %.3f, raw scores = %s' \
           % (np.mean(result_early), np.std(result_early), result_early)
     return result_seizure,result_early

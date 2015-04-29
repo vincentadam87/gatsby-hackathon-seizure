@@ -195,6 +195,9 @@ class SubjectEEGData(object):
 
 
         eeg_data.eeg_data = preprocessing.preprocess_multichannel_data(data, params)
+        # filtering twice?
+
+
         return (eeg_data, y_seizure, y_early)
 
     @staticmethod
