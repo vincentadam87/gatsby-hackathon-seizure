@@ -1394,86 +1394,10 @@ Experiment 1
 \end_layout
 
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/kaggle_2_train_test_seizure.svg
-	width 8cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Seizure Detection
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/kaggle_2_train_test_early.svg
-	width 8cm
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Early/Late Prediction
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Plain Layout
 Report here Kaggle score?
 \end_layout
 
-\begin_layout Plain Layout
+\begin_layout Standard
 Report per-subject accuracy and overall results (computing mean score across
  subjects and generalized score, as in kaggle)
 \end_layout
@@ -1489,7 +1413,6 @@ Early seizure detection: y% accuracy
 \begin_layout Itemize
 Overall performance (as in kaggle) with features comparison table
 \end_layout
-
 
 \begin_layout Standard
 The measure we used to report overall performance 
@@ -2157,6 +2080,46 @@ Kaggle competition results
 
 \end_layout
 
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/kaggle_2_train_test_seizure.svg
+	width 8cm
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/kaggle_2_train_test_early.svg
+	width 8cm
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 
@@ -2167,10 +2130,30 @@ Kaggle competition results
 Experiment 2
 \end_layout
 
+\begin_layout Subsection
+Feature analysis
+\end_layout
+
 \begin_layout Standard
-\begin_inset Float figure
-wide false
-sideways false
+We were interested in assessing the relative performance of our features.
+ Furthermore, we wanted to understand how well individual features work
+ as the seizure progresses.
+ For this reason, we tested various combinations of the features and compared
+ classification performance vs seizure latency.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Box Frameless
+position "t"
+hor_pos "c"
+has_inner_box 1
+inner_pos "t"
+use_parbox 0
+use_makebox 0
+width "100col%"
+special "none"
+height "1in"
+height_special "totalheight"
 status open
 
 \begin_layout Plain Layout
@@ -2184,33 +2167,9 @@ status open
 
 \end_layout
 
-\begin_layout Plain Layout
-\begin_inset Caption
-
-\begin_layout Plain Layout
-Seizure and Early/Late prediction as a function of latency
-\end_layout
-
 \end_inset
 
 
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Feature analysis
-\end_layout
-
-\begin_layout Standard
-We were interested in assessing the relative performance of our features.
- Furthermore, we wanted to understand how well individual features work
- as the seizure progresses.
- For this reason, we tested various combinations of the features and compared
- classification performance vs seizure latency.
 \end_layout
 
 \begin_layout Section
