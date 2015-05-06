@@ -97,7 +97,7 @@ Shaun Dowling, Iulian Vlad Serban, Matthieu Louis
 
 \begin_layout Standard
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Plain Layout
 Although we didn't win, this winner template is a good guide
@@ -133,7 +133,7 @@ tion/forums/t/10111/required-model-documentation-and-code
 
 \begin_layout Standard
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Section*
 TODO
@@ -185,8 +185,8 @@ key "SeizureChallengeKaggle"
 
  hosted by the machine learning competition organizer Kaggle.
  We ranked 9/205 and here describe the method we used.
- Using further information obtained after the competition, we provide a
- more in depth analysis of our solution.
+ Furthermore, we provide a more in depth analysis of our solution based
+ on a set of experiments we carried out after the competition.
  
 \end_layout
 
@@ -288,7 +288,7 @@ key "mirowski2008comparing"
 
 \end_inset
 
-
+.
 \end_layout
 
 \begin_layout Subsection
@@ -1371,7 +1371,7 @@ Experiment 1: Reproducing the Kaggle results
 \begin_layout Standard
 We trained and tested our algorithm on the same dataset as the one used
  in the competition.
- However we report the scores per task and per subject for each feature
+ However, we report the scores per task and per subject for each feature
  combination evaluated, instead of a unique aggregated score.
  The results are summarized in table 3 and figure 1.
 \end_layout
@@ -1381,11 +1381,11 @@ Experiment 2: Classification performance as a function of latency
 \end_layout
 
 \begin_layout Standard
-We reversed the training and test sets in order to analyze the prediction
+We reversed the training and test datasets in order to analyze the prediction
  confidence as a function of latency.
  The rationale here is to assess the extend to which different features
  pick up early signatures of seizures.
- The results of this analysis are illustrated in figure 2.
+ The results of this analysis are exemplified in figure 2.
 \end_layout
 
 \begin_layout Standard
@@ -2021,19 +2021,28 @@ Discussion
 
 \begin_layout Standard
 We observe that features extracted with VAR models beyond 2nd order do not
- improve classification performance, as can be seen in fig1, top and bottom
- plots.
- A combination of SE+VAR+PLV achieves the best results in both tasks.
+ improve classification performance, as can be seen in figure 1, top and
+ bottom plots.
+ A combination of SE+VAR+PLV features achieves the best results in both
+ tasks.
  Using this method, we ranked among the top 10 in the kaggle seizure detection
- competition [2].
+ competition 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "SeizureChallengeKaggle"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-iEEG data segments are more confidently classified as ictal as seizure progresse
-s (see figure 2, left plot).
- PLV features perform poorly regardless of latency.
+We observe that iEEG data segments are more confidently classified as ictal
+ as seizure progresses (see figure 2, left plot).
  Low confidence predictions in the first 10 seconds reveal the increasing
  difficulty of the detection task for segments closest to seizure onset.
+ We also note that in both tasks, PLV features perform poorly regardless
+ of latency.
  As expected (fig 2, right plot), classifier has lower confidence in telling
  apart early vs late for earliest segments and close to early/late boundary
  at 15s.
@@ -2068,6 +2077,19 @@ scipy.signal (signal filtering, downsampling)
 
 \begin_layout Itemize
 numpy (fourier transform)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+LINK TO CODE, GITHUB???
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -2121,7 +2143,7 @@ Preprocessing module
 
 \begin_layout Standard
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Section*
 Remarks & additional info
@@ -2204,7 +2226,7 @@ key "gomez2008measuring,billinger2014scot"
 
 \begin_layout Standard
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Subsection
 Comparison to other methods
@@ -2355,12 +2377,11 @@ In order to reproduce the kaggle competition results, we computed the
 \uwave default
 \noun default
 \color inherit
- The measure used to report overall performance, as used in the competition,
- is 
+ We chose the measure 
 \begin_inset Formula $AUC_{tot}=\frac{1}{2}(AUC_{seizure}+AUC_{early})$
 \end_inset
 
-.
+ to report overall performance, as used in the competition.
  The results are summarized in Table 4.
  We provide the overall scores for all the different feature combinations
  tested in this report, including the combination of features we used for
@@ -2368,8 +2389,11 @@ In order to reproduce the kaggle competition results, we computed the
 \begin_inset Formula $VAR(2)+PLV+SE.$
 \end_inset
 
- Note that we couldn't exactly reproduce the score obtained in the competition,
- as we 
+ Note that, due to lack of time, we were unable to reproduce exactly the
+ score obtained in the competition, as we lost the details of the exact
+ parameters we used.
+ We expect to be able to obtain an even better performance once we carry
+ out a more rigorous parameter search.
 \end_layout
 
 \begin_layout Standard
@@ -3083,19 +3107,16 @@ This frequency range offered the best result compared to other frequency
  ranges.
  These features alone, combined with the selected classifier (Random Forest),
  offered already excellent performance.
-\end_layout
-
-\begin_layout Standard
-FFT magnitudes matrix dimensions: 
-\begin_inset Formula $(\#_{channels}*47$
+ The resulting FFT magnitudes matrix has dimensions 
+\begin_inset Formula $\#_{channels}*47$
 \end_inset
 
-).
+.
 \end_layout
 
 \end_deeper
 \begin_layout Enumerate
-Correlation coefficients, CC, between iEEG channels
+Correlation coefficients, CC, between iEEG channels.
 \end_layout
 
 \begin_deeper
@@ -3112,8 +3133,8 @@ The FFT magnitudes matrix is first normalized across frequencies, column
 
 \begin_layout Standard
 The same is performed using the time-series data, by computing the CC matrix
- from the original iEEG data matrix, with dimensions 
-\begin_inset Formula $(\#_{channels}*time)$
+ from the original iEEG data matrix, which has dimensions 
+\begin_inset Formula $\#_{channels}*time$
 \end_inset
 
 .
@@ -3121,7 +3142,7 @@ The same is performed using the time-series data, by computing the CC matrix
 
 \end_deeper
 \begin_layout Enumerate
-Eigenvalues 
+Eigenvalues .
 \end_layout
 
 \begin_deeper
@@ -3147,14 +3168,13 @@ Classifier
 
 \begin_layout Standard
 The chosen method for classification was selected with the help of the scikit-le
-arn python machine learning library, which provides a common interface for
- trying many different classifiers very easily.
+arn python machine learning library.
  Random Forest offered the best performance.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Note Comment
-status open
+status collapsed
 
 \begin_layout Plain Layout
 The following python scikit-learn classifier was used to train the winning
