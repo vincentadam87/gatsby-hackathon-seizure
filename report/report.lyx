@@ -80,19 +80,19 @@ The Fitzgerald team solution
 \end_layout
 
 \begin_layout Author
-Vincent Adam, Heiko Strathmann, Wittawat Jitkritum,
+Vincent Adam, Joana Soldado-Magraner, Wittawat Jitkritum,
 \begin_inset Newline newline
 \end_inset
 
-Balaji Lakshminarayanan, Gergő Bohner, Joana Soldado Magraner,
+Heiko Strathmann, Balaji Lakshminarayanan, Alessandro Davide Ialongo,
 \begin_inset Newline newline
 \end_inset
 
- Lea Goetz, Ben Dongsung Huh, Shaun Dowling,
+ Gergő Bohner, Ben Dongsung Huh, Lea Goetz,
 \begin_inset Newline newline
 \end_inset
 
-Julian Serban, Matthieu Louis
+Shaun Dowling, Iulian Vlad Serban, Matthieu Louis
 \end_layout
 
 \begin_layout Standard
@@ -1351,17 +1351,17 @@ Metrics
 \begin_layout Standard
 We evaluate our classifiers using the Area Under the ROC Curve (AUC) as
  a metric.
- We report mean and standard deviation of the AUC score for each classifier
+ We report mean and standard deviation of the AUC score for each classifier.
 \end_layout
 
 \begin_layout Section
-Experiments
+Results
 \end_layout
 
 \begin_layout Standard
 In order to get a better understanding of both the dataset and our algorithm,
- we ran a set of experiment beyond the reproduction of the averaged score
- of the kaggle competition
+ we ran a set of experiments beyond the reproduction of the averaged score
+ of the kaggle competition.
 \end_layout
 
 \begin_layout Subsection*
@@ -1372,7 +1372,8 @@ Experiment 1: Reproducing the Kaggle results
 We trained and tested our algorithm on the same dataset as the one used
  in the competition.
  However we report the scores per task and per subject for each feature
- combination tested instead of a unique agregated score.
+ combination evaluated, instead of a unique aggregated score.
+ The results are summarized in table 3 and figure 1.
 \end_layout
 
 \begin_layout Subsection*
@@ -1380,46 +1381,995 @@ Experiment 2: Classification performance as a function of latency
 \end_layout
 
 \begin_layout Standard
-We reversed the training and test sets and present and analyze prediction
- confidence of ictal segments as a function of latency.
- The rationale here is to assess how different features early signs of seizures.
-\end_layout
-
-\begin_layout Section
-Results
-\end_layout
-
-\begin_layout Subsection
-Experiment 1
+We reversed the training and test sets in order to analyze the prediction
+ confidence as a function of latency.
+ The rationale here is to assess the extend to which different features
+ pick up early signatures of seizures.
+ The results of this analysis are illustrated in figure 2.
 \end_layout
 
 \begin_layout Standard
-Report here Kaggle score?
+\begin_inset Note Comment
+status open
+
+\begin_layout Plain Layout
+Include results for other patients? I would put some of them in the Appendix.
 \end_layout
 
-\begin_layout Standard
-Report per-subject accuracy and overall results (computing mean score across
- subjects and generalized score, as in kaggle)
-\end_layout
-
-\begin_layout Itemize
-Seizure detection: x% accuracy (AUC, report false positives, etc)
-\end_layout
-
-\begin_layout Itemize
-Early seizure detection: y% accuracy
-\end_layout
-
-\begin_layout Itemize
-Overall performance (as in kaggle) with features comparison table
-\end_layout
-
-\begin_layout Standard
-The measure we used to report overall performance 
-\begin_inset Formula $AUC_{tot}=\frac{1}{2}(AUC_{seizure}+AUC_{early})$
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+medskip
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="3">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<column alignment="center" valignment="top" width="0">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size small
+Features
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size scriptsize
+\begin_inset Formula $AUC_{seizure}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size scriptsize
+\begin_inset Formula $AUC_{early}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(1)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.939
+\begin_inset Formula $\pm$
+\end_inset
+
+0.072
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.893
+\begin_inset Formula $\pm$
+\end_inset
+
+0.093
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(2)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.940
+\begin_inset Formula $\pm$
+\end_inset
+
+0.081
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.881
+\begin_inset Formula $\pm$
+\end_inset
+
+0.094
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(3)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.916
+\begin_inset Formula $\pm$
+\end_inset
+
+0.117
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.864
+\begin_inset Formula $\pm$
+\end_inset
+
+0.119
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(4)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.917
+\begin_inset Formula $\pm$
+\end_inset
+
+0.111
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.870
+\begin_inset Formula $\pm$
+\end_inset
+
+0.113
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(7)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.909
+\begin_inset Formula $\pm$
+\end_inset
+
+0.101
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.859
+\begin_inset Formula $\pm$
+\end_inset
+
+0.086
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+SE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.938
+\begin_inset Formula $\pm$
+\end_inset
+
+0.086
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.865
+\begin_inset Formula $\pm$
+\end_inset
+
+0.156
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+PLV
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.848
+\begin_inset Formula $\pm$
+\end_inset
+
+0.115
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.756
+\begin_inset Formula $\pm$
+\end_inset
+
+0.126
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(2)+PLV+SE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.945
+\begin_inset Formula $\pm$
+\end_inset
+
+0.084
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.896
+\begin_inset Formula $\pm$
+\end_inset
+
+0.116
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(2)+SE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.938
+\begin_inset Formula $\pm$
+\end_inset
+
+0.094
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.896
+\begin_inset Formula $\pm$
+\end_inset
+
+0.112
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size tiny
+VAR(1)+VAR(2)+PLV+SE
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.949
+\begin_inset Formula $\pm$
+\end_inset
+
+0.073
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\size footnotesize
+0.904
+\begin_inset Formula $\pm$
+\end_inset
+
+0.106
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Mean performance and standard deviation across patients for both the seizure
+ and early seizure detection tasks.
+ Each row indicates the features/feature combinations tested.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename figures/kaggle_2_train_test_seizure.svg
+	width 7cm
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename figures/kaggle_2_train_test_early.svg
+	width 7cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Box plot summarizing classification performance across all subjects.
+ Top figure, seizure detection task.
+ Bottom figure, early seizure detection task.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align left
+\begin_inset Graphics
+	filename figures/Patient_2_latency new.svg
+	width 8.5cm
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Estimated probabilities for seizure (left) and early seizure (right) as
+ a function of seizure latency, for an example human patient.
+ Thin lines: seizure prediction for individual ictal epochs.
+ Thick lines: mean seizure prediction.
+ Dashed lines: mean seizure prediction for interictal segments.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Standard
+We observe that features extracted with VAR models beyond 2nd order do not
+ improve classification performance, as can be seen in fig1, top and bottom
+ plots.
+ A combination of SE+VAR+PLV achieves the best results in both tasks.
+ Using this method, we ranked among the top 10 in the kaggle seizure detection
+ competition [2].
+\end_layout
+
+\begin_layout Standard
+iEEG data segments are more confidently classified as ictal as seizure progresse
+s (see figure 2, left plot).
+ PLV features perform poorly regardless of latency.
+ Low confidence predictions in the first 10 seconds reveal the increasing
+ difficulty of the detection task for segments closest to seizure onset.
+ As expected (fig 2, right plot), classifier has lower confidence in telling
+ apart early vs late for earliest segments and close to early/late boundary
+ at 15s.
+\end_layout
+
+\begin_layout Section
+Software
+\end_layout
+
+\begin_layout Standard
+All mathematical analyses were executed using the following Python libraries
+\end_layout
+
+\begin_layout Itemize
+statsmodels (Vector Autoregressive model fitting)
+\end_layout
+
+\begin_layout Itemize
+scikit.learn 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "scikit-learn"
+
+\end_inset
+
+ (svm, random forest, cross-validation)
+\end_layout
+
+\begin_layout Itemize
+scipy.signal (signal filtering, downsampling)
+\end_layout
+
+\begin_layout Itemize
+numpy (fourier transform)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Subsection
+Code Structure
+\end_layout
+
+\begin_layout Itemize
+Classes
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Feature Class and wrapper
+\end_layout
+
+\begin_layout Itemize
+Predictor Class
+\end_layout
+
+\begin_layout Itemize
+Data Loader Class
+\end_layout
+
+\begin_layout Itemize
+Xvalidation Class
+\end_layout
+
+\begin_layout Itemize
+Submission Class
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Modules
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Preprocessing module
+\end_layout
+
+\end_deeper
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Section*
+Remarks & additional info
+\end_layout
+
+\begin_layout Plain Layout
+Unexplored features and existing literature
+\end_layout
+
+\begin_layout Itemize
+Correlation features 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "schindler2007assessing"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Phase dynamics 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "daly2014exploration"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Cross power spectrum 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "krusienski2012value"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Mixture of features for classification 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "valderrama2012identifying,laurent2010source"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Spatial features? 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "shoeb2010application"
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+Directional coupling (connectivity based) 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "gomez2008measuring,billinger2014scot"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Comment
+status open
+
+\begin_layout Subsection
+Comparison to other methods
+\end_layout
+
+\begin_layout Plain Layout
+The approach taken in this work differs from previous methods in that...
+\end_layout
+
+\begin_layout Plain Layout
+Other participants from kaggle:
+\end_layout
+
+\begin_layout Plain Layout
+Summary of the methods used (see Appendix for further details):
+\end_layout
+
+\begin_layout Subsubsection*
+1st position (Michael Hills, winner) 
+\end_layout
+
+\begin_layout Plain Layout
+The code and documentation can be found at:
+\end_layout
+
+\begin_layout Plain Layout
+
+\size small
+\begin_inset CommandInset href
+LatexCommand href
+name "Michael Hills code and documentation"
+target "https://github.com/MichaelHills/seizure-detection"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\size small
+\begin_inset CommandInset href
+LatexCommand href
+name "Michael Hills report"
+target "https://github.com/MichaelHills/seizure-detection/raw/master/seizure-detection.pdf"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Features
+\bar default
+: FFT log magnitudes in the 1-47Hz range + inter-channel correlation coefficient
+s, CC, both in time and frequency domains + CC matrix eigenvalues in both
+ time and frequency domains.
+\end_layout
+
+\begin_layout Enumerate
+
+\bar under
+Classifier
+\bar default
+: per-patient Random Forest classifiers (3000 trees), trained on data from
+ each patient.
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "report_bib"
+options "plain"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout --Separator--
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+newpage
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+Appendix
+\end_layout
+
+\begin_layout Subsection*
+A.
+ Reproduction of Kaggle competition results
+\end_layout
+
+\begin_layout Standard
+In order to reproduce the kaggle competition results, we computed the
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+ 
+\begin_inset Formula $AUC$
+\end_inset
+
+ for the predicted scores (
+\begin_inset Formula $P_{seizure}$
+\end_inset
+
+, 
+\begin_inset Formula $P_{early}$
+\end_inset
+
+) of all patients together.
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ The measure used to report overall performance, as used in the competition,
+ is 
+\begin_inset Formula $AUC_{tot}=\frac{1}{2}(AUC_{seizure}+AUC_{early})$
+\end_inset
+
+.
+ The results are summarized in Table 4.
+ We provide the overall scores for all the different feature combinations
+ tested in this report, including the combination of features we used for
+ the competition, 
+\begin_inset Formula $VAR(2)+PLV+SE.$
+\end_inset
+
+ Note that we couldn't exactly reproduce the score obtained in the competition,
+ as we 
 \end_layout
 
 \begin_layout Standard
@@ -2085,368 +3035,17 @@ Kaggle competition results
 
 \end_layout
 
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/kaggle_2_train_test_seizure.svg
-	width 8cm
-
-\end_inset
-
-
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Graphics
-	filename figures/kaggle_2_train_test_early.svg
-	width 8cm
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Subsection
-Experiment 2
-\end_layout
-
-\begin_layout Subsection
-Feature analysis
+\begin_layout Subsection*
+B.
+ Summary of other methods
 \end_layout
 
 \begin_layout Standard
-We were interested in assessing the relative performance of our features.
- Furthermore, we wanted to understand how well individual features work
- as the seizure progresses.
- For this reason, we tested various combinations of the features and compared
- classification performance vs seizure latency.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Box Frameless
-position "t"
-hor_pos "c"
-has_inner_box 1
-inner_pos "t"
-use_parbox 0
-use_makebox 0
-width "100col%"
-special "none"
-height "1in"
-height_special "totalheight"
-status open
-
-\begin_layout Plain Layout
-\align center
-\begin_inset Graphics
-	filename figures/Patient_2_latency.svg
-	width 8cm
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Discussion
-\end_layout
-
-\begin_layout Standard
-Summarize results here.
-\begin_inset Newline newline
-\end_inset
-
-
-\begin_inset Note Comment
-status open
-
-\begin_layout Subsection
-Comparison to other methods
-\end_layout
-
-\begin_layout Plain Layout
-The approach taken in this work differs from previous methods in that...
-\end_layout
-
-\begin_layout Plain Layout
-Other participants from kaggle:
-\end_layout
-
-\begin_layout Plain Layout
-Summary of the methods used (see Appendix for further details):
+In this section we provide a brief summary of the methods used by other
+ kaggle participants, only for comparison purposes.
 \end_layout
 
 \begin_layout Subsubsection*
-1st position (Michael Hills, winner) 
-\end_layout
-
-\begin_layout Plain Layout
-The code and documentation can be found at:
-\end_layout
-
-\begin_layout Plain Layout
-
-\size small
-\begin_inset CommandInset href
-LatexCommand href
-name "Michael Hills code and documentation"
-target "https://github.com/MichaelHills/seizure-detection"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Plain Layout
-
-\size small
-\begin_inset CommandInset href
-LatexCommand href
-name "Michael Hills report"
-target "https://github.com/MichaelHills/seizure-detection/raw/master/seizure-detection.pdf"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Enumerate
-
-\bar under
-Features
-\bar default
-: FFT log magnitudes in the 1-47Hz range + inter-channel correlation coefficient
-s, CC, both in time and frequency domains + CC matrix eigenvalues in both
- time and frequency domains.
-\end_layout
-
-\begin_layout Enumerate
-
-\bar under
-Classifier
-\bar default
-: per-patient Random Forest classifiers (3000 trees), trained on data from
- each patient.
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Section
-Software
-\end_layout
-
-\begin_layout Standard
-All mathematical analyses were executed using the following Python libraries
-\end_layout
-
-\begin_layout Itemize
-statsmodels (Vector Autoregressive model fitting)
-\end_layout
-
-\begin_layout Itemize
-scikit.learn 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "scikit-learn"
-
-\end_inset
-
- (svm, random forest, cross-validation)
-\end_layout
-
-\begin_layout Itemize
-scipy.signal (signal filtering, downsampling)
-\end_layout
-
-\begin_layout Itemize
-numpy (fourier transform)
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Subsection
-Code Structure
-\end_layout
-
-\begin_layout Itemize
-Classes
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Feature Class and wrapper
-\end_layout
-
-\begin_layout Itemize
-Predictor Class
-\end_layout
-
-\begin_layout Itemize
-Data Loader Class
-\end_layout
-
-\begin_layout Itemize
-Xvalidation Class
-\end_layout
-
-\begin_layout Itemize
-Submission Class
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Modules
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Preprocessing module
-\end_layout
-
-\end_deeper
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset Note Comment
-status open
-
-\begin_layout Section*
-Remarks & additional info
-\end_layout
-
-\begin_layout Plain Layout
-Unexplored features and existing literature
-\end_layout
-
-\begin_layout Itemize
-Correlation features 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "schindler2007assessing"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Phase dynamics 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "daly2014exploration"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Cross power spectrum 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "krusienski2012value"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Mixture of features for classification 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "valderrama2012identifying,laurent2010source"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-Spatial features? 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "shoeb2010application"
-
-\end_inset
-
- 
-\end_layout
-
-\begin_layout Itemize
-Directional coupling (connectivity based) 
-\begin_inset CommandInset citation
-LatexCommand cite
-key "gomez2008measuring,billinger2014scot"
-
-\end_inset
-
-
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-\begin_inset CommandInset bibtex
-LatexCommand bibtex
-bibfiles "report_bib"
-options "plain"
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout --Separator--
-
-\end_layout
-
-\begin_layout Part*
-Appendix
-\end_layout
-
-\begin_layout Standard
-In here we report a summary of the methods used by other kaggle participants
- (for comparison purposes).
-\end_layout
-
-\begin_layout Subsection*
 
 \bar under
 Feature extraction
@@ -2536,7 +3135,7 @@ Eigenvalues are computed from the CC matrices, from both time and frequency
 \end_layout
 
 \end_deeper
-\begin_layout Subsection*
+\begin_layout Subsubsection*
 
 \bar under
 Classifier
