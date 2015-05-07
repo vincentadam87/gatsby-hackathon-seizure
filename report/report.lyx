@@ -1985,8 +1985,8 @@ status open
 \begin_layout Plain Layout
 \align left
 \begin_inset Graphics
-	filename figures/Patient_2_latency new.svg
-	width 8.5cm
+	filename figures/Patient_2_latency.svg
+	width 8.25cm
 
 \end_inset
 
