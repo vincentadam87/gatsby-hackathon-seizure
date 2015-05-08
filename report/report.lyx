@@ -1209,6 +1209,70 @@ Features Parameters
 
 \end_layout
 
+\begin_layout Subsection*
+Additional note: Relations between AR, VAR and SE features
+\end_layout
+
+\begin_layout Standard
+AR, VAR and SE features are 
+\begin_inset Formula $2^{nd}$
+\end_inset
+
+ order methods.
+ They can all be seen as constructed from auto or cross correlations of
+ the iEEG time series in the following way
+\end_layout
+
+\begin_layout Itemize
+Spectral energy is related to auto-correlation under stationary assumptions
+ through the Wiener-Khinchin Theorem which states that the spectral density
+ of a stationary process is equal the the Fourier transform of its autocorrelati
+on function.
+\end_layout
+
+\begin_layout Itemize
+AR[
+\begin_inset Formula $\tau$
+\end_inset
+
+] models of various lag 
+\begin_inset Formula $\tau$
+\end_inset
+
+ parameterize spectral densities which richer expressive power as 
+\begin_inset Formula $\tau$
+\end_inset
+
+ is increased.
+ Parameter estimation through Yule-Walker equations shows that estimated
+ parameters are linear functions of up to 
+\begin_inset Formula $\tau$
+\end_inset
+
+-lagged autocorrelations.
+ Parameter estimation (residual variance excluded) is scale invariant.
+\end_layout
+
+\begin_layout Itemize
+Parameter estimation in VAR[
+\begin_inset Formula $\tau$
+\end_inset
+
+] model amounts to a linear combination of auto and cross correlation up
+ to lag 
+\begin_inset Formula $\tau$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In summary, AR fits are impoverished representations of the single channel
+ spectrum (through its parameterization).
+ VAR fits also impoverish the individual channel spectral density representation
+ but, relative to SE features contain additional cross channel information.
+\end_layout
+
 \begin_layout Subsection
 Classification
 \end_layout
@@ -1385,7 +1449,8 @@ We reversed the training and test datasets in order to analyze the prediction
  confidence as a function of latency.
  The rationale here is to assess the extend to which different features
  pick up early signatures of seizures.
- The results of this analysis are exemplified in figure 2.
+ The results of this analysis are exemplified in figure 2, which correspond
+ to a single patient.
 \end_layout
 
 \begin_layout Standard
