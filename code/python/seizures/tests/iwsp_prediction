@@ -63,7 +63,7 @@ if __name__ == "__main__":
         StackFeatures(VarLagsARFeatures(2), VarLagsARFeatures(4), PLVFeatures(), SEFeatures())
     ]
 
-        feature_extractors = [
+    feature_extractors = [
         VarLagsARFeatures(2),
         SEFeatures(),
         PLVFeatures(),
