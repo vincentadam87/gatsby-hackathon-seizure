@@ -13,7 +13,7 @@ import time
 import numpy as np
 from code.python.seizures.evaluation.performance_measures import auc
 import pickle
-from code.python.seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
+#from code.python.seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
 
 class Parallel_job_train_test(IndependentJob):
     def __init__(self, aggregator,patient,
@@ -84,30 +84,3 @@ class Parallel_job_train_test(IndependentJob):
         self.aggregator.submit_result(result)
         logger.info("done computing")
 
-
-
-class Parallel_job_Xval(IndependentJob):
-    def __init__(self, aggregator,feature_extractors,
-                 predictors,
-                 patient,
-                 clips_folder,
-                 max_segments,
-                 sav_path):
-        IndependentJob.__init__(self, aggregator)
-        self.feature_extractors=feature_extractors
-        self.predictors=predictors
-        self.patient=patient
-        self.clips_folder=clips_folder
-        self.max_segments=max_segments
-        self.sav_path=sav_path
-
-    def compute(self):
-        logger.info("computing")
-        tester = CachedCVFeaPredTester(self.feature_extractors,
-                                       self.predictors,
-                                       self.patient,
-                                       data_path=self.clips_folder)
-
-        result_list = tester.test_combination(fold=10, max_segments=self.max_segments)
-
-        pickle.dump( result_list, open( self.sav_path+"slurm_xval_result_"+self.patient+".p", "wb" ) )
