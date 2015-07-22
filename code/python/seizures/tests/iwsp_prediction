@@ -51,6 +51,8 @@ if __name__ == "__main__":
     patients = ['Dog_1','Dog_2','Dog_3','Dog_4', 'Dog_5'
                 ]
 
+    patients = ['Patient_1', 'Patient_2']
+
     feature_extractors = [
         ARFeatures(),
         VarLagsARFeatures(2),
@@ -66,12 +68,9 @@ if __name__ == "__main__":
         StackFeatures(VarLagsARFeatures(2), VarLagsARFeatures(4), PLVFeatures(), SEFeatures())
     ]
 
-    #feature_extractors = [
-    #    VarLagsARFeatures(2),
-    #    SEFeatures(),
-    #    PLVFeatures(),
-    #    StackFeatures(VarLagsARFeatures(2), PLVFeatures(), SEFeatures())
-    #]
+    feature_extractors = [
+        StackFeatures(VarLagsARFeatures(2), PLVFeatures(), SEFeatures())
+    ]
 
 
     data_path = Global.path_map('clips_folder_prediction')
@@ -84,7 +83,7 @@ if __name__ == "__main__":
     max_segments = -1
 
 
-    sav_path = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/results/kaggle_prediction/'
+    sav_path = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/results/kaggle_prediction/results2/'
     if not os.path.exists(sav_path):
         os.makedirs(sav_path)
 
