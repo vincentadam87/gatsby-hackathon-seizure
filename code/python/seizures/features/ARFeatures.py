@@ -1,7 +1,7 @@
 import numpy as np
 from seizures.features.FeatureExtractBase import FeatureExtractBase
 from statsmodels.tsa.vector_ar.var_model import VAR
-from seizures.data.Instance import Instance
+#from seizures.data.Instance import Instance
 
 class ARFeatures(FeatureExtractBase):
     """
@@ -49,7 +49,7 @@ class VarLagsARFeatures(FeatureExtractBase):
         self.lags = lags
 
     def extract(self, instance):
-        assert(isinstance(instance, Instance))
+        #assert(isinstance(instance, Instance))
         #print self.lags, instance.eeg_data.T.shape, instance.eeg_data.T
         #v= VAR(instance.eeg_data.T)
         params = VAR(instance.eeg_data.T)._estimate_var(self.lags).params
