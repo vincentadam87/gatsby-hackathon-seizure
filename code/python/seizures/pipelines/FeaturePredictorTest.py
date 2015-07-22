@@ -18,13 +18,13 @@ import numpy as np
 import time
 
 
-from independentjobs.independent_jobs.tools.Log import Log
-from independentjobs.independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
-from independentjobs.independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
-from independentjobs.independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
-from independentjobs.independent_jobs.jobs.IndependentJob import IndependentJob
-from independentjobs.independent_jobs.results.SingleResult import SingleResult
-from independentjobs.independent_jobs.tools.Log import logger
+from independentjobsfolder.independent_jobs.tools.Log import Log
+from independentjobsfolder.independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
+from independentjobsfolder.independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
+from independentjobsfolder.independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
+from independentjobsfolder.independent_jobs.jobs.IndependentJob import IndependentJob
+from independentjobsfolder.independent_jobs.results.SingleResult import SingleResult
+from independentjobsfolder.independent_jobs.tools.Log import logger
 
 class Data_parallel_job(IndependentJob):
     def __init__(self, aggregator,feature_extractor,x,params):
