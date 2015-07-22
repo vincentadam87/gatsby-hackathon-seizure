@@ -25,7 +25,7 @@ import time,os
 
 from seizures.evaluation.performance_measures import auc
 
-#from code.python.seizures.pipelines.FeaturePredictorTest import FeaturesPredictsTable
+#from seizures.pipelines.FeaturePredictorTest import FeaturesPredictsTable
 
 from seizures.features.ARFeatures import *
 from seizures.features.MixFeatures import StackFeatures

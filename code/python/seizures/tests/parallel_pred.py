@@ -13,7 +13,7 @@ import time
 import numpy as np
 from seizures.evaluation.performance_measures import auc
 import pickle
-#from code.python.seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
+#from seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
 
 class Parallel_job_train_test(IndependentJob):
     def __init__(self, aggregator,patient,
