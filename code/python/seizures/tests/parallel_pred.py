@@ -78,7 +78,7 @@ class Parallel_job_train_test(IndependentJob):
         print self.patient
         print result_list
 
-        pickle.dump( result_list, open( self.sav_path+"pred_result_detail_"+self.patient+".p", "wb" ) )
+        pickle.dump( result_list, open( self.sav_path+"pred_result_detail2_"+self.patient+".p", "wb" ) )
         result = SingleResult([])
         # submit the result to my own aggregator
         self.aggregator.submit_result(result)

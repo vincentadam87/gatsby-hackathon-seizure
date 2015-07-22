@@ -91,7 +91,7 @@ class Global():
 
         path_dict['my_result_folder'] = '/nfs/nhome/live/jmagraner/Desktop/seizures_detection/'
         path_dict['my_xval_folder'] = '/nfs/nhome/live/jmagraner/Desktop/seizures_detection/xval/'
-        path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/jmagraner/Desktop/kaggle_slurm/'
+        path_dict['slurm_jobs_folder'] = '/nfs/nhome/live/jmagraner/Desktop/kaggle_slurm/prediction2/'
         path_dict['test_labels'] = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/data/'
          # --------------- end Joana -------------
 

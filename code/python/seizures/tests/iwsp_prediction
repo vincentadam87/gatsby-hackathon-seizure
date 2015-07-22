@@ -63,6 +63,13 @@ if __name__ == "__main__":
         StackFeatures(VarLagsARFeatures(2), VarLagsARFeatures(4), PLVFeatures(), SEFeatures())
     ]
 
+        feature_extractors = [
+        VarLagsARFeatures(2),
+        SEFeatures(),
+        PLVFeatures(),
+        StackFeatures(VarLagsARFeatures(2), PLVFeatures(), SEFeatures())
+    ]
+
 
     data_path = Global.path_map('clips_folder_prediction')
 
@@ -74,7 +81,7 @@ if __name__ == "__main__":
     max_segments = -1
 
 
-    sav_path = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/results/kaggle_prediction/'
+    sav_path = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/results/kaggle_prediction/results2/'
     if not os.path.exists(sav_path):
         os.makedirs(sav_path)
 
@@ -182,7 +189,7 @@ if __name__ == "__main__":
             print patient
             print result_list
 
-            pickle.dump( result_list, open( sav_path+"pred_seq_result_"+patient+".p", "wb" ) )
+            pickle.dump( result_list, open( sav_path+"pred_seq_result2_"+patient+".p", "wb" ) )
             #table.print_table('seizure_auc')
 
 
