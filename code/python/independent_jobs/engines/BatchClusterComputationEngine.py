@@ -79,8 +79,9 @@ class BatchClusterComputationEngine(IndependentComputationEngine):
         lines = []
         lines.append("import socket")
         lines.append("import sys")
-        lines.append("sys.path.append(\"/nfs/nhome/live/vincenta/git/independent-jobs/\")")
-        lines.append("from independent_jobs.engines.BatchClusterComputationEngine import Dispatcher")
+        #lines.append("sys.path.append(\"/nfs/nhome/live/vincenta/git/independent-jobs/\")")
+        lines.append("sys.path.append(\"/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/code/python/\")")
+	lines.append("from independent_jobs.engines.BatchClusterComputationEngine import Dispatcher")
         lines.append("from independent_jobs.tools.Log import Log, logger")
         lines.append("Log.set_loglevel(%d)" % self.batch_parameters.loglevel)
         lines.append("logger.info(\"Job running on host \" + socket.gethostname())")

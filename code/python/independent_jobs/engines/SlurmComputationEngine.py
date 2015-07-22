@@ -44,8 +44,9 @@ class SlurmComputationEngine(BatchClusterComputationEngine):
 
     def create_batch_script(self, job_name, dispatcher_string):
         command = "nice -n 10 " + dispatcher_string
-        precommand = "export PYHTONPATH=$PYTHONPATH:/nfs/nhome/live/vincenta/git/independent-jobs/"
-        days, hours, minutes, seconds = Time.sec_to_all(self.batch_parameters.max_walltime)
+       # precommand = "export PYHTONPATH=$PYTHONPATH:/nfs/nhome/live/vincenta/git/independent-jobs/"
+        precommand = "export PYTHONPATH=$PYTHONPATH:/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/code/python/"
+	days, hours, minutes, seconds = Time.sec_to_all(self.batch_parameters.max_walltime)
         walltime = '%d-%d:%d:%d' % (days, hours, minutes, seconds)
         
         num_nodes = str(self.batch_parameters.nodes)
