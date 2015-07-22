@@ -1,8 +1,8 @@
 import numpy as np
-from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
-from code.python.seizures.features.ARFeatures import ARFeatures
-from code.python.seizures.features.PLVFeatures import PLVFeatures
-from code.python.seizures.features.SEFeatures import SEFeatures
+from seizures.features.FeatureExtractBase import FeatureExtractBase
+from seizures.features.ARFeatures import ARFeatures
+from seizures.features.PLVFeatures import PLVFeatures
+from seizures.features.SEFeatures import SEFeatures
 
 class MixFeatures(FeatureExtractBase):
     """

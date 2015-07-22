@@ -11,7 +11,7 @@ from independent_jobs.results.SingleResult import SingleResult
 from independent_jobs.tools.Log import logger
 import time
 import numpy as np
-from code.python.seizures.evaluation.performance_measures import auc
+from seizures.evaluation.performance_measures import auc
 import pickle
 #from code.python.seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
 
@@ -78,7 +78,7 @@ class Parallel_job_train_test(IndependentJob):
         print self.patient
         print result_list
 
-        pickle.dump( result_list, open( self.sav_path+"pred_result_detail2_"+self.patient+".p", "wb" ) )
+        pickle.dump( result_list, open( self.sav_path+"pred_result_detail_"+self.patient+".p", "wb" ) )
         result = SingleResult([])
         # submit the result to my own aggregator
         self.aggregator.submit_result(result)

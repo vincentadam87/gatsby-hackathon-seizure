@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 import numpy as np
-from code.python.seizures.prediction.PredictorBase import PredictorBase
+from seizures.prediction.PredictorBase import PredictorBase
 from sklearn.ensemble import RandomForestClassifier
 
 

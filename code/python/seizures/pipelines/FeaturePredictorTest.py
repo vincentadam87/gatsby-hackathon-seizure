@@ -4,16 +4,16 @@ on specified datasets
 @arthor: Wittawat
 """
 
-from code.python.seizures.prediction.PredictorBase import PredictorBase
-from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
-from code.python.seizures.Global import Global
-from code.python.seizures.data.DataLoader_v2 import DataLoader
-from code.python.seizures.evaluation.XValidation import XValidation
-from code.python.seizures.evaluation.performance_measures import accuracy, auc
-from code.python.seizures.data.SubjectEEGData import SubjectEEGData
+from seizures.prediction.PredictorBase import PredictorBase
+from seizures.features.FeatureExtractBase import FeatureExtractBase
+from seizures.Global import Global
+from seizures.data.DataLoader_v2 import DataLoader
+from seizures.evaluation.XValidation import XValidation
+from seizures.evaluation.performance_measures import accuracy, auc
+from seizures.data.SubjectEEGData import SubjectEEGData
 from abc import abstractmethod
 from sklearn import cross_validation
-from code.python.seizures.preprocessing import preprocessing
+from seizures.preprocessing import preprocessing
 import numpy as np
 import time
 

@@ -2,7 +2,7 @@ from scipy.fftpack import fft, fftshift
 
 import numpy as np
 import math
-from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
+from seizures.features.FeatureExtractBase import FeatureExtractBase
 from scipy.signal import kaiserord, firwin
 
 
