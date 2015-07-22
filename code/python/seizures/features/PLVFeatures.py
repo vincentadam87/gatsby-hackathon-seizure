@@ -1,6 +1,6 @@
 import numpy as np
 from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
-from seizures.data.Instance import Instance
+from code.python.seizures.data.Instance import Instance
 import numpy as np
 from numpy import unwrap, angle
 from scipy.signal import hilbert
