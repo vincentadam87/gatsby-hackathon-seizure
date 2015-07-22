@@ -1,6 +1,6 @@
 __author__ = 'Matthieu'
 
-from Instance_pred import Instance
+from code.python.seizures.data.Instance_pred import Instance
 import scipy.io
 import numpy as np
 

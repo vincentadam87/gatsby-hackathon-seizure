@@ -1,5 +1,5 @@
 import numpy as np
-from seizures.features.FeatureExtractBase import FeatureExtractBase
+from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
 from seizures.data.Instance import Instance
 import numpy as np
 from numpy import unwrap, angle

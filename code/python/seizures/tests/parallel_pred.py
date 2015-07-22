@@ -1,4 +1,4 @@
-from seizures.data.DataLoader_pred import DataLoader, make_test_label_dict
+from code.python.seizures.data.DataLoader_pred import DataLoader, make_test_label_dict
 
 import sys
 
@@ -11,9 +11,9 @@ from independent_jobs.results.SingleResult import SingleResult
 from independent_jobs.tools.Log import logger
 import time
 import numpy as np
-from seizures.evaluation.performance_measures import auc
+from code.python.seizures.evaluation.performance_measures import auc
 import pickle
-from seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
+from code.python.seizures.pipelines.FeaturePredictorTest import CachedCVFeaPredTester
 
 class Parallel_job_train_test(IndependentJob):
     def __init__(self, aggregator,patient,

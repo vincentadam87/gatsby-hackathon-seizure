@@ -1,12 +1,12 @@
 import glob
 from os.path import join
 import os
-from seizures.data.EEGData_pred import EEGData
-from seizures.preprocessing import preprocessing
+from code.python.seizures.data.EEGData_pred import EEGData
+from code.python.seizures.preprocessing import preprocessing
 import numpy as np
 import random
-from seizures.features.FeatureExtractBase import FeatureExtractBase
-from seizures.Global_pred import Global
+from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
+from code.python.seizures.Global_pred import Global
 import csv
 # Wittawat: Many load_* methods do not actually use the patient_name argument
 

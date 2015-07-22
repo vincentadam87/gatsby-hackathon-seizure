@@ -23,25 +23,25 @@ from independent_jobs.results.SingleResult import SingleResult
 from independent_jobs.tools.Log import logger
 import time,os
 
-from seizures.evaluation.performance_measures import auc
+from code.python.seizures.evaluation.performance_measures import auc
 
 from seizures.pipelines.FeaturePredictorTest import FeaturesPredictsTable
 
-from seizures.features.ARFeatures import *
-from seizures.features.MixFeatures import StackFeatures
-from seizures.features.PLVFeatures import PLVFeatures
-from seizures.features.SEFeatures import SEFeatures
-from seizures.features.ARFeatures import ARFeatures
-from seizures.prediction.ForestPredictor import ForestPredictor
+from code.python.seizures.features.ARFeatures import *
+from code.python.seizures.features.MixFeatures import StackFeatures
+from code.python.seizures.features.PLVFeatures import PLVFeatures
+from code.python.seizures.features.SEFeatures import SEFeatures
+from code.python.seizures.features.ARFeatures import ARFeatures
+from code.python.seizures.prediction.ForestPredictor import ForestPredictor
 import numpy as np
 import sys
-from seizures.Global_pred import Global
+from code.python.seizures.Global_pred import Global
 
-from seizures.data.DataLoader_pred import DataLoader, make_test_label_dict
+from code.python.seizures.data.DataLoader_pred import DataLoader, make_test_label_dict
 
 import pickle
 
-from seizures.tests.parallel_pred import Parallel_job_train_test
+from code.python.seizures.tests.parallel_pred import Parallel_job_train_test
 
 if __name__ == "__main__":
 

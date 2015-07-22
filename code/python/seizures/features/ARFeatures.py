@@ -1,5 +1,5 @@
 import numpy as np
-from seizures.features.FeatureExtractBase import FeatureExtractBase
+from code.python.seizures.features.FeatureExtractBase import FeatureExtractBase
 from statsmodels.tsa.vector_ar.var_model import VAR
 #from seizures.data.Instance import Instance
 
