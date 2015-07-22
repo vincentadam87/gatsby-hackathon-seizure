@@ -2,13 +2,13 @@ from code.python.seizures.data.DataLoader_pred import DataLoader, make_test_labe
 
 import sys
 
-from independentjobsfolder.independent_jobs.tools.Log import Log
-from independentjobsfolder.independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
-from independentjobsfolder.independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
-from independentjobsfolder.independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
-from independentjobsfolder.independent_jobs.jobs.IndependentJob import IndependentJob
-from independentjobsfolder.independent_jobs.results.SingleResult import SingleResult
-from independentjobsfolder.independent_jobs.tools.Log import logger
+from independent_jobs.tools.Log import Log
+from independent_jobs.aggregators.SingleResultAggregator import SingleResultAggregator
+from independent_jobs.engines.BatchClusterParameters import BatchClusterParameters
+from independent_jobs.engines.SlurmComputationEngine import SlurmComputationEngine
+from independent_jobs.jobs.IndependentJob import IndependentJob
+from independent_jobs.results.SingleResult import SingleResult
+from independent_jobs.tools.Log import logger
 import time
 import numpy as np
 from code.python.seizures.evaluation.performance_measures import auc
