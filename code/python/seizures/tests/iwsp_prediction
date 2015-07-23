@@ -51,8 +51,6 @@ if __name__ == "__main__":
     patients = ['Dog_1','Dog_2','Dog_3','Dog_4', 'Dog_5'
                 ]
 
-    patients = ['Patient_1', 'Patient_2']
-
     feature_extractors = [
         ARFeatures(),
         VarLagsARFeatures(2),
@@ -68,13 +66,8 @@ if __name__ == "__main__":
         StackFeatures(VarLagsARFeatures(2), VarLagsARFeatures(4), PLVFeatures(), SEFeatures())
     ]
 
-    feature_extractors = [
-        StackFeatures(VarLagsARFeatures(2), PLVFeatures(), SEFeatures())
-    ]
-
 
     data_path = Global.path_map('clips_folder_prediction')
-
 
 
     predictor_seizure = ForestPredictor(n_estimators=100)
@@ -83,12 +76,13 @@ if __name__ == "__main__":
     max_segments = -1
 
 
-    sav_path = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/results/kaggle_prediction/results2/'
+    sav_path = '/nfs/nhome/live/jmagraner/gatsby-hackathon-seizure/results/kaggle_prediction/'
     if not os.path.exists(sav_path):
         os.makedirs(sav_path)
 
     cluster = 'on'
     type = 'slurm'
+    maxruntime = 50    # in hours
 
     if cluster == 'on':
 
@@ -103,9 +97,11 @@ if __name__ == "__main__":
         logger.info("Creating batch parameter instance")
         johns_slurm_hack = "#SBATCH --partition=intel-ivy,wrkstn,compute"
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        batch_parameters = BatchClusterParameters(max_walltime=60*60*20,
+        batch_parameters = BatchClusterParameters(
                     foldername=foldername,
                     job_name_base="kaggle_iwsp_loader_"+timestr+"_",
+                    max_walltime=60*60*maxruntime,
+                    nodes = 5,
                     parameter_prefix=johns_slurm_hack)
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")
@@ -191,7 +187,7 @@ if __name__ == "__main__":
             print patient
             print result_list
 
-            pickle.dump( result_list, open( sav_path+"pred_seq_result2_"+patient+".p", "wb" ) )
+            pickle.dump( result_list, open( sav_path+"pred_seq_result_"+patient+".p", "wb" ) )
             #table.print_table('seizure_auc')
 
 
