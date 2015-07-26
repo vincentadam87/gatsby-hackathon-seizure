@@ -154,32 +154,41 @@ In this work, we aimed to solve two tasks:
 analyse the importance of the different features for classification performance.
 \item II. We compare the estimated probabilities of seizure and early seizure against latency to characterize how accuracy
 changes as the seizure progresses.
+\item III. We repeat the same analysis as in I, but on a seizure prediction task.
 \end{itemize}
 \end{block}
 
-
-
+\vspace{-1.2cm}
 \begin{columns}
 \column{0.49\textwidth}
-\begin{block}{Results I. Performance}
+\begin{block}{Results I. Seizure \& early seizure detection performance}
 \begin{columns}
 \column{0.49\textwidth}
+\vspace{-1cm}
 \begin{figure}
-\includegraphics[width=1\textwidth]{figures/kaggle_2_train_test_early.pdf}
+\includegraphics[width=1\textwidth]{figures/kaggle_2_train_test_seizure.pdf}
 \end{figure}
 \column{0.49\textwidth}
+\vspace{-1cm}
 \begin{figure}
 \includegraphics[width=1\textwidth]{figures/kaggle_2_train_test_early.pdf}
 \end{figure}
 \end{columns}
 \end{block}
 \column{0.49\textwidth}
-\begin{block}{Results II. Latency}
-\centering
-Mean performance across subjects, for different feature combinations.
+\begin{block}{Results III. Seizrue prediction performance}
+\begin{columns}
+\column{0.49\textwidth}
+\vspace{-1cm}
 \begin{figure}
-\includegraphics[width=0.85\textwidth]{figures/all_latency.pdf}
+\includegraphics[width=1\textwidth]{figures/kaggle_prediction_seizure.pdf}
 \end{figure}
+\column{0.49\textwidth}
+\begin{itemize}
+\item We run the same analysis
+\item Overall performance drops significantly
+\end{itemize}
+\end{columns}
 \end{block}
 \end{columns}
 
@@ -198,16 +207,26 @@ Mean performance across subjects, for different feature combinations.
 \end{block}
 \end{columns}
 
-
-
+\begin{columns}
+\column{0.49\textwidth}
+\begin{block}{Results II. Latency}
+\centering
+Mean performance across subjects, for different feature combinations.
+\begin{figure}
+\includegraphics[width=0.85\textwidth]{figures/all_latency.pdf}
+\end{figure}
+\end{block}
+\column{0.49\textwidth}
 \begin{block}{Conclusions}
 \begin{itemize}
 \item features extracted with VAR models beyond 2nd order do not improve classification performance
 \item A combination of SE+VAR+PLV achieves the best results in both tasks
 \item data segments are more confidently classified as ictal as seizure progresses (latency)
+\item Best features for prediction are...
+\item Compare performance vs VAR degree. In detection clearly decreases, in prediction...
 \end{itemize}
 \end{block}
-
+\end{columns}
 
 
 
