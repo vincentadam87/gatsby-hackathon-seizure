@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     cluster = 'on'
     type = 'slurm'
-    maxruntime = 8    # in days
+    maxruntime = 6    # in days
 
     if cluster == 'on':
 
