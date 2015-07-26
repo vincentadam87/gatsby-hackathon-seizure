@@ -51,6 +51,9 @@ if __name__ == "__main__":
     patients = ['Dog_1','Dog_2','Dog_3','Dog_4', 'Dog_5'
                 ]
 
+    patients = ['Dog_2','Dog_3','Dog_4'
+                ]
+
     feature_extractors = [
         ARFeatures(),
         VarLagsARFeatures(2),
@@ -82,7 +85,7 @@ if __name__ == "__main__":
 
     cluster = 'on'
     type = 'slurm'
-    maxruntime = 10    # in days
+    maxruntime = 8    # in days
 
     if cluster == 'on':
 
@@ -101,7 +104,7 @@ if __name__ == "__main__":
                     foldername=foldername,
                     job_name_base="kaggle_iwsp_loader_"+timestr+"_",
                     max_walltime=60*60*24*maxruntime,
-                    nodes = 5,
+                    nodes = 3,
                     parameter_prefix=johns_slurm_hack)
         # create slurm engine (which works locally)
         logger.info("Creating slurm engine instance")
