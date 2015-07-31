@@ -85,8 +85,8 @@ detecting the onset of seizures in order to stop their progress.
 
 
 \begin{block}{The data}
-1 second multi-channel iEEG data segments from 8 human patients and 4 dogs with epilepsy was provided by the UPenn-Mayo Clinic
-Seizure Detection Challenge, hosted on \emph{kaggle.com}, which was sponsored by the American Epilepsy Society. \\
+The data consists of 1 second multi-channel iEEG segments from 8 human patients and 4 dogs with epilepsy. It was
+provided by the UPenn-Mayo Clinic Seizure Detection Challenge, hosted on \emph{kaggle.com}[1], which was sponsored by the American Epilepsy Society. \\
 \quad \\
 The data was split into training and test sets.
 \begin{itemize}
@@ -102,8 +102,8 @@ The data was split into training and test sets.
 The task consisted on answering two questions about each test segment:
 \begin{itemize}
 \centering
-\item[1.] Is it a seizure segment?
-\item [2.] Is it an early seizure segment?
+\item[1.] Is it a {\bf seizure} segment?
+\item [2.] Is it an {\bf early seizure} segment?
 \end{itemize}
 \end{block}
 
@@ -165,7 +165,7 @@ The learned parameters $[A_{1},A_{2},...,A_{\tau},Q]$ were taken as features. \\
 
 \begin{minipage}[t]{0.95\linewidth}
 \begin{tcolorbox}[title=3. Clasification]
-A Random Forest classifier was trained individually for each subject.
+A Random Forest classifier[2] with tree width 100 was trained individually for each subject.
 \end{tcolorbox}
 \end{minipage}
 \vspace{0.5cm}
@@ -179,14 +179,15 @@ A Random Forest classifier was trained individually for each subject.
 \begin{column}{.27\linewidth}
 
 
-\begin{block}{Summary}
+\begin{block}{Summary of the method}
 \quad \\
 \vspace{0.2cm}
-We extract a small set of features from the pre-processed iEEG signal based on {\bf neural synchrony} (VAR, PLV) and {\bf spectral energy} (SE).
-We pair these features with a state-of-the-art random forest classifier to yield an algorithm
-which is able to accurately identify ictal iEEG data segments and detect early periods of the seizures
+We extract a small set of features from the pre-processed iEEG signal based on \underline{\bf neural synchrony} (VAR, PLV)
+and \underline{\bf spectral energy} (SE).
+We pair these features with a state-of-the-art random forest classifier to yield an algorithm[3] which
+is able to accurately identify ictal iEEG data segments and detect early periods of the seizures
 ({\bf latency} from seizure onset\textless15s). \\
-\quad \\
+\qquad \\
 \vspace{0.3cm}
 \end{block}
 
@@ -194,9 +195,10 @@ which is able to accurately identify ictal iEEG data segments and detect early p
 Once the classifier is trained:
 \begin{itemize}
 \item[I.] We evaluate the accuracy of the classifier in seizure detection and early seizure detection using the
-Area Under the ROC Curve (AUC) as a metric. Furthermore, we analyse the {\bf importance of the different features}
+Area Under the ROC Curve (AUC) as a metric. Furthermore, we analyse the \underline{\bf importance of the different features}
 for classification performance.
-\item[II.] We compare the estimated probabilities of seizure and early seizure with respect to {\bf latency} to characterize
+\item[II.] We compare the estimated probabilities of seizure and early seizure with respect to \underline{\bf latency}
+ (time from seizure onset) to characterize
 how accuracy changes as the seizure progresses.
 \end{itemize}
 \end{block}
@@ -255,7 +257,7 @@ how accuracy changes as the seizure progresses.
 \vspace{-1.4cm}
 \begin{columns}
 \column{0.59\textwidth}
-\begin{block}{Results II. Accuracy vs Latency.}
+\begin{block}{Results II. Seizure/early detection vs latency.}
 Patient example.
 \begin{figure}
 \includegraphics[width=0.5\textwidth]{figures/Patient_2_latency_seizure.pdf}
@@ -264,8 +266,8 @@ Patient example.
 \vspace{-0.8cm}
 Dog example.
 \begin{figure}
-\includegraphics[width=0.5\textwidth]{figures/Dog_4_latency_seizure.pdf}
-\includegraphics[width=0.5\textwidth]{figures/Dog_4_latency_early.pdf}
+\includegraphics[width=0.5\textwidth]{figures/Dog_1_latency_seizure.pdf}
+\includegraphics[width=0.5\textwidth]{figures/Dog_1_latency_early.pdf}
 \end{figure}
 \end{block}
 \column{0.39\textwidth}
@@ -273,8 +275,19 @@ Dog example.
 \begin{itemize}
 \item Features extracted with VAR models beyond 2nd order do not improve classification performance.
 \item A combination of SE+VAR+PLV achieves the best results in both tasks.
-\item Data segments are more confidently classified as ictal as seizure progresses (latency).
+\item Data segments are more confidently classified as ictal as seizure progresses (increasing latency from onset).
+\item Classification performance is variable across subjects. However, for a subset of the patients,
+our algorithm very reliably identifies the onset of the seizure.
+\vspace{1cm}
 \end{itemize}
+\end{block}
+
+\begin{block}{References}
+$[1]$ Kaggle seizure detection challenge, 2014. \\
+$[2]$ Breiman, 2001 \\
+$[3]$ The Fitzgerald Team solution: \\
+\small www.gatsby.ucl.ac.uk/~vincenta/kaggle/report.pdf \\
+\vspace{0.3cm}
 \end{block}
 \end{columns}
 
